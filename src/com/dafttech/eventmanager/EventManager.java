@@ -4,20 +4,17 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-public class EventManager
-{
+public class EventManager {
     volatile protected List<EventType> events = new ArrayList<EventType>();
     volatile public AsyncEventQueue asyncEventQueue = new AsyncEventQueue();
 
-    public static enum EventListenerMode
-    {
+    public static enum EventListenerMode {
         onEvent, Annotation
     };
 
     volatile public EventListenerMode eventListenerMode = EventListenerMode.onEvent;
 
-    public EventManager()
-    {
+    public EventManager() {
     }
 
     /**
@@ -28,11 +25,9 @@ public class EventManager
      *            : name.
      * @return Event: requested event.
      */
-    public EventType getEventByName(String name)
-    {
+    public EventType getEventByName(String name) {
         EventType event = null;
-        for (Iterator<EventType> i = events.iterator(); i.hasNext();)
-        {
+        for (Iterator<EventType> i = events.iterator(); i.hasNext();) {
             event = i.next();
             if (event.name.equals(name)) return event;
         }
@@ -49,8 +44,7 @@ public class EventManager
      * @return List < Object >: Every called class will return an object. They
      *         are collected in this list.
      */
-    public Event callSyncEvent(String eventName, Object... objects)
-    {
+    public Event callSyncEvent(String eventName, Object... objects) {
         EventType event = getEventByName(eventName);
         if (event == null) return null;
         return event.callSync(objects);
@@ -70,8 +64,7 @@ public class EventManager
      *         list with EventStream.getReturn()
      * @throws AsyncEventQueueOverflowException
      */
-    public Event callAsyncEvent(String eventName, Object... objects) throws AsyncEventQueueOverflowException
-    {
+    public Event callAsyncEvent(String eventName, Object... objects) throws AsyncEventQueueOverflowException {
         EventType event = getEventByName(eventName);
         if (event == null) return null;
         return event.callAsync(objects);
@@ -83,8 +76,7 @@ public class EventManager
      * @param EventType
      *            Listener: Event Listener to be registered.
      */
-    public void registerEventListener(String eventName, Object eventListener)
-    {
+    public void registerEventListener(String eventName, Object eventListener) {
         EventType event = getEventByName(eventName);
         if (event == null) return;
         event.registerEventListener(eventListener, 0);
@@ -102,8 +94,7 @@ public class EventManager
      * @param int: priority. Higher = more important, lower = less.
      * @param boolean: Activate forceCall to receive all Events of this type.
      */
-    public void registerEventListener(String eventName, Object eventListener, int priority, Object... filter)
-    {
+    public void registerEventListener(String eventName, Object eventListener, int priority, Object... filter) {
         EventType event = getEventByName(eventName);
         if (event == null) return;
         event.registerEventListener(eventListener, priority, filter);

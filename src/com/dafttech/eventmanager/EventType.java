@@ -3,27 +3,23 @@ package com.dafttech.eventmanager;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EventType
-{
+public class EventType {
     volatile protected List<EventListenerContainer> eventListenerContainer = new ArrayList<EventListenerContainer>();
     volatile protected EventManager eventManager = null;
     volatile protected String name = "";
 
-    public EventType(EventManager eventManager, String name)
-    {
+    public EventType(EventManager eventManager, String name) {
         this.eventManager = eventManager;
         this.name = name;
         eventManager.events.add(this);
     }
 
-    public EventType(EventManager eventManager)
-    {
+    public EventType(EventManager eventManager) {
         this.eventManager = eventManager;
         eventManager.events.add(this);
     }
 
-    public String getName()
-    {
+    public String getName() {
         return name;
     }
 
@@ -33,8 +29,7 @@ public class EventType
      * @param Event
      *            Listener: Event Listener to be registered.
      */
-    public final void registerEventListener(Object eventListener)
-    {
+    public final void registerEventListener(Object eventListener) {
         registerEventListener(eventListener, 0);
     }
 
@@ -50,14 +45,11 @@ public class EventType
      * @param int: priority. Higher = more important, lower = less.
      * @param boolean: Activate forceCall to receive all Events of this type.
      */
-    public final void registerEventListener(Object eventListener, int priority, Object... filter)
-    {
+    public final void registerEventListener(Object eventListener, int priority, Object... filter) {
         EventListenerContainer newListener = new EventListenerContainer(eventListener, priority, filter);
-        for (int count = 0; count < eventListenerContainer.size(); count++)
-        {
+        for (int count = 0; count < eventListenerContainer.size(); count++) {
             EventListenerContainer currEventListenerContainer = eventListenerContainer.get(count);
-            if (currEventListenerContainer.priority < priority)
-            {
+            if (currEventListenerContainer.priority < priority) {
                 eventListenerContainer.add(count, newListener);
                 return;
             }
@@ -73,8 +65,7 @@ public class EventType
      * @return List < Object >: Every called class will return an object. They
      *         are collected in this list.
      */
-    public final Event callSync(Object... objects)
-    {
+    public final Event callSync(Object... objects) {
         Event event = new Event(this, objects);
         event.sheduleEvent();
         return event;
@@ -92,8 +83,7 @@ public class EventType
      *         list with EventStream.getReturn()
      * @throws AsyncEventQueueOverflowException
      */
-    public final Event callAsync(Object... objects) throws AsyncEventQueueOverflowException
-    {
+    public final Event callAsync(Object... objects) throws AsyncEventQueueOverflowException {
         Event event = new Event(this, objects);
         eventManager.asyncEventQueue.add(event);
         return event;
@@ -111,14 +101,12 @@ public class EventType
      *            : object given by the call method.
      * @return boolean: true, if the Event Listener should be called.
      */
-    protected boolean applyFilter(Object eventlistener, Object[] filter, Object[] in)
-    {
+    protected boolean applyFilter(Object eventlistener, Object[] filter, Object[] in) {
         return true;
     }
 
     @Override
-    public boolean equals(Object object)
-    {
+    public boolean equals(Object object) {
         if (object == this) return true;
         return false;
     }

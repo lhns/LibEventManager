@@ -17,7 +17,6 @@ import java.lang.annotation.Target;
 @Target(METHOD)
 @Retention(RUNTIME)
 @Documented
-public @interface EventListener
-{
+public @interface EventListener {
     String[] value();
 }
