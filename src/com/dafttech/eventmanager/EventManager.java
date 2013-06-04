@@ -76,10 +76,10 @@ public class EventManager {
      * @param EventType
      *            Listener: Event Listener to be registered.
      */
-    public void registerEventListener(String eventName, Object eventListener) {
+    public void registerEventListener(String eventName, Object eventListener, Object... filter) {
         EventType event = getEventByName(eventName);
         if (event == null) return;
-        event.registerEventListener(eventListener, 0);
+        event.registerEventListener(eventListener, 0, filter);
     }
 
     /**
@@ -94,7 +94,7 @@ public class EventManager {
      * @param int: priority. Higher = more important, lower = less.
      * @param boolean: Activate forceCall to receive all Events of this type.
      */
-    public void registerEventListener(String eventName, Object eventListener, int priority, Object... filter) {
+    public void registerEventListenerWithPriority(String eventName, Object eventListener, int priority, Object... filter) {
         EventType event = getEventByName(eventName);
         if (event == null) return;
         event.registerEventListener(eventListener, priority, filter);

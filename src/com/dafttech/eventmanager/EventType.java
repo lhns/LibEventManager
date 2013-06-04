@@ -24,16 +24,6 @@ public class EventType {
     }
 
     /**
-     * Registers an Event Listener to call the onEvent Method.
-     * 
-     * @param Event
-     *            Listener: Event Listener to be registered.
-     */
-    public final void registerEventListener(Object eventListener) {
-        registerEventListener(eventListener, 0);
-    }
-
-    /**
      * Registers an Event Listener to call the onEvent Method. You can set a
      * priority, to specify, in which order the events have to be called. The
      * higher the priority value is, the earlier the Event Listener will be
@@ -45,7 +35,11 @@ public class EventType {
      * @param int: priority. Higher = more important, lower = less.
      * @param boolean: Activate forceCall to receive all Events of this type.
      */
-    public final void registerEventListener(Object eventListener, int priority, Object... filter) {
+    public final void registerEventListener(Object eventListener, Object... filter) {
+        registerEventListenerWithPriority(eventListener, 0, filter);
+    }
+
+    public final void registerEventListenerWithPriority(Object eventListener, int priority, Object... filter) {
         EventListenerContainer newListener = new EventListenerContainer(eventListener, priority, filter);
         for (int count = 0; count < eventListenerContainer.size(); count++) {
             EventListenerContainer currEventListenerContainer = eventListenerContainer.get(count);
