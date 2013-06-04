@@ -25,14 +25,14 @@ public class Event {
         for (Iterator<EventListenerContainer> i = event.eventListenerContainer.iterator(); i.hasNext();) {
             eventListenerContainer = i.next();
             if (eventListenerContainer.filter.length == 0
-                    || event.applyFilter(eventListenerContainer.eventlistener, eventListenerContainer.filter, in)) {
+                    || event.applyFilter(eventListenerContainer.eventListener, eventListenerContainer.filter, in)) {
                 if (event.eventManager.eventListenerMode == EventManager.EventListenerMode.Annotation) {
-                    for (Method method : eventListenerContainer.eventlistener.getClass().getMethods()) {
+                    for (Method method : eventListenerContainer.eventListener.getClass().getMethods()) {
                         if (method.isAnnotationPresent(EventListener.class)) {
                             String allowedEvents[] = method.getAnnotation(EventListener.class).value();
                             if (Arrays.asList(allowedEvents).contains(event.name)) {
                                 try {
-                                    out.add(method.invoke(eventListenerContainer.eventlistener, this, in));
+                                    out.add(method.invoke(eventListenerContainer.eventListener, this, in));
                                     if (cancelled) return;
                                 } catch (Exception e) {
                                     e.printStackTrace();
@@ -41,8 +41,8 @@ public class Event {
                         }
                     }
                 } else if (event.eventManager.eventListenerMode == EventManager.EventListenerMode.onEvent) {
-                    if (eventListenerContainer.eventlistener instanceof IEventListener) {
-                        out.add(((IEventListener) eventListenerContainer.eventlistener).onEvent(this, in));
+                    if (eventListenerContainer.eventListener instanceof IEventListener) {
+                        out.add(((IEventListener) eventListenerContainer.eventListener).onEvent(this, in));
                         if (cancelled) return;
                     }
                 }

@@ -99,4 +99,10 @@ public class EventManager {
         if (event == null) return;
         event.registerEventListener(eventListener, priority, filter);
     }
+
+    public final void unregisterEventListener(String eventName, Object eventListener) {
+        EventType event = getEventByName(eventName);
+        if (event == null) return;
+        event.unregisterEventListener(eventListener);
+    }
 }

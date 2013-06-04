@@ -51,6 +51,10 @@ public class EventType {
         eventListenerContainer.add(newListener);
     }
 
+    public final void unregisterEventListener(Object eventListener) {
+        eventListenerContainer.remove(eventListener);
+    }
+
     /**
      * Calls this event and asks all registered Event Listeners for an Object.
      * 
