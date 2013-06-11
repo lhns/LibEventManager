@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.dafttech.eventmanager.exception.AsyncEventQueueOverflowException;
+import com.dafttech.eventmanager.exception.UnnamedEventTypeInAnnotationModeException;
 import com.dafttech.eventmanager.exception.WrongEventManagerModeException;
 
 public class EventType {
@@ -15,14 +16,15 @@ public class EventType {
     public static final int PRIORITY_STANDARD = 0;
 
     public EventType(EventManager eventManager, String name) {
-        this(eventManager);
+        this.eventManager = eventManager;
+        eventManager.events.add(this);
+        this.id = eventManager.events.size();
         this.name = name;
     }
 
     public EventType(EventManager eventManager) {
-        this.eventManager = eventManager;
-        eventManager.events.add(this);
-        this.id = eventManager.events.size();
+        this(eventManager, "");
+        if (eventManager.mode == EventManagerMode.ANNOTATION) throw new UnnamedEventTypeInAnnotationModeException();
     }
 
     public final String getName() {
