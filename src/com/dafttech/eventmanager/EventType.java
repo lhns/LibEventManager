@@ -3,15 +3,22 @@ package com.dafttech.eventmanager;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.dafttech.eventmanager.exception.AsyncEventQueueOverflowException;
+import com.dafttech.eventmanager.exception.WrongEventManagerModeException;
+
 public class EventType {
     volatile protected List<EventListenerContainer> eventListenerContainer = new ArrayList<EventListenerContainer>();
     volatile protected EventManager eventManager = null;
     volatile protected String name = "";
+    volatile protected int id = 0;
+
+    public static final int PRIORITY_STANDARD = 0;
 
     public EventType(EventManager eventManager, String name) {
         this.eventManager = eventManager;
         this.name = name;
         eventManager.events.add(this);
+        this.id = eventManager.events.size();
     }
 
     public EventType(EventManager eventManager) {
@@ -19,8 +26,12 @@ public class EventType {
         eventManager.events.add(this);
     }
 
-    public String getName() {
+    public final String getName() {
         return name;
+    }
+
+    public final int getId() {
+        return id;
     }
 
     /**
@@ -36,14 +47,19 @@ public class EventType {
      * @param boolean: Activate forceCall to receive all Events of this type.
      */
     public final void registerEventListener(Object eventListener, Object... filter) {
-        registerEventListenerWithPriority(eventListener, 0, filter);
+        registerPrioritizedEventListener(eventListener, PRIORITY_STANDARD, filter);
     }
 
-    public final void registerEventListenerWithPriority(Object eventListener, int priority, Object... filter) {
-        EventListenerContainer newListener = new EventListenerContainer(eventListener, priority, filter);
+    public final void registerPrioritizedEventListener(Object eventListener, int priority, Object... filter) {
+        if (eventManager.mode == EventManagerMode.ANNOTATION) throw new WrongEventManagerModeException();
+        addEventListenerContainer(new EventListenerContainer(eventListener, priority, filter));
+    }
+
+    protected final void addEventListenerContainer(EventListenerContainer newListener) {
+        EventListenerContainer currEventListenerContainer;
         for (int count = 0; count < eventListenerContainer.size(); count++) {
-            EventListenerContainer currEventListenerContainer = eventListenerContainer.get(count);
-            if (currEventListenerContainer.priority < priority) {
+            currEventListenerContainer = eventListenerContainer.get(count);
+            if (currEventListenerContainer.priority < newListener.priority) {
                 eventListenerContainer.add(count, newListener);
                 return;
             }
@@ -105,7 +121,13 @@ public class EventType {
 
     @Override
     public boolean equals(Object object) {
-        if (object == this) return true;
+        if (object instanceof EventType) {
+            if (object == this) return true;
+        } else if (object instanceof Integer) {
+            if ((Integer) object == id) return true;
+        } else if (object instanceof String) {
+            if (((String) object).equals(name)) return true;
+        }
         return false;
     }
 }

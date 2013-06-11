@@ -1,6 +1,6 @@
-package com.dafttech.eventmanager;
+package com.dafttech.eventmanager.exception;
 
-public class AsyncEventQueueOverflowException extends Exception {
+public class AsyncEventQueueOverflowException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     public AsyncEventQueueOverflowException() {

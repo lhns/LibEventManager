@@ -1,11 +1,13 @@
 package com.dafttech.eventmanager;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+
+import com.dafttech.eventmanager.exception.WrongEventListenerTypeException;
 
 public class Event {
     volatile private EventType event = null;
@@ -26,24 +28,28 @@ public class Event {
             eventListenerContainer = i.next();
             if (eventListenerContainer.filter.length == 0
                     || event.applyFilter(eventListenerContainer.eventListener, eventListenerContainer.filter, in)) {
-                if (event.eventManager.eventListenerMode == EventManager.EventListenerMode.Annotation) {
-                    for (Method method : eventListenerContainer.eventListener.getClass().getMethods()) {
-                        if (method.isAnnotationPresent(EventListener.class)) {
-                            String allowedEvents[] = method.getAnnotation(EventListener.class).value();
-                            if (Arrays.asList(allowedEvents).contains(event.name)) {
-                                try {
-                                    out.add(method.invoke(eventListenerContainer.eventListener, this, in));
-                                    if (cancelled) return;
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-                            }
+                if (event.eventManager.mode == EventManagerMode.ANNOTATION) {
+
+                    if (eventListenerContainer.extraInstance != null && eventListenerContainer.eventListener instanceof Method) {
+                        try {
+                            ((Method) eventListenerContainer.eventListener).invoke(eventListenerContainer.extraInstance, this, in);
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        } catch (IllegalArgumentException e) {
+                            e.printStackTrace();
+                        } catch (InvocationTargetException e) {
+                            e.printStackTrace();
                         }
-                    }
-                } else if (event.eventManager.eventListenerMode == EventManager.EventListenerMode.onEvent) {
-                    if (eventListenerContainer.eventListener instanceof IEventListener) {
-                        out.add(((IEventListener) eventListenerContainer.eventListener).onEvent(this, in));
                         if (cancelled) return;
+                    } else {
+                        throw new WrongEventListenerTypeException();
+                    }
+                } else if (event.eventManager.mode == EventManagerMode.INTERFACE) {
+                    if (eventListenerContainer.eventListener instanceof IEventListener) {
+                        ((IEventListener) eventListenerContainer.eventListener).onEvent(this, in);
+                        if (cancelled) return;
+                    } else {
+                        throw new WrongEventListenerTypeException();
                     }
                 }
             }
@@ -60,16 +66,20 @@ public class Event {
         cancelled = true;
     }
 
+    public void addOutput(Object obj) {
+        out.add(obj);
+    }
+
+    public boolean isCancelled() {
+        return cancelled;
+    }
+
     /**
      * Check, if all the data of an Async Event is collected.
      */
     public boolean isDone() {
         if (cancelled) return true;
         return done;
-    }
-
-    public boolean isCancelled() {
-        return cancelled;
     }
 
     /**

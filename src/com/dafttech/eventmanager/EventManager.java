@@ -1,20 +1,24 @@
 package com.dafttech.eventmanager;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
+
+import com.dafttech.eventmanager.exception.AsyncEventQueueOverflowException;
+import com.dafttech.eventmanager.exception.WrongEventListenerAnnotationUsageException;
+import com.dafttech.eventmanager.exception.WrongEventManagerModeException;
 
 public class EventManager {
     volatile protected List<EventType> events = new ArrayList<EventType>();
+    volatile protected EventManagerMode mode = EventManagerMode.INTERFACE;
+
     volatile public AsyncEventQueue asyncEventQueue = new AsyncEventQueue();
 
-    public static enum EventListenerMode {
-        onEvent, Annotation
-    };
-
-    volatile public EventListenerMode eventListenerMode = EventListenerMode.onEvent;
-
     public EventManager() {
+    }
+
+    public EventManager(EventManagerMode mode) {
+        this.mode = mode;
     }
 
     /**
@@ -26,11 +30,12 @@ public class EventManager {
      * @return Event: requested event.
      */
     public EventType getEventByName(String name) {
-        EventType event = null;
-        for (Iterator<EventType> i = events.iterator(); i.hasNext();) {
-            event = i.next();
-            if (event.name.equals(name)) return event;
-        }
+        if (events.contains(name)) return events.get(events.indexOf(name));
+        return null;
+    }
+
+    public EventType getEventById(int id) {
+        if (events.contains(id)) return events.get(events.indexOf(id));
         return null;
     }
 
@@ -76,10 +81,8 @@ public class EventManager {
      * @param EventType
      *            Listener: Event Listener to be registered.
      */
-    public void registerEventListener(String eventName, Object eventListener, Object... filter) {
-        EventType event = getEventByName(eventName);
-        if (event == null) return;
-        event.registerEventListener(eventListener, 0, filter);
+    public void registerEventListener(Object eventListener, Object... filter) {
+        registerPrioritizedEventListener(eventListener, EventType.PRIORITY_STANDARD, filter);
     }
 
     /**
@@ -94,10 +97,22 @@ public class EventManager {
      * @param int: priority. Higher = more important, lower = less.
      * @param boolean: Activate forceCall to receive all Events of this type.
      */
-    public void registerEventListenerWithPriority(String eventName, Object eventListener, int priority, Object... filter) {
-        EventType event = getEventByName(eventName);
-        if (event == null) return;
-        event.registerEventListener(eventListener, priority, filter);
+    public void registerPrioritizedEventListener(Object eventListener, int priority, Object... filter) {
+        if (mode == EventManagerMode.INTERFACE) throw new WrongEventManagerModeException();
+        EventType event = null;
+        for (Method method : eventListener.getClass().getMethods()) {
+            if (method.isAnnotationPresent(EventListener.class)) {
+                if (method.getParameterTypes().length == 2 && method.getParameterTypes()[0] == Event.class
+                        && method.getParameterTypes()[1] == Object[].class) {
+                    for (int allowedEvent : method.getAnnotation(EventListener.class).eventTypeId()) {
+                        event = getEventById(allowedEvent);
+                        if (event != null) event.addEventListenerContainer(new EventListenerContainer(method, eventListener, priority, filter));
+                    }
+                } else {
+                    throw new WrongEventListenerAnnotationUsageException();
+                }
+            }
+        }
     }
 
     public final void unregisterEventListener(String eventName, Object eventListener) {

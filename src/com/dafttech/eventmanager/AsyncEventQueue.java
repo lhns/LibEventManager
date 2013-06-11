@@ -3,6 +3,8 @@ package com.dafttech.eventmanager;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.dafttech.eventmanager.exception.AsyncEventQueueOverflowException;
+
 public class AsyncEventQueue implements Runnable {
     volatile private List<Event> eventQueue = new ArrayList<Event>();
     volatile private int queueOverflow = 2000;
