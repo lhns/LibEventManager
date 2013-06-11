@@ -15,15 +15,14 @@ public class EventType {
     public static final int PRIORITY_STANDARD = 0;
 
     public EventType(EventManager eventManager, String name) {
-        this.eventManager = eventManager;
+        this(eventManager);
         this.name = name;
-        eventManager.events.add(this);
-        this.id = eventManager.events.size();
     }
 
     public EventType(EventManager eventManager) {
         this.eventManager = eventManager;
         eventManager.events.add(this);
+        this.id = eventManager.events.size();
     }
 
     public final String getName() {
