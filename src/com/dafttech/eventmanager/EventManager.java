@@ -102,8 +102,8 @@ public class EventManager {
             if (method.isAnnotationPresent(EventListener.class)) {
                 if (method.getParameterTypes().length == 2 && method.getParameterTypes()[0] == Event.class
                         && method.getParameterTypes()[1] == Object[].class) {
-                    for (int allowedEvent : method.getAnnotation(EventListener.class).eventTypeId()) {
-                        event = getEventById(allowedEvent);
+                    for (String allowedEvent : method.getAnnotation(EventListener.class).eventNames()) {
+                        event = getEventByName(allowedEvent);
                         if (event != null) event.addEventListenerContainer(new EventListenerContainer(method, eventListener, priority, filter));
                     }
                 } else {

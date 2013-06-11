@@ -18,7 +18,7 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Documented
 public @interface EventListener {
-    int[] eventTypeId();
+    String[] eventNames();
 
     int priority() default EventType.PRIORITY_STANDARD;
 }
