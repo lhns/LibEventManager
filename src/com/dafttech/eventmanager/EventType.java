@@ -123,7 +123,7 @@ public class EventType {
         if (object instanceof EventType) {
             if (object == this) return true;
         } else if (object instanceof Integer) {
-            if ((Integer) object == id) return true;
+            if (((Integer) object).equals(id)) return true;
         } else if (object instanceof String) {
             if (((String) object).equals(name)) return true;
         }

@@ -30,13 +30,11 @@ public class EventManager {
      * @return Event: requested event.
      */
     public EventType getEventByName(String name) {
-        if (events.contains(name)) return events.get(events.indexOf(name));
-        return null;
+        return new EventTypeGetter(name).getFromList(events);
     }
 
     public EventType getEventById(int id) {
-        if (events.contains(id)) return events.get(events.indexOf(id));
-        return null;
+        return new EventTypeGetter(id).getFromList(events);
     }
 
     /**
