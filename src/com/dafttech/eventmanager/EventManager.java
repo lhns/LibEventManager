@@ -113,9 +113,9 @@ public class EventManager {
         }
     }
 
-    public final void unregisterEventListener(String eventName, Object eventListener) {
-        EventType event = getEventByName(eventName);
-        if (event == null) return;
-        event.unregisterEventListener(eventListener);
+    public final void unregisterEventListener(Object eventListener) {
+        for (EventType eventType : events) {
+            eventType.eventListenerContainer.remove(eventListener);
+        }
     }
 }

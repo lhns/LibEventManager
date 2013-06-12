@@ -56,6 +56,11 @@ public class EventType {
         addEventListenerContainer(new EventListenerContainer(eventListener, priority, filter));
     }
 
+    public final void unregisterEventListener(Object eventListener) {
+        if (eventManager.mode == EventManagerMode.ANNOTATION) throw new WrongEventManagerModeException();
+        eventListenerContainer.remove(eventListener);
+    }
+
     protected final void addEventListenerContainer(EventListenerContainer newListener) {
         EventListenerContainer currEventListenerContainer;
         for (int count = 0; count < eventListenerContainer.size(); count++) {
@@ -66,10 +71,6 @@ public class EventType {
             }
         }
         eventListenerContainer.add(newListener);
-    }
-
-    public final void unregisterEventListener(Object eventListener) {
-        eventListenerContainer.remove(eventListener);
     }
 
     /**
@@ -118,6 +119,9 @@ public class EventType {
      */
     protected boolean applyFilter(Object eventlistener, Object[] filter, Object[] in) {
         return true;
+    }
+
+    protected void onEvent(Event event, Object[] objects) {
     }
 
     @Override

@@ -24,6 +24,7 @@ public class Event {
     protected void sheduleEvent() {
         if (cancelled || done) return;
         EventListenerContainer eventListenerContainer = null;
+        event.onEvent(this, in);
         for (Iterator<EventListenerContainer> i = event.eventListenerContainer.iterator(); i.hasNext();) {
             eventListenerContainer = i.next();
             if (eventListenerContainer.filter.length == 0
