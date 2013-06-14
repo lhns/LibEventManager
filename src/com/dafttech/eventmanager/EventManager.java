@@ -64,17 +64,23 @@ public class EventManager {
      *            subclasses
      */
     public void registerPrioritizedEventListener(Object eventListener, int priority, Object... filter) {
+        registerAnnotatedMethods(eventListener, priority, filter, null);
+    }
+
+    protected void registerAnnotatedMethods(Object eventListener, int priority, Object[] filter, EventType eventType) {
         EventType event = null;
         for (Method method : eventListener.getClass().getMethods()) {
             if (method.isAnnotationPresent(EventListener.class)) {
                 if (method.getParameterTypes().length == 2 && method.getParameterTypes()[0] == Event.class
                         && method.getParameterTypes()[1] == Object[].class) {
                     for (String allowedEvent : method.getAnnotation(EventListener.class).eventNames()) {
-                        event = getEventByName(allowedEvent);
-                        if (event != null) {
-                            event.addEventListenerContainer(new EventListenerContainer(eventListener, method, priority, filter));
-                        } else {
-                            throw new MissingEventTypeException(allowedEvent);
+                        if (eventType == null || eventType.equals(allowedEvent)) {
+                            event = getEventByName(allowedEvent);
+                            if (event != null) {
+                                event.addEventListenerContainer(new EventListenerContainer(eventListener, method, priority, filter));
+                            } else {
+                                throw new MissingEventTypeException(allowedEvent);
+                            }
                         }
                     }
                 } else {

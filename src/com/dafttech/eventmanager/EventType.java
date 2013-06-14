@@ -40,12 +40,13 @@ public class EventType {
      * @param int: priority. Higher = more important, lower = less.
      * @param boolean: Activate forceCall to receive all Events of this type.
      */
-    public final void registerEventListener(IEventListener eventListener, Object... filter) {
+    public final void registerEventListener(Object eventListener, Object... filter) {
         registerPrioritizedEventListener(eventListener, PRIORITY_STANDARD, filter);
     }
 
-    public final void registerPrioritizedEventListener(IEventListener eventListener, int priority, Object... filter) {
-        addEventListenerContainer(new EventListenerContainer(eventListener, priority, filter));
+    public final void registerPrioritizedEventListener(Object eventListener, int priority, Object... filter) {
+        if (eventListener instanceof IEventListener) addEventListenerContainer(new EventListenerContainer(eventListener, priority, filter));
+        eventManager.registerAnnotatedMethods(eventListener, priority, filter, this);
     }
 
     public final void unregisterEventListener(IEventListener eventListener) {
