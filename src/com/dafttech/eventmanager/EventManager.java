@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.dafttech.eventmanager.exception.AsyncEventQueueOverflowException;
+import com.dafttech.eventmanager.exception.MissingEventTypeException;
 import com.dafttech.eventmanager.exception.WrongEventListenerAnnotationUsageException;
 
 public class EventManager {
@@ -97,7 +98,11 @@ public class EventManager {
                         && method.getParameterTypes()[1] == Object[].class) {
                     for (String allowedEvent : method.getAnnotation(EventListener.class).eventNames()) {
                         event = getEventByName(allowedEvent);
-                        if (event != null) event.addEventListenerContainer(new EventListenerContainer(eventListener, method, priority, filter));
+                        if (event != null) {
+                            event.addEventListenerContainer(new EventListenerContainer(eventListener, method, priority, filter));
+                        } else {
+                            throw new MissingEventTypeException(allowedEvent);
+                        }
                     }
                 } else {
                     throw new WrongEventListenerAnnotationUsageException();
