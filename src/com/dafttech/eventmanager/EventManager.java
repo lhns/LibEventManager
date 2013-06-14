@@ -4,7 +4,6 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.dafttech.eventmanager.exception.AsyncEventQueueOverflowException;
 import com.dafttech.eventmanager.exception.MissingEventTypeException;
 import com.dafttech.eventmanager.exception.WrongEventListenerAnnotationUsageException;
 
@@ -30,42 +29,6 @@ public class EventManager {
 
     public EventType getEventById(int id) {
         return new EventTypeGetter(id).getFromList(events);
-    }
-
-    /**
-     * Calls an event and asks all registered Event Listeners for an Object.
-     * 
-     * @param String
-     *            : Event name to call.
-     * @param Object
-     *            : You can send any valid objects to the registered classes.
-     * @return List < Object >: Every called class will return an object. They
-     *         are collected in this list.
-     */
-    public Event callSyncEvent(String eventName, Object... objects) {
-        EventType event = getEventByName(eventName);
-        if (event == null) return null;
-        return event.callSync(objects);
-    }
-
-    /**
-     * Calls this event and asks all registered Event Listeners for an Object in
-     * the background.
-     * 
-     * @param String
-     *            : Event name to call.
-     * @param Object
-     *            : You can send any valid objects to the registered classes.
-     * @return EventStream: Every called class will return an object. They are
-     *         collected in this list. If the data is collected, which you can
-     *         enshure by using EventStream.isDone(), you can get your Object
-     *         list with EventStream.getReturn()
-     * @throws AsyncEventQueueOverflowException
-     */
-    public Event callAsyncEvent(String eventName, Object... objects) throws AsyncEventQueueOverflowException {
-        EventType event = getEventByName(eventName);
-        if (event == null) return null;
-        return event.callAsync(objects);
     }
 
     /**
