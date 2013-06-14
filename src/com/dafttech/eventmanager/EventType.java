@@ -65,12 +65,14 @@ public class EventType {
     }
 
     /**
-     * Calls this event and asks all registered Event Listeners for an Object.
+     * Calls this event and asks all registered EventListeners and sends the
+     * objects to them.
      * 
-     * @param Object
-     *            : You can send any valid objects to the registered classes.
-     * @return List < Object >: Every called class will return an object. They
-     *         are collected in this list.
+     * @param objects
+     *            Object... - You can send any objects to the registered
+     *            classes.
+     * @return Event - to manage the called event such as getting the output and
+     *         checking if the event was cancelled
      */
     public final Event callSync(Object... objects) {
         Event event = new Event(this, objects);
@@ -79,16 +81,16 @@ public class EventType {
     }
 
     /**
-     * Calls this event and asks all registered Event Listeners for an Object in
-     * the background.
+     * Calls this event in another thread that has to be started with
+     * eventManagerInstance.asyncEventQueue.start(). It asks all registered
+     * EventListeners and sends the objects to them.
      * 
-     * @param Object
-     *            : You can send any valid objects to the registered classes.
-     * @return EventStream: Every called class will return an object. They are
-     *         collected in this list. If the data is collected, which you can
-     *         enshure by using EventStream.isDone(), you can get your Object
-     *         list with EventStream.getReturn()
-     * @throws AsyncEventQueueOverflowException
+     * @param objects
+     *            Object... - You can send any objects to the registered
+     *            classes.
+     * @return Event - to manage the called event such as checking if the event
+     *         is done, getting the output and checking if the event was
+     *         cancelled
      */
     public final Event callAsync(Object... objects) throws AsyncEventQueueOverflowException {
         Event event = new Event(this, objects);
@@ -97,22 +99,31 @@ public class EventType {
     }
 
     /**
-     * Only used in the Event extending classes. It decides, if a called Event
-     * belongs to an Event Listener.
+     * Used to be overridden in subclasses (use anonymous classes), to filter
+     * out the EventListeners
      * 
+     * @param eventListener
+     *            Object - Is the instance of the EventListener class
      * @param filter
-     * 
-     * @param Event
-     *            Listener: Event Listener to process.
-     * @param Object
-     *            : object given by the call method.
-     * @return boolean: true, if the Event Listener should be called.
+     *            Object[] - Is the given filter on registering an EventListener
+     * @param in
+     *            Object[] - Are the objects given, when calling the event
+     * @return boolean: true, if the EventListener should be called.
      */
     protected boolean applyFilter(Object eventListener, Object[] filter, Object[] in) {
         return true;
     }
 
-    protected void onEvent(Event event, Object[] objects) {
+    /**
+     * Used to be overridden in subclasses (use anonymous classes), to catch the
+     * events before all the EventListeners
+     * 
+     * @param event
+     *            Event - Is the called event (can be cancelled)
+     * @param in
+     *            Object[] - Are the objects given, when calling the event
+     */
+    protected void onEvent(Event event, Object[] in) {
     }
 
     @Override

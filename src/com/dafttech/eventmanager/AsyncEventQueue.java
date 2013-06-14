@@ -37,6 +37,10 @@ public class AsyncEventQueue implements Runnable {
         }
     }
 
+    /**
+     * DON'T USE!! You want to use start().
+     */
+    @Deprecated
     @Override
     public void run() {
         Event firstEvent = null;
@@ -53,15 +57,30 @@ public class AsyncEventQueue implements Runnable {
         }
     }
 
+    /**
+     * Set the Queue overflow
+     * 
+     * @param queueOverflow
+     *            int - number of maximum events in this list.
+     */
     public void setQueueOverflow(int queueOverflow) {
         this.queueOverflow = queueOverflow;
     }
 
+    /**
+     * Starts this queue with a Thread priority.
+     * 
+     * @param priority
+     *            int - Queue Thread priority.
+     */
     public void start(int priority) {
         this.priority = priority;
         start();
     }
 
+    /**
+     * Starts this queue.
+     */
     public void start() {
         running = true;
         if (queueThread == null) {
@@ -73,11 +92,20 @@ public class AsyncEventQueue implements Runnable {
         }
     }
 
+    /**
+     * Stops this queue.
+     */
     public void stop() {
         running = false;
         notifyThread();
     }
 
+    /**
+     * Sets the Thread priority for this queue.
+     * 
+     * @param priority
+     *            int - Queue Thread priority.
+     */
     public void setPriority(int priority) {
         this.priority = priority;
         if (queueThread != null && queueThread.isAlive()) {

@@ -21,29 +21,31 @@ public class Event {
     }
 
     protected void sheduleEvent() {
-        if (cancelled || done) return;
-        EventListenerContainer eventListenerContainer = null;
         event.onEvent(this, in);
-        for (Iterator<EventListenerContainer> i = event.eventListenerContainer.iterator(); i.hasNext();) {
-            eventListenerContainer = i.next();
-            if (eventListenerContainer.filter.length == 0
-                    || event.applyFilter(eventListenerContainer.eventListener, eventListenerContainer.filter, in)) {
-                if (eventListenerContainer.method != null) {
-                    try {
-                        eventListenerContainer.method.invoke(eventListenerContainer.eventListener, this, in);
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    } catch (IllegalArgumentException e) {
-                        e.printStackTrace();
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
+        if (cancelled) return;
+        if (event.eventListenerContainer.size() > 0) {
+            EventListenerContainer eventListenerContainer = null;
+            for (Iterator<EventListenerContainer> i = event.eventListenerContainer.iterator(); i.hasNext();) {
+                eventListenerContainer = i.next();
+                if (eventListenerContainer.filter.length == 0
+                        || event.applyFilter(eventListenerContainer.eventListener, eventListenerContainer.filter, in)) {
+                    if (eventListenerContainer.method != null) {
+                        try {
+                            eventListenerContainer.method.invoke(eventListenerContainer.eventListener, this, in);
+                        } catch (IllegalAccessException e) {
+                            e.printStackTrace();
+                        } catch (IllegalArgumentException e) {
+                            e.printStackTrace();
+                        } catch (InvocationTargetException e) {
+                            e.printStackTrace();
+                        }
+                    } else if (eventListenerContainer.eventListener instanceof IEventListener) {
+                        ((IEventListener) eventListenerContainer.eventListener).onEvent(this, in);
+                    } else {
+                        throw new WrongEventListenerTypeException();
                     }
-                } else if (eventListenerContainer.eventListener instanceof IEventListener) {
-                    ((IEventListener) eventListenerContainer.eventListener).onEvent(this, in);
-                } else {
-                    throw new WrongEventListenerTypeException();
+                    if (cancelled) return;
                 }
-                if (cancelled) return;
             }
         }
         done = true;
@@ -51,23 +53,36 @@ public class Event {
 
     /**
      * Cancel this EventStream to stop the process of calling all the other
-     * registered classes.
+     * EventListeners.
      */
     public void cancel() {
         if (done) return;
         cancelled = true;
     }
 
+    /**
+     * Add objects to the output list.
+     * 
+     * @param obj
+     *            Object - object to add to the output list.
+     */
     public void addOutput(Object obj) {
         out.add(obj);
     }
 
+    /**
+     * Check if the event is cancelled
+     * 
+     * @return boolean - true, if the event was cancelled.
+     */
     public boolean isCancelled() {
         return cancelled;
     }
 
     /**
      * Check, if all the data of an Async Event is collected.
+     * 
+     * @return boolean - true, if the event is done.
      */
     public boolean isDone() {
         if (cancelled) return true;
@@ -75,14 +90,22 @@ public class Event {
     }
 
     /**
-     * If the Async Event is done, you can get your Return by using this. After
-     * using this, this EventStream will not be available for you anymore.
+     * Use this to get all the objects out of the output list.
+     * 
+     * @return List<Object> - output list, or null if the event is not done.
      */
     public List<Object> getOutput() {
         if (isDone()) return out;
         return null;
     }
 
+    /**
+     * Use this to get all the objects out of the output list, but sort out all
+     * null values.
+     * 
+     * @return List<Object> - output list without null values, or null if the
+     *         event is not done.
+     */
     public List<Object> getCleanOutput() {
         if (isDone()) {
             List<Object> cleanOut = new ArrayList<Object>(out);
@@ -93,7 +116,11 @@ public class Event {
     }
 
     /**
-     * Check, which Event this EventStream is.
+     * Check, if this Event is a specific EventType.
+     * 
+     * @param eventType
+     *            EventType - EventType to check for.
+     * @return boolean - if this event is of that EventType.
      */
     public boolean isEventType(EventType eventType) {
         if (event.equals(event)) return true;
