@@ -1,7 +1,6 @@
 package com.dafttech.eventmanager;
 
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -29,30 +28,22 @@ public class Event {
             eventListenerContainer = i.next();
             if (eventListenerContainer.filter.length == 0
                     || event.applyFilter(eventListenerContainer.eventListener, eventListenerContainer.filter, in)) {
-                if (event.eventManager.mode == EventManagerMode.ANNOTATION) {
-
-                    if (eventListenerContainer.extraInstance != null && eventListenerContainer.eventListener instanceof Method) {
-                        try {
-                            ((Method) eventListenerContainer.eventListener).invoke(eventListenerContainer.extraInstance, this, in);
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        } catch (IllegalArgumentException e) {
-                            e.printStackTrace();
-                        } catch (InvocationTargetException e) {
-                            e.printStackTrace();
-                        }
-                        if (cancelled) return;
-                    } else {
-                        throw new WrongEventListenerTypeException();
+                if (eventListenerContainer.method != null) {
+                    try {
+                        eventListenerContainer.method.invoke(eventListenerContainer.eventListener, this, in);
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (IllegalArgumentException e) {
+                        e.printStackTrace();
+                    } catch (InvocationTargetException e) {
+                        e.printStackTrace();
                     }
-                } else if (event.eventManager.mode == EventManagerMode.INTERFACE) {
-                    if (eventListenerContainer.eventListener instanceof IEventListener) {
-                        ((IEventListener) eventListenerContainer.eventListener).onEvent(this, in);
-                        if (cancelled) return;
-                    } else {
-                        throw new WrongEventListenerTypeException();
-                    }
+                } else if (eventListenerContainer.eventListener instanceof IEventListener) {
+                    ((IEventListener) eventListenerContainer.eventListener).onEvent(this, in);
+                } else {
+                    throw new WrongEventListenerTypeException();
                 }
+                if (cancelled) return;
             }
         }
         done = true;

@@ -6,19 +6,13 @@ import java.util.List;
 
 import com.dafttech.eventmanager.exception.AsyncEventQueueOverflowException;
 import com.dafttech.eventmanager.exception.WrongEventListenerAnnotationUsageException;
-import com.dafttech.eventmanager.exception.WrongEventManagerModeException;
 
 public class EventManager {
     volatile protected List<EventType> events = new ArrayList<EventType>();
-    volatile protected EventManagerMode mode = EventManagerMode.INTERFACE;
 
     volatile public AsyncEventQueue asyncEventQueue = new AsyncEventQueue();
 
     public EventManager() {
-    }
-
-    public EventManager(EventManagerMode mode) {
-        this.mode = mode;
     }
 
     /**
@@ -96,7 +90,6 @@ public class EventManager {
      * @param boolean: Activate forceCall to receive all Events of this type.
      */
     public void registerPrioritizedEventListener(Object eventListener, int priority, Object... filter) {
-        if (mode == EventManagerMode.INTERFACE) throw new WrongEventManagerModeException();
         EventType event = null;
         for (Method method : eventListener.getClass().getMethods()) {
             if (method.isAnnotationPresent(EventListener.class)) {
@@ -104,7 +97,7 @@ public class EventManager {
                         && method.getParameterTypes()[1] == Object[].class) {
                     for (String allowedEvent : method.getAnnotation(EventListener.class).eventNames()) {
                         event = getEventByName(allowedEvent);
-                        if (event != null) event.addEventListenerContainer(new EventListenerContainer(method, eventListener, priority, filter));
+                        if (event != null) event.addEventListenerContainer(new EventListenerContainer(eventListener, method, priority, filter));
                     }
                 } else {
                     throw new WrongEventListenerAnnotationUsageException();

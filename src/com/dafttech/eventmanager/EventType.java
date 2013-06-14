@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.dafttech.eventmanager.exception.AsyncEventQueueOverflowException;
-import com.dafttech.eventmanager.exception.UnnamedEventTypeInAnnotationModeException;
-import com.dafttech.eventmanager.exception.WrongEventManagerModeException;
 
 public class EventType {
     volatile protected List<EventListenerContainer> eventListenerContainer = new ArrayList<EventListenerContainer>();
@@ -20,11 +18,6 @@ public class EventType {
         eventManager.events.add(this);
         this.id = eventManager.events.size();
         this.name = name;
-    }
-
-    public EventType(EventManager eventManager) {
-        this(eventManager, "");
-        if (eventManager.mode == EventManagerMode.ANNOTATION) throw new UnnamedEventTypeInAnnotationModeException();
     }
 
     public final String getName() {
@@ -47,17 +40,15 @@ public class EventType {
      * @param int: priority. Higher = more important, lower = less.
      * @param boolean: Activate forceCall to receive all Events of this type.
      */
-    public final void registerEventListener(Object eventListener, Object... filter) {
+    public final void registerEventListener(IEventListener eventListener, Object... filter) {
         registerPrioritizedEventListener(eventListener, PRIORITY_STANDARD, filter);
     }
 
-    public final void registerPrioritizedEventListener(Object eventListener, int priority, Object... filter) {
-        if (eventManager.mode == EventManagerMode.ANNOTATION) throw new WrongEventManagerModeException();
+    public final void registerPrioritizedEventListener(IEventListener eventListener, int priority, Object... filter) {
         addEventListenerContainer(new EventListenerContainer(eventListener, priority, filter));
     }
 
-    public final void unregisterEventListener(Object eventListener) {
-        if (eventManager.mode == EventManagerMode.ANNOTATION) throw new WrongEventManagerModeException();
+    public final void unregisterEventListener(IEventListener eventListener) {
         eventListenerContainer.remove(eventListener);
     }
 
@@ -117,7 +108,7 @@ public class EventType {
      *            : object given by the call method.
      * @return boolean: true, if the Event Listener should be called.
      */
-    protected boolean applyFilter(Object eventlistener, Object[] filter, Object[] in) {
+    protected boolean applyFilter(Object eventListener, Object[] filter, Object[] in) {
         return true;
     }
 
