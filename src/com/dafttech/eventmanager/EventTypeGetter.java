@@ -2,7 +2,7 @@ package com.dafttech.eventmanager;
 
 import java.util.List;
 
-public class EventTypeGetter {
+public class EventTypeGetter { 
     Object universalObj;
     int type = 0;
 
