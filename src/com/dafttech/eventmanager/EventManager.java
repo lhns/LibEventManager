@@ -8,7 +8,7 @@ import com.dafttech.eventmanager.exception.MissingEventTypeException;
 import com.dafttech.eventmanager.exception.WrongEventListenerAnnotationUsageException;
 
 public class EventManager {
-    volatile protected List<EventType> events = new ArrayList<EventType>();
+    volatile protected List<EventType> events = new ArrayList<EventType>(); 
 
     volatile public AsyncEventQueue asyncEventQueue = new AsyncEventQueue();
 
