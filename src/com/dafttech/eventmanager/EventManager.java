@@ -12,7 +12,7 @@ public class EventManager {
 
     volatile public AsyncEventQueue asyncEventQueue = new AsyncEventQueue();
 
-    public EventManager() { 
+    public EventManager() {
     }
 
     /**
