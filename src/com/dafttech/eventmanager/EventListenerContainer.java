@@ -1,6 +1,7 @@
 package com.dafttech.eventmanager;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 public class EventListenerContainer {
     volatile protected Object eventListener = null;
@@ -15,7 +16,7 @@ public class EventListenerContainer {
     }
 
     protected EventListenerContainer(Object eventListener, Method method, int priority, Object[] filter) {
-        this.eventListener = eventListener;
+        this.eventListener = Modifier.isStatic(method.getModifiers()) ? null : eventListener;
         this.method = method;
         this.priority = priority;
         this.filter = filter;
