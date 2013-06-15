@@ -2,21 +2,21 @@ package com.dafttech.eventmanager;
 
 import java.util.List;
 
-public class EventTypeGetterTest {
+public class EventTypeGetter {
     Object universalObj;
     int type = 0;
 
-    protected EventTypeGetterTest(EventType eventType) {
+    protected EventTypeGetter(EventType eventType) {
         universalObj = eventType;
         type = 0;
     }
 
-    protected EventTypeGetterTest(int id) {
+    protected EventTypeGetter(int id) {
         universalObj = id;
         type = 1;
     }
 
-    protected EventTypeGetterTest(String name) {
+    protected EventTypeGetter(String name) {
         universalObj = name;
         type = 2;
     }

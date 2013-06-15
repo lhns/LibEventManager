@@ -23,7 +23,7 @@ public class EventManager {
      * @return EventType
      */
     public EventType getEventByName(String name) {
-        return new EventTypeGetterTest(name).getFromList(events);
+        return new EventTypeGetter(name).getFromList(events);
     }
 
     /**
@@ -34,7 +34,7 @@ public class EventManager {
      * @return EventType
      */
     public EventType getEventById(int id) {
-        return new EventTypeGetterTest(id).getFromList(events);
+        return new EventTypeGetter(id).getFromList(events);
     }
 
     /**
