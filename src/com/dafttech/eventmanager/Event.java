@@ -112,6 +112,23 @@ public class Event {
     }
 
     /**
+     * Retrieve a specific object given, when the event was called and cast it
+     * to the given class
+     * 
+     * @param num
+     *            int - number of the object to request
+     * @param calst
+     *            Class<T> the class to cast to
+     * @return T - the requested object casted to T, or null if the number was
+     *         out of range
+     */
+    @SuppressWarnings("unchecked")
+    public <T> T getInput(int num, Class<T> cast) {
+        if (num < 0 || num >= in.length || !cast.isInstance(in[num])) return null;
+        return (T) in[num];
+    }
+
+    /**
      * Use this to get all the objects out of the output list.
      * 
      * @return List<Object> - output list, or null if the event is not done.
