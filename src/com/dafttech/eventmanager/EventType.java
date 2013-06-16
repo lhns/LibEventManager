@@ -111,7 +111,7 @@ public class EventType {
      *            Object[] - Are the objects given, when calling the event
      * @return boolean: true, if the EventListener should be called.
      */
-    protected boolean applyFilter(Object eventListener, Object[] filter, Object[] in) {
+    protected boolean applyFilter(Event event, Object eventListener, Object[] filter) {
         return true;
     }
 
@@ -124,7 +124,7 @@ public class EventType {
      * @param in
      *            Object[] - Are the objects given, when calling the event
      */
-    protected void onEvent(Event event, Object[] in) {
+    protected void onEvent(Event event) {
     }
 
     @Override

@@ -9,26 +9,26 @@ import java.util.List;
 import com.dafttech.eventmanager.exception.WrongEventListenerTypeException;
 
 public class Event {
-    volatile private EventType event = null;
+    volatile private EventType eventType = null;
     volatile private Object[] in = null;
     volatile private List<Object> out = new ArrayList<Object>();
     volatile private boolean done = false;
     volatile private boolean cancelled = false;
 
     protected Event(EventType event, Object[] in) {
-        this.event = event;
+        this.eventType = event;
         this.in = in;
     }
 
     protected void sheduleEvent() {
-        event.onEvent(this, in);
+        eventType.onEvent(this);
         if (cancelled) return;
-        if (event.eventListenerContainer.size() > 0) {
+        if (eventType.eventListenerContainer.size() > 0) {
             EventListenerContainer eventListenerContainer = null;
-            for (Iterator<EventListenerContainer> i = event.eventListenerContainer.iterator(); i.hasNext();) {
+            for (Iterator<EventListenerContainer> i = eventType.eventListenerContainer.iterator(); i.hasNext();) {
                 eventListenerContainer = i.next();
                 if (eventListenerContainer.filter.length == 0
-                        || event.applyFilter(eventListenerContainer.eventListener, eventListenerContainer.filter, in)) {
+                        || eventType.applyFilter(this, eventListenerContainer.eventListener, eventListenerContainer.filter)) {
                     if (eventListenerContainer.method != null) {
                         try {
                             eventListenerContainer.method.invoke(eventListenerContainer.eventListener, this);
@@ -145,7 +145,6 @@ public class Event {
      * @return boolean - if this event is of that EventType.
      */
     public boolean isEventType(EventType eventType) {
-        if (event.equals(event)) return true;
-        return false;
+        return this.eventType.equals(eventType);
     }
 }
