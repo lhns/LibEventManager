@@ -89,10 +89,23 @@ public class Event {
         return done;
     }
 
+    /**
+     * Retrieve all objects given, when the event was called
+     * 
+     * @return Object[] - the objects
+     */
     public Object[] getInput() {
         return in;
     }
 
+    /**
+     * Retrieve a specific object given, when the event was called
+     * 
+     * @param num
+     *            int - number of the object to request
+     * @return Object - the requested object, or null if the number was out of
+     *         range
+     */
     public Object getInput(int num) {
         if (num < 0 || num >= in.length) return null;
         return in[num];
