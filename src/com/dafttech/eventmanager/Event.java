@@ -31,7 +31,7 @@ public class Event {
                         || event.applyFilter(eventListenerContainer.eventListener, eventListenerContainer.filter, in)) {
                     if (eventListenerContainer.method != null) {
                         try {
-                            eventListenerContainer.method.invoke(eventListenerContainer.eventListener, this, in);
+                            eventListenerContainer.method.invoke(eventListenerContainer.eventListener, this);
                         } catch (IllegalAccessException e) {
                             e.printStackTrace();
                         } catch (IllegalArgumentException e) {
@@ -40,7 +40,7 @@ public class Event {
                             e.printStackTrace();
                         }
                     } else if (eventListenerContainer.eventListener instanceof IEventListener) {
-                        ((IEventListener) eventListenerContainer.eventListener).onEvent(this, in);
+                        ((IEventListener) eventListenerContainer.eventListener).onEvent(this);
                     } else {
                         throw new WrongEventListenerTypeException();
                     }
@@ -87,6 +87,15 @@ public class Event {
     public boolean isDone() {
         if (cancelled) return true;
         return done;
+    }
+
+    public Object[] getInput() {
+        return in;
+    }
+
+    public Object getInput(int num) {
+        if (num < 0 || num >= in.length) return null;
+        return in[num];
     }
 
     /**
