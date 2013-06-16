@@ -103,12 +103,12 @@ public class EventType {
      * Used to be overridden in subclasses (use anonymous classes), to filter
      * out the EventListeners
      * 
+     * @param event
+     *            Event - the called event
      * @param eventListener
      *            Object - Is the instance of the EventListener class
      * @param filter
      *            Object[] - Is the given filter on registering an EventListener
-     * @param in
-     *            Object[] - Are the objects given, when calling the event
      * @return boolean: true, if the EventListener should be called.
      */
     protected boolean applyFilter(Event event, Object eventListener, Object[] filter) {
@@ -121,8 +121,6 @@ public class EventType {
      * 
      * @param event
      *            Event - Is the called event (can be cancelled)
-     * @param in
-     *            Object[] - Are the objects given, when calling the event
      */
     protected void onEvent(Event event) {
     }
