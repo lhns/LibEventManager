@@ -1,6 +1,5 @@
 package com.dafttech.eventmanager;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -32,15 +31,15 @@ public class Event {
                     if (eventListenerContainer.method != null) {
                         try {
                             eventListenerContainer.method.invoke(eventListenerContainer.eventListener, this);
-                        } catch (IllegalAccessException e) {
-                            e.printStackTrace();
-                        } catch (IllegalArgumentException e) {
-                            e.printStackTrace();
-                        } catch (InvocationTargetException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                     } else if (eventListenerContainer.eventListener instanceof IEventListener) {
-                        ((IEventListener) eventListenerContainer.eventListener).onEvent(this);
+                        try {
+                            ((IEventListener) eventListenerContainer.eventListener).onEvent(this);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     } else {
                         throw new WrongEventListenerTypeException();
                     }
