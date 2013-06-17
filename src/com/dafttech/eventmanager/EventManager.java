@@ -72,7 +72,7 @@ public class EventManager {
         for (Method method : eventListener.getClass().getMethods()) {
             if (method.isAnnotationPresent(EventListener.class)) {
                 if (method.getParameterTypes().length == 1 && method.getParameterTypes()[0] == Event.class) {
-                    for (String allowedEvent : method.getAnnotation(EventListener.class).eventNames()) {
+                    for (String allowedEvent : method.getAnnotation(EventListener.class).events()) {
                         if (eventType == null || eventType.equals(allowedEvent)) {
                             event = getEventByName(allowedEvent);
                             if (event != null) {
