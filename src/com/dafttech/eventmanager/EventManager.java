@@ -10,9 +10,18 @@ import com.dafttech.eventmanager.exception.WrongEventListenerAnnotationUsageExce
 public class EventManager {
     volatile protected List<EventType> events = new ArrayList<EventType>();
 
-    volatile public AsyncEventQueue asyncEventQueue = new AsyncEventQueue();
+    volatile protected AsyncEventQueue asyncEventQueue = new AsyncEventQueue();
 
-    public EventManager() {
+    public final EventManager() {
+    }
+
+    /**
+     * Used to get the asyncEventQueue of the EventManager
+     * 
+     * @return AsyncEventQueue
+     */
+    public final AsyncEventQueue getAsyncEventQueue() {
+        return asyncEventQueue;
     }
 
     /**
@@ -22,7 +31,7 @@ public class EventManager {
      *            String
      * @return EventType
      */
-    public EventType getEventByName(String name) {
+    public final EventType getEventByName(String name) {
         return new EventTypeGetter(name).getFromList(events);
     }
 
@@ -33,7 +42,7 @@ public class EventManager {
      *            int
      * @return EventType
      */
-    public EventType getEventById(int id) {
+    public final EventType getEventById(int id) {
         return new EventTypeGetter(id).getFromList(events);
     }
 
@@ -47,7 +56,7 @@ public class EventManager {
      *            Object... - Sets the filter that is customizable in EventType
      *            subclasses
      */
-    public void registerEventListener(Object eventListener, Object... filter) {
+    public final void registerEventListener(Object eventListener, Object... filter) {
         registerPrioritizedEventListener(eventListener, EventType.PRIORITY_STANDARD, filter);
     }
 
@@ -63,11 +72,11 @@ public class EventManager {
      *            Object... - Sets the filter that is customizable in EventType
      *            subclasses
      */
-    public void registerPrioritizedEventListener(Object eventListener, int priority, Object... filter) {
+    public final void registerPrioritizedEventListener(Object eventListener, int priority, Object... filter) {
         registerAnnotatedMethods(eventListener, priority, filter, null);
     }
 
-    protected void registerAnnotatedMethods(Object eventListener, int priority, Object[] filter, EventType eventType) {
+    protected final void registerAnnotatedMethods(Object eventListener, int priority, Object[] filter, EventType eventType) {
         EventType event = null;
         for (Method method : eventListener.getClass().getMethods()) {
             if (method.isAnnotationPresent(EventListener.class)) {
