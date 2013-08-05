@@ -78,36 +78,30 @@ public class EventManager {
     }
 
     protected final List<Method> getAnnotatedMethods(Class<?> targetClass, Class<? extends Annotation> annotation, Class<?>... requiredArgs) {
-        List<Method> ret = new ArrayList<Method>();
+        List<Method> methods = new ArrayList<Method>();
         for (Method method : targetClass.getMethods()) {
             if (method.isAnnotationPresent(annotation)) {
                 if (Arrays.equals(method.getParameterTypes(), requiredArgs)) {
-                    ret.add(method);
+                    methods.add(method);
                 } else {
                     throw new WrongAnnotationUsageException();
                 }
             }
         }
-        return ret;
+        return methods;
     }
     
     protected final void registerAnnotatedMethods(Object eventListener, int priority, Object[] filter, EventType eventType) {
         EventType event = null;
-        for (Method method : eventListener.getClass().getMethods()) {
-            if (method.isAnnotationPresent(EventListener.class)) {
-                if (method.getParameterTypes().length == 1 && method.getParameterTypes()[0] == Event.class) {
-                    for (String allowedEvent : method.getAnnotation(EventListener.class).events()) {
-                        if (eventType == null || eventType.equals(allowedEvent)) {
-                            event = getEventByName(allowedEvent);
-                            if (event != null) {
-                                event.addEventListenerContainer(new EventListenerContainer(eventListener, method, priority, filter));
-                            } else {
-                                throw new MissingEventTypeException(allowedEvent);
-                            }
-                        }
+        for (Method method : getAnnotatedMethods(eventListener.getClass(), EventListener.class, Event.class)) {
+            for (String requestedEvent : method.getAnnotation(EventListener.class).events()) {
+                if (eventType == null || eventType.equals(requestedEvent)) {
+                    event = getEventByName(requestedEvent);
+                    if (event != null) {
+                        event.addEventListenerContainer(new EventListenerContainer(eventListener, method, priority, filter));
+                    } else {
+                        throw new MissingEventTypeException(requestedEvent);
                     }
-                } else {
-                    throw new WrongAnnotationUsageException();
                 }
             }
         }
