@@ -1,11 +1,13 @@
 package com.dafttech.eventmanager;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.dafttech.eventmanager.exception.MissingEventTypeException;
-import com.dafttech.eventmanager.exception.WrongEventListenerAnnotationUsageException;
+import com.dafttech.eventmanager.exception.WrongAnnotationUsageException;
 
 public class EventManager {
     volatile protected List<EventType> events = new ArrayList<EventType>();
@@ -75,6 +77,20 @@ public class EventManager {
         registerAnnotatedMethods(eventListener, priority, filter, null);
     }
 
+    protected final List<Method> getAnnotatedMethods(Class<?> targetClass, Class<? extends Annotation> annotation, Class<?>... requiredArgs) {
+        List<Method> ret = new ArrayList<Method>();
+        for (Method method : targetClass.getMethods()) {
+            if (method.isAnnotationPresent(annotation)) {
+                if (Arrays.equals(method.getParameterTypes(), requiredArgs)) {
+                    ret.add(method);
+                } else {
+                    throw new WrongAnnotationUsageException();
+                }
+            }
+        }
+        return ret;
+    }
+    
     protected final void registerAnnotatedMethods(Object eventListener, int priority, Object[] filter, EventType eventType) {
         EventType event = null;
         for (Method method : eventListener.getClass().getMethods()) {
@@ -91,7 +107,7 @@ public class EventManager {
                         }
                     }
                 } else {
-                    throw new WrongEventListenerAnnotationUsageException();
+                    throw new WrongAnnotationUsageException();
                 }
             }
         }
