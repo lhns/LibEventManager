@@ -12,12 +12,12 @@ public class EventListenerContainer {
 
     volatile private Method filter;
 
-    protected EventListenerContainer(Object eventListener, Method method, int priority, Method filter) {
+    protected EventListenerContainer(Object eventListener, Method method, EventListener annotation) {
         this.eventListener = eventListener;
         this.eventListenerStatic = Modifier.isStatic(method.getModifiers());
         this.method = method;
-        this.priority = priority;
-        this.filter = filter;
+        this.priority = annotation.priority();
+        this.filter = getFilterMethod(eventListener, annotation.filter());
         if (eventListenerStatic && !(eventListener instanceof Class)) {
             this.eventListener = this.eventListener.getClass();
         }
@@ -39,5 +39,15 @@ public class EventListenerContainer {
         } else {
             return paramObject == eventListener;
         }
+    }
+
+    private static final Method getFilterMethod(Object eventListener, String filterName) {
+        if (!filterName.equals("")) {
+            for (Method method : EventManager.getAnnotatedMethods(eventListener.getClass(), EventFilter.class,
+                    Object[].class)) {
+                return method;
+            }
+        }
+        return null;
     }
 }

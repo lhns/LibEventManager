@@ -61,47 +61,22 @@ public class EventManager {
         registerAnnotatedMethods(eventListener, null);
     }
 
-    protected final List<Method> getAnnotatedMethods(Class<?> targetClass, Class<? extends Annotation> annotation,
-            Class<?> reqRet, Class<?>... reqArgs) {
-        List<Method> methods = new ArrayList<Method>();
-        for (Method method : targetClass.getMethods()) {
-            if (method.isAnnotationPresent(annotation)) {
-                if (method.getReturnType() == reqRet && Arrays.equals(method.getParameterTypes(), reqArgs)) {
-                    methods.add(method);
-                } else {
-                    throw new WrongAnnotationUsageException();
-                }
-            }
-        }
-        return methods;
-    }
-
     protected final void registerAnnotatedMethods(Object eventListener, EventType eventType) {
         EventType event = null;
         EventListener annotation = null;
-        for (Method method : getAnnotatedMethods(eventListener.getClass(), EventListener.class, Event.class)) {
+        for (Method method : getAnnotatedMethods(eventListener.getClass(), EventListener.class, null, Event.class)) {
             annotation = method.getAnnotation(EventListener.class);
             for (String requestedEvent : annotation.events()) {
                 if (eventType == null || eventType.equals(requestedEvent)) {
                     event = getEventByName(requestedEvent);
                     if (event != null) {
-                        event.addEventListenerContainer(new EventListenerContainer(eventListener, method, annotation
-                                .priority(), getFilterMethod(eventListener, annotation.filter())));
+                        event.addEventListenerContainer(new EventListenerContainer(eventListener, method, annotation));
                     } else {
                         throw new UnknownEventTypeException(requestedEvent);
                     }
                 }
             }
         }
-    }
-
-    protected final Method getFilterMethod(Object eventListener, String filterName) {
-        if (!filterName.equals("")) {
-            for (Method method : getAnnotatedMethods(eventListener.getClass(), EventFilter.class, Object[].class)) {
-                return method;
-            }
-        }
-        return null;
     }
 
     /**
@@ -114,5 +89,21 @@ public class EventManager {
         for (EventType eventType : events) {
             eventType.unregisterEventListener(eventListener);
         }
+    }
+
+    protected static final List<Method> getAnnotatedMethods(Class<?> targetClass,
+            Class<? extends Annotation> annotation, Class<?> reqRet, Class<?>... reqArgs) {
+        List<Method> methods = new ArrayList<Method>();
+        if (reqRet == null) reqRet = void.class;
+        for (Method method : targetClass.getMethods()) {
+            if (method.isAnnotationPresent(annotation)) {
+                if (method.getReturnType() == reqRet && Arrays.equals(method.getParameterTypes(), reqArgs)) {
+                    methods.add(method);
+                } else {
+                    throw new WrongAnnotationUsageException();
+                }
+            }
+        }
+        return methods;
     }
 }
