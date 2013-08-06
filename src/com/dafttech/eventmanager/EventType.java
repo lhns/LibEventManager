@@ -44,7 +44,6 @@ public class EventType {
         eventManager.registerAnnotatedMethods(eventListener, this);
     }
 
-    // TODO: Correct Method
     public final void unregisterEventListener(Object eventListener) {
         eventListenerContainer.remove(eventListener);
     }

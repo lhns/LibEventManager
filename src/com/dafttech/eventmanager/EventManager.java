@@ -110,7 +110,7 @@ public class EventManager {
      */
     public final void unregisterEventListener(Object eventListener) {
         for (EventType eventType : events) {
-            eventType.eventListenerContainer.remove(eventListener);
+            eventType.unregisterEventListener(eventListener);
         }
     }
 }
