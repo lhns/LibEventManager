@@ -92,6 +92,7 @@ public class EventManager {
         return methods;
     }
     
+    @Deprecated
     protected final void registerAnnotatedMethods(Object eventListener, int priority, Object[] filter, EventType eventType) {
         EventType event = null; EventListener annotation = null;
         for (Method method : getAnnotatedMethods(eventListener.getClass(), EventListener.class, null, Event.class)) {
