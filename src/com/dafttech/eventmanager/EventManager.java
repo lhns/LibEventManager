@@ -86,7 +86,7 @@ public class EventManager {
                     event = getEventByName(requestedEvent);
                     if (event != null) {
                         event.addEventListenerContainer(new EventListenerContainer(eventListener, method, annotation
-                                .priority(), getFilter(eventListener, annotation.filter())));
+                                .priority(), getFilterMethod(eventListener, annotation.filter())));
                     } else {
                         throw new UnknownEventTypeException(requestedEvent);
                     }
@@ -95,7 +95,7 @@ public class EventManager {
         }
     }
 
-    protected final Method getFilter(Object eventListener, String filterName) {
+    protected final Method getFilterMethod(Object eventListener, String filterName) {
         if (!filterName.equals("")) {
             for (Method method : getAnnotatedMethods(eventListener.getClass(), EventFilter.class, Object[].class)) {
                 return method;

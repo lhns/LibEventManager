@@ -1,5 +1,6 @@
 package com.dafttech.eventmanager;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -30,7 +31,7 @@ public class Event {
                         || eventType.applyFilter(this, eventListenerContainer.eventListener, eventFilter)) {
                     try {
                         eventListenerContainer.method.invoke(eventListenerContainer.eventListener, this);
-                    } catch (Exception e) {
+                    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
                         e.printStackTrace();
                     }
                     if (cancelled) return;
