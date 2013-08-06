@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.dafttech.eventmanager.exception.MissingEventTypeException;
+import com.dafttech.eventmanager.exception.UnknownEventTypeException;
 import com.dafttech.eventmanager.exception.WrongAnnotationUsageException;
 
 public class EventManager {
@@ -61,7 +61,8 @@ public class EventManager {
         registerAnnotatedMethods(eventListener, null);
     }
 
-    protected final List<Method> getAnnotatedMethods(Class<?> targetClass, Class<? extends Annotation> annotation, Class<?> reqRet, Class<?>... reqArgs) {
+    protected final List<Method> getAnnotatedMethods(Class<?> targetClass, Class<? extends Annotation> annotation,
+            Class<?> reqRet, Class<?>... reqArgs) {
         List<Method> methods = new ArrayList<Method>();
         for (Method method : targetClass.getMethods()) {
             if (method.isAnnotationPresent(annotation)) {
@@ -84,15 +85,16 @@ public class EventManager {
                 if (eventType == null || eventType.equals(requestedEvent)) {
                     event = getEventByName(requestedEvent);
                     if (event != null) {
-                        event.addEventListenerContainer(new EventListenerContainer(eventListener, method, annotation.priority(), getFilter(eventListener, annotation.filter())));
+                        event.addEventListenerContainer(new EventListenerContainer(eventListener, method, annotation
+                                .priority(), getFilter(eventListener, annotation.filter())));
                     } else {
-                        throw new MissingEventTypeException(requestedEvent);
+                        throw new UnknownEventTypeException(requestedEvent);
                     }
                 }
             }
         }
     }
-    
+
     protected final Method getFilter(Object eventListener, String filterName) {
         if (!filterName.equals("")) {
             for (Method method : getAnnotatedMethods(eventListener.getClass(), EventFilter.class, Object[].class)) {

@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import com.dafttech.eventmanager.exception.WrongEventListenerTypeException;
-
 public class Event {
     volatile private EventType eventType = null;
     volatile private Object[] in = null;
@@ -30,14 +28,10 @@ public class Event {
                 eventFilter = eventListenerContainer.getFilter();
                 if (eventFilter.length == 0
                         || eventType.applyFilter(this, eventListenerContainer.eventListener, eventFilter)) {
-                    if (eventListenerContainer.eventListenerMethod != null) {
-                        try {
-                            eventListenerContainer.eventListenerMethod.invoke(eventListenerContainer.eventListener, this);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    } else {
-                        throw new WrongEventListenerTypeException();
+                    try {
+                        eventListenerContainer.method.invoke(eventListenerContainer.eventListener, this);
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                     if (cancelled) return;
                 }

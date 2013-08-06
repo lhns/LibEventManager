@@ -5,22 +5,27 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
 public class EventListenerContainer {
-    volatile protected Object eventListener = null;
-    volatile protected Method eventListenerMethod = null;
-    volatile protected int priority = 0;
-    
-    volatile private Method eventFilterMethod = null;
-    
-    protected EventListenerContainer(Object eventListener, Method eventListenerMethod, int priority, Method eventFilterMethod) {
-        this.eventListener = Modifier.isStatic(eventListenerMethod.getModifiers()) ? null : eventListener;
-        this.eventListenerMethod = eventListenerMethod;
+    volatile protected Object eventListener;
+    volatile protected boolean eventListenerStatic;
+    volatile protected Method method;
+    volatile protected int priority;
+
+    volatile private Method filter;
+
+    protected EventListenerContainer(Object eventListener, Method method, int priority, Method filter) {
+        this.eventListener = eventListener;
+        this.eventListenerStatic = Modifier.isStatic(method.getModifiers());
+        this.method = method;
         this.priority = priority;
-        this.eventFilterMethod = eventFilterMethod;
+        this.filter = filter;
+        if (eventListenerStatic && !(eventListener instanceof Class)) {
+            this.eventListener = this.eventListener.getClass();
+        }
     }
-    
+
     protected Object[] getFilter() {
         try {
-            if (eventFilterMethod != null) return (Object[]) eventFilterMethod.invoke(eventListener);
+            if (filter != null) return (Object[]) filter.invoke(eventListener);
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             e.printStackTrace();
         }
