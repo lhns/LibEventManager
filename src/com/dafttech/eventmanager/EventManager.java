@@ -1,6 +1,7 @@
 package com.dafttech.eventmanager;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -77,11 +78,11 @@ public class EventManager {
         registerAnnotatedMethods(eventListener, priority, filter, null);
     }
 
-    protected final List<Method> getAnnotatedMethods(Class<?> targetClass, Class<? extends Annotation> annotation, Class<?>... requiredArgs) {
+    protected final List<Method> getAnnotatedMethods(Class<?> targetClass, Class<? extends Annotation> annotation, Class<?> reqRet, Class<?>... reqArgs) {
         List<Method> methods = new ArrayList<Method>();
         for (Method method : targetClass.getMethods()) {
             if (method.isAnnotationPresent(annotation)) {
-                if (Arrays.equals(method.getParameterTypes(), requiredArgs)) {
+                if (method.getReturnType() == reqRet && Arrays.equals(method.getParameterTypes(), reqArgs)) {
                     methods.add(method);
                 } else {
                     throw new WrongAnnotationUsageException();
@@ -92,9 +93,10 @@ public class EventManager {
     }
     
     protected final void registerAnnotatedMethods(Object eventListener, int priority, Object[] filter, EventType eventType) {
-        EventType event = null;
-        for (Method method : getAnnotatedMethods(eventListener.getClass(), EventListener.class, Event.class)) {
-            for (String requestedEvent : method.getAnnotation(EventListener.class).events()) {
+        EventType event = null; EventListener annotation = null;
+        for (Method method : getAnnotatedMethods(eventListener.getClass(), EventListener.class, null, Event.class)) {
+            annotation = method.getAnnotation(EventListener.class);
+            for (String requestedEvent : annotation.events()) {
                 if (eventType == null || eventType.equals(requestedEvent)) {
                     event = getEventByName(requestedEvent);
                     if (event != null) {
@@ -105,6 +107,37 @@ public class EventManager {
                 }
             }
         }
+    }
+    
+    protected final void registerAnnotatedMethods(Object eventListener, EventType eventType) {
+        EventType event = null;
+        EventListener annotation = null;
+        for (Method method : getAnnotatedMethods(eventListener.getClass(), EventListener.class, Event.class)) {
+            annotation = method.getAnnotation(EventListener.class);
+            for (String requestedEvent : annotation.events()) {
+                if (eventType == null || eventType.equals(requestedEvent)) {
+                    event = getEventByName(requestedEvent);
+                    if (event != null) {
+                        event.addEventListenerContainer(new EventListenerContainer(eventListener, method, annotation.priority(), getFilter(eventListener, annotation.filter())));
+                    } else {
+                        throw new MissingEventTypeException(requestedEvent);
+                    }
+                }
+            }
+        }
+    }
+    
+    protected final Object[] getFilter(Object eventListener, String filterName) {
+        if (!filterName.equals("")) {
+            for (Method method : getAnnotatedMethods(eventListener.getClass(), EventFilter.class, Object[].class)) {
+                try {
+                    return (Object[]) method.invoke(eventListener);
+                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                }
+                break;
+            }
+        }
+        return new Object[0];
     }
 
     /**
