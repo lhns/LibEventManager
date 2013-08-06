@@ -3,8 +3,6 @@ package com.dafttech.eventmanager;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.dafttech.eventmanager.exception.AsyncEventQueueOverflowException;
-
 public class EventType {
     volatile protected List<EventListenerContainer> eventListenerContainer = new ArrayList<EventListenerContainer>();
     volatile protected EventManager eventManager = null;
@@ -88,7 +86,7 @@ public class EventType {
      *         is done, getting the output and checking if the event was
      *         cancelled
      */
-    public final Event callAsync(Object... objects) throws AsyncEventQueueOverflowException {
+    public final Event callAsync(Object... objects) throws QueueOverflowException {
         Event event = new Event(this, objects);
         eventManager.asyncEventQueue.add(event);
         return event;

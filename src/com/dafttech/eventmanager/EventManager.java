@@ -5,9 +5,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import com.dafttech.eventmanager.exception.UnknownEventTypeException;
-import com.dafttech.eventmanager.exception.WrongAnnotationUsageException;
+import java.util.NoSuchElementException;
 
 public class EventManager {
     volatile protected List<EventType> events = new ArrayList<EventType>();
@@ -72,7 +70,7 @@ public class EventManager {
                     if (event != null) {
                         event.addEventListenerContainer(new EventListenerContainer(eventListener, method, annotation));
                     } else {
-                        throw new UnknownEventTypeException(requestedEvent);
+                        throw new NoSuchElementException(requestedEvent);
                     }
                 }
             }
@@ -100,7 +98,7 @@ public class EventManager {
                 if (method.getReturnType() == reqRet && Arrays.equals(method.getParameterTypes(), reqArgs)) {
                     methods.add(method);
                 } else {
-                    throw new WrongAnnotationUsageException();
+                    throw new IllegalArgumentException();
                 }
             }
         }
