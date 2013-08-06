@@ -24,13 +24,15 @@ public class Event {
         if (cancelled) return;
         if (eventType.eventListenerContainer.size() > 0) {
             EventListenerContainer eventListenerContainer = null;
+            Object[] eventFilter = null;
             for (Iterator<EventListenerContainer> i = eventType.eventListenerContainer.iterator(); i.hasNext();) {
                 eventListenerContainer = i.next();
-                if (eventListenerContainer.filter.length == 0
-                        || eventType.applyFilter(this, eventListenerContainer.eventListener, eventListenerContainer.filter)) {
-                    if (eventListenerContainer.method != null) {
+                eventFilter = eventListenerContainer.getFilter();
+                if (eventFilter.length == 0
+                        || eventType.applyFilter(this, eventListenerContainer.eventListener, eventFilter)) {
+                    if (eventListenerContainer.eventListenerMethod != null) {
                         try {
-                            eventListenerContainer.method.invoke(eventListenerContainer.eventListener, this);
+                            eventListenerContainer.eventListenerMethod.invoke(eventListenerContainer.eventListener, this);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }

@@ -1,7 +1,6 @@
 package com.dafttech.eventmanager;
 
 import java.lang.annotation.Annotation;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -129,17 +128,13 @@ public class EventManager {
         }
     }
     
-    protected final Object[] getFilter(Object eventListener, String filterName) {
+    protected final Method getFilter(Object eventListener, String filterName) {
         if (!filterName.equals("")) {
             for (Method method : getAnnotatedMethods(eventListener.getClass(), EventFilter.class, Object[].class)) {
-                try {
-                    return (Object[]) method.invoke(eventListener);
-                } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-                }
-                break;
+                return method;
             }
         }
-        return new Object[0];
+        return null;
     }
 
     /**
