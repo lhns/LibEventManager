@@ -61,23 +61,6 @@ public class EventManager {
         registerAnnotatedMethods(eventListener, null);
     }
 
-    /**
-     * Used to register an EventListener with a specific priority created with
-     * annotations to call the annotated methods.
-     * 
-     * @param eventListener
-     *            Object - Instance of the listening class
-     * @param priority
-     *            int - Higher priority = earlier called
-     * @param filter
-     *            Object... - Sets the filter that is customizable in EventType
-     *            subclasses
-     */
-    @Deprecated
-    public final void registerPrioritizedEventListener(Object eventListener, int priority, Object... filter) {
-        registerAnnotatedMethods(eventListener, priority, filter, null);
-    }
-
     protected final List<Method> getAnnotatedMethods(Class<?> targetClass, Class<? extends Annotation> annotation, Class<?> reqRet, Class<?>... reqArgs) {
         List<Method> methods = new ArrayList<Method>();
         for (Method method : targetClass.getMethods()) {
@@ -91,25 +74,7 @@ public class EventManager {
         }
         return methods;
     }
-    
-    @Deprecated
-    protected final void registerAnnotatedMethods(Object eventListener, int priority, Object[] filter, EventType eventType) {
-        EventType event = null; EventListener annotation = null;
-        for (Method method : getAnnotatedMethods(eventListener.getClass(), EventListener.class, null, Event.class)) {
-            annotation = method.getAnnotation(EventListener.class);
-            for (String requestedEvent : annotation.events()) {
-                if (eventType == null || eventType.equals(requestedEvent)) {
-                    event = getEventByName(requestedEvent);
-                    if (event != null) {
-                        event.addEventListenerContainer(new EventListenerContainer(eventListener, method, priority, filter));
-                    } else {
-                        throw new MissingEventTypeException(requestedEvent);
-                    }
-                }
-            }
-        }
-    }
-    
+
     protected final void registerAnnotatedMethods(Object eventListener, EventType eventType) {
         EventType event = null;
         EventListener annotation = null;

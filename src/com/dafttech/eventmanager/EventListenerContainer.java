@@ -10,23 +10,6 @@ public class EventListenerContainer {
     volatile protected int priority = 0;
     
     volatile private Method eventFilterMethod = null;
-    @Deprecated
-    volatile protected Object[] filter = null;
-
-    @Deprecated
-    protected EventListenerContainer(Object eventListener, int priority, Object[] filter) {
-        this.eventListener = eventListener;
-        this.priority = priority;
-        this.filter = filter;
-    }
-
-    @Deprecated
-    protected EventListenerContainer(Object eventListener, Method method, int priority, Object[] filter) {
-        this.eventListener = Modifier.isStatic(method.getModifiers()) ? null : eventListener;
-        this.eventListenerMethod = method;
-        this.priority = priority;
-        this.filter = filter;
-    }
     
     protected EventListenerContainer(Object eventListener, Method eventListenerMethod, int priority, Method eventFilterMethod) {
         this.eventListener = Modifier.isStatic(eventListenerMethod.getModifiers()) ? null : eventListener;

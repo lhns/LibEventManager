@@ -44,13 +44,8 @@ public class EventType {
         eventManager.registerAnnotatedMethods(eventListener, this);
     }
 
-    @Deprecated
-    public final void registerPrioritizedEventListener(Object eventListener, int priority, Object... filter) {
-        if (eventListener instanceof IEventListener) addEventListenerContainer(new EventListenerContainer(eventListener, priority, filter));
-        eventManager.registerAnnotatedMethods(eventListener, priority, filter, this);
-    }
-
-    public final void unregisterEventListener(IEventListener eventListener) {
+    // TODO: Correct Method
+    public final void unregisterEventListener(Object eventListener) {
         eventListenerContainer.remove(eventListener);
     }
 

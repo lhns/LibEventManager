@@ -36,12 +36,6 @@ public class Event {
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                    } else if (eventListenerContainer.eventListener instanceof IEventListener) {
-                        try {
-                            ((IEventListener) eventListenerContainer.eventListener).onEvent(this);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
                     } else {
                         throw new WrongEventListenerTypeException();
                     }
