@@ -58,8 +58,8 @@ public class EventManager {
      *            Object... - Sets the filter that is customizable in EventType
      *            subclasses
      */
-    public final void registerEventListener(Object eventListener, Object... filter) {
-        registerPrioritizedEventListener(eventListener, EventType.PRIORITY_STANDARD, filter);
+    public final void registerEventListener(Object eventListener) {
+        registerAnnotatedMethods(eventListener, null);
     }
 
     /**
@@ -74,6 +74,7 @@ public class EventManager {
      *            Object... - Sets the filter that is customizable in EventType
      *            subclasses
      */
+    @Deprecated
     public final void registerPrioritizedEventListener(Object eventListener, int priority, Object... filter) {
         registerAnnotatedMethods(eventListener, priority, filter, null);
     }
