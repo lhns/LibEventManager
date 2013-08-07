@@ -99,7 +99,18 @@ public class EventManager {
                 if (method.getReturnType() == reqType && Arrays.equals(method.getParameterTypes(), reqArgs)) {
                     methods.add(method);
                 } else {
-                    throw new IllegalArgumentException();
+                    String errorMessage = "\nat " + targetClass.getName() + " at Annotation " + annotation.getName()
+                            + ":";
+                    errorMessage = errorMessage + "\nexpected: " + reqType.getName() + " with "
+                            + (reqArgs.length == 0 ? "no args" : "args:");
+                    for (Class<?> arg : reqArgs)
+                        errorMessage = errorMessage + ", " + arg.getName();
+                    errorMessage = errorMessage + "\nand got:  " + method.getReturnType() + " with "
+                            + (method.getParameterTypes().length == 0 ? "no args" : "args:");
+                    for (Class<?> arg : method.getParameterTypes())
+                        errorMessage = errorMessage + ", " + arg.getName();
+                    errorMessage = errorMessage + ".";
+                    throw new IllegalArgumentException(errorMessage);
                 }
             }
         }
@@ -115,7 +126,12 @@ public class EventManager {
                 if (field.getType() == reqType) {
                     fields.add(field);
                 } else {
-                    throw new IllegalArgumentException();
+                    String errorMessage = "\nat " + targetClass.getName() + " at Annotation " + annotation.getName()
+                            + ":";
+                    errorMessage = errorMessage + "\nexpected: " + reqType.getName();
+                    errorMessage = errorMessage + "\nand got:  " + field.getType();
+                    errorMessage = errorMessage + ".";
+                    throw new IllegalArgumentException(errorMessage);
                 }
             }
         }
