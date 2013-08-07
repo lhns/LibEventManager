@@ -101,15 +101,15 @@ public class EventManager {
                 } else {
                     String errorMessage = "\nat " + targetClass.getName() + " at Annotation " + annotation.getName()
                             + ":";
-                    errorMessage = errorMessage + "\nexpected: " + reqType.getName() + " with "
+                    errorMessage += "\nexpected: " + reqType.getName() + " with "
                             + (reqArgs.length == 0 ? "no args" : "args:");
                     for (Class<?> arg : reqArgs)
-                        errorMessage = errorMessage + ", " + arg.getName();
-                    errorMessage = errorMessage + "\nand got:  " + method.getReturnType() + " with "
+                        errorMessage += ", " + arg.getName();
+                    errorMessage += "\nand got:  " + method.getReturnType() + " with "
                             + (method.getParameterTypes().length == 0 ? "no args" : "args:");
                     for (Class<?> arg : method.getParameterTypes())
-                        errorMessage = errorMessage + ", " + arg.getName();
-                    errorMessage = errorMessage + ".";
+                        errorMessage += ", " + arg.getName();
+                    errorMessage += ".";
                     throw new IllegalArgumentException(errorMessage);
                 }
             }
@@ -128,9 +128,9 @@ public class EventManager {
                 } else {
                     String errorMessage = "\nat " + targetClass.getName() + " at Annotation " + annotation.getName()
                             + ":";
-                    errorMessage = errorMessage + "\nexpected: " + reqType.getName();
-                    errorMessage = errorMessage + "\nand got:  " + field.getType();
-                    errorMessage = errorMessage + ".";
+                    errorMessage += "\nexpected: " + reqType.getName();
+                    errorMessage += "\nand got:  " + field.getType();
+                    errorMessage += ".";
                     throw new IllegalArgumentException(errorMessage);
                 }
             }
