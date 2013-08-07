@@ -27,8 +27,7 @@ public class Event {
             for (Iterator<EventListenerContainer> i = eventType.eventListenerContainer.iterator(); i.hasNext();) {
                 eventListenerContainer = i.next();
                 eventFilter = eventListenerContainer.getFilter();
-                if (eventFilter.length == 0
-                        || eventType.applyFilter(this, eventListenerContainer.eventListener, eventFilter)) {
+                if (isFiltered(eventListenerContainer.eventListener, eventFilter)) {
                     try {
                         eventListenerContainer.method.invoke(eventListenerContainer.eventListener, this);
                     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
@@ -39,6 +38,15 @@ public class Event {
             }
         }
         done = true;
+    }
+
+    private final boolean isFiltered(Object eventListener, Object[] eventFilter) {
+        if (eventFilter.length == 0) return true;
+        try {
+            return eventType.applyFilter(this, eventListener, eventFilter);
+        } catch (ArrayIndexOutOfBoundsException e) {
+        }
+        return false;
     }
 
     /**
