@@ -23,11 +23,9 @@ public class Event {
         if (cancelled) return;
         if (eventType.eventListenerContainer.size() > 0) {
             EventListenerContainer eventListenerContainer = null;
-            Object[] eventFilter = null;
             for (Iterator<EventListenerContainer> i = eventType.eventListenerContainer.iterator(); i.hasNext();) {
                 eventListenerContainer = i.next();
-                eventFilter = eventListenerContainer.getFilter();
-                if (isFiltered(eventListenerContainer.eventListener, eventFilter)) {
+                if (isFiltered(eventListenerContainer.eventListener, eventListenerContainer.getFilter())) {
                     try {
                         eventListenerContainer.method.invoke(eventListenerContainer.eventListener, this);
                     } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
