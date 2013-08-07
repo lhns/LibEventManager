@@ -109,7 +109,7 @@ public class EventManager {
     protected static final List<Field> getAnnotatedFields(Class<?> targetClass, Class<? extends Annotation> annotation,
             Class<?> reqType) {
         List<Field> fields = new ArrayList<Field>();
-        if (reqType == null) reqType = void.class;
+        if (reqType == null) return fields;
         for (Field field : targetClass.getFields()) {
             if (field.isAnnotationPresent(annotation)) {
                 if (field.getType() == reqType) {
