@@ -1,5 +1,6 @@
 package com.dafttech.eventmanager;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -10,14 +11,14 @@ public class EventListenerContainer {
     volatile protected Method method;
     volatile protected int priority;
 
-    volatile private Method filter;
+    volatile private Object filter;
 
     protected EventListenerContainer(Object eventListener, Method method, EventListener annotation) {
         this.eventListener = eventListener;
         this.eventListenerStatic = Modifier.isStatic(method.getModifiers());
         this.method = method;
         this.priority = annotation.priority();
-        this.filter = getFilterMethod(eventListener, annotation.filter());
+        this.filter = getFilterContainer(eventListener, annotation.filter());
         if (eventListenerStatic && !(eventListener instanceof Class)) {
             this.eventListener = this.eventListener.getClass();
         }
@@ -25,7 +26,10 @@ public class EventListenerContainer {
 
     protected Object[] getFilter() {
         try {
-            if (filter != null) return (Object[]) filter.invoke(eventListener);
+            if (filter != null) {
+                if (filter instanceof Field) return (Object[]) ((Field) filter).get(eventListener);
+                if (filter instanceof Method) return (Object[]) ((Method) filter).invoke(eventListener);
+            }
         } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
             e.printStackTrace();
         }
@@ -41,8 +45,12 @@ public class EventListenerContainer {
         }
     }
 
-    private static final Method getFilterMethod(Object eventListener, String filterName) {
+    private static final Object getFilterContainer(Object eventListener, String filterName) {
         if (!filterName.equals("")) {
+            for (Field field : EventManager.getAnnotatedFields(eventListener.getClass(), EventFilter.class,
+                    Object[].class)) {
+                return field;
+            }
             for (Method method : EventManager.getAnnotatedMethods(eventListener.getClass(), EventFilter.class,
                     Object[].class)) {
                 return method;

@@ -1,6 +1,7 @@
 package com.dafttech.eventmanager;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -90,12 +91,12 @@ public class EventManager {
     }
 
     protected static final List<Method> getAnnotatedMethods(Class<?> targetClass,
-            Class<? extends Annotation> annotation, Class<?> reqRet, Class<?>... reqArgs) {
+            Class<? extends Annotation> annotation, Class<?> reqType, Class<?>... reqArgs) {
         List<Method> methods = new ArrayList<Method>();
-        if (reqRet == null) reqRet = void.class;
+        if (reqType == null) reqType = void.class;
         for (Method method : targetClass.getMethods()) {
             if (method.isAnnotationPresent(annotation)) {
-                if (method.getReturnType() == reqRet && Arrays.equals(method.getParameterTypes(), reqArgs)) {
+                if (method.getReturnType() == reqType && Arrays.equals(method.getParameterTypes(), reqArgs)) {
                     methods.add(method);
                 } else {
                     throw new IllegalArgumentException();
@@ -103,5 +104,21 @@ public class EventManager {
             }
         }
         return methods;
+    }
+
+    protected static final List<Field> getAnnotatedFields(Class<?> targetClass, Class<? extends Annotation> annotation,
+            Class<?> reqType) {
+        List<Field> fields = new ArrayList<Field>();
+        if (reqType == null) reqType = void.class;
+        for (Field field : targetClass.getFields()) {
+            if (field.isAnnotationPresent(annotation)) {
+                if (field.getType() == reqType) {
+                    fields.add(field);
+                } else {
+                    throw new IllegalArgumentException();
+                }
+            }
+        }
+        return fields;
     }
 }
