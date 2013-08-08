@@ -21,7 +21,7 @@ public class EventTypeGetter {
         type = 2;
     }
 
-    protected EventType getFromList(List<EventType> list) {
+    protected <T> T getFromList(List<T> list) {
         if (list.contains(this)) return list.get(list.indexOf(this));
         return null;
     }
