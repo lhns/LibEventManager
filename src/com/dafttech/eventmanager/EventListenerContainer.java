@@ -30,7 +30,11 @@ public class EventListenerContainer {
                 if (filter instanceof Field) return (Object[]) ((Field) filter).get(eventListener);
                 if (filter instanceof Method) return (Object[]) ((Method) filter).invoke(eventListener);
             }
-        } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
             e.printStackTrace();
         }
         return new Object[0];
@@ -47,12 +51,10 @@ public class EventListenerContainer {
 
     private static final Object getFilterContainer(Object eventListener, String filterName) {
         if (!filterName.equals("")) {
-            for (Field field : EventManager.getAnnotatedFields(eventListener.getClass(), EventFilter.class,
-                    Object[].class)) {
+            for (Field field : EventManager.getAnnotatedFields(eventListener.getClass(), EventFilter.class, Object[].class)) {
                 return field;
             }
-            for (Method method : EventManager.getAnnotatedMethods(eventListener.getClass(), EventFilter.class,
-                    Object[].class)) {
+            for (Method method : EventManager.getAnnotatedMethods(eventListener.getClass(), EventFilter.class, Object[].class)) {
                 return method;
             }
         }

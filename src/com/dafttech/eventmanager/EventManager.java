@@ -90,8 +90,8 @@ public class EventManager {
         }
     }
 
-    protected static final List<Method> getAnnotatedMethods(Class<?> targetClass,
-            Class<? extends Annotation> annotation, Class<?> reqType, Class<?>... reqArgs) {
+    protected static final List<Method> getAnnotatedMethods(Class<?> targetClass, Class<? extends Annotation> annotation, Class<?> reqType,
+            Class<?>... reqArgs) {
         List<Method> methods = new ArrayList<Method>();
         if (reqType == null) reqType = void.class;
         for (Method method : targetClass.getMethods()) {
@@ -99,10 +99,8 @@ public class EventManager {
                 if (method.getReturnType() == reqType && Arrays.equals(method.getParameterTypes(), reqArgs)) {
                     methods.add(method);
                 } else {
-                    String errorMessage = "\nat " + targetClass.getName() + " at Annotation " + annotation.getName()
-                            + ":";
-                    errorMessage += "\nexpected: " + reqType.getName() + " with "
-                            + (reqArgs.length == 0 ? "no args" : "args:");
+                    String errorMessage = "\nat " + targetClass.getName() + " at Annotation " + annotation.getName() + ":";
+                    errorMessage += "\nexpected: " + reqType.getName() + " with " + (reqArgs.length == 0 ? "no args" : "args:");
                     for (Class<?> arg : reqArgs)
                         errorMessage += ", " + arg.getName();
                     errorMessage += "\nand got:  " + method.getReturnType() + " with "
@@ -117,8 +115,7 @@ public class EventManager {
         return methods;
     }
 
-    protected static final List<Field> getAnnotatedFields(Class<?> targetClass, Class<? extends Annotation> annotation,
-            Class<?> reqType) {
+    protected static final List<Field> getAnnotatedFields(Class<?> targetClass, Class<? extends Annotation> annotation, Class<?> reqType) {
         List<Field> fields = new ArrayList<Field>();
         if (reqType == null) return fields;
         for (Field field : targetClass.getFields()) {
@@ -126,8 +123,7 @@ public class EventManager {
                 if (field.getType() == reqType) {
                     fields.add(field);
                 } else {
-                    String errorMessage = "\nat " + targetClass.getName() + " at Annotation " + annotation.getName()
-                            + ":";
+                    String errorMessage = "\nat " + targetClass.getName() + " at Annotation " + annotation.getName() + ":";
                     errorMessage += "\nexpected: " + reqType.getName();
                     errorMessage += "\nand got:  " + field.getType();
                     errorMessage += ".";

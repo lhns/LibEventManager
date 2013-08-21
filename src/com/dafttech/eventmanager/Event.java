@@ -28,7 +28,11 @@ public class Event {
                 if (isFiltered(eventListenerContainer.eventListener, eventListenerContainer.getFilter())) {
                     try {
                         eventListenerContainer.method.invoke(eventListenerContainer.eventListener, this);
-                    } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+                    } catch (IllegalAccessException e) {
+                        e.printStackTrace();
+                    } catch (IllegalArgumentException e) {
+                        e.printStackTrace();
+                    } catch (InvocationTargetException e) {
                         e.printStackTrace();
                     }
                     if (cancelled) return;
