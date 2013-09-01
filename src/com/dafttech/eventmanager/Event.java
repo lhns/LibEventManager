@@ -47,6 +47,7 @@ public class Event {
         try {
             return eventType.applyFilter(this, eventListener, eventFilter);
         } catch (ArrayIndexOutOfBoundsException e) {
+        } catch (ClassCastException e) {
         }
         return false;
     }
