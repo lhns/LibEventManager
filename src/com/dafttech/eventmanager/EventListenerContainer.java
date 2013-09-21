@@ -52,10 +52,10 @@ public class EventListenerContainer {
     private static final Object getFilterContainer(Object eventListener, String filterName) {
         if (!filterName.equals("")) {
             for (Field field : EventManager.getAnnotatedFields(eventListener.getClass(), EventFilter.class, Object[].class)) {
-                return field;
+                if (((EventFilter) field.getAnnotation(EventFilter.class)).name().equals(filterName)) return field;
             }
             for (Method method : EventManager.getAnnotatedMethods(eventListener.getClass(), EventFilter.class, Object[].class)) {
-                return method;
+                if (((EventFilter) method.getAnnotation(EventFilter.class)).name().equals(filterName)) return method;
             }
         }
         return null;
