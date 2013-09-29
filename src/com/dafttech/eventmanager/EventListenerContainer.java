@@ -51,6 +51,7 @@ public class EventListenerContainer {
             if (filterName.contains(".")) {
                 try {
                     filterClass = Class.forName(filterName.substring(0, filterName.lastIndexOf('.')));
+                    filterName = filterName.substring(filterName.lastIndexOf('.') + 1);
                     isStatic = true;
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
