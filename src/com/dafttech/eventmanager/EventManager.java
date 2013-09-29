@@ -67,7 +67,7 @@ public class EventManager {
         EventListener annotation = null;
         boolean isStatic = false;
         EventType event = null;
-        for (Method method : getAnnotatedMethods(eventListenerClass, EventListener.class, null, Event.class)) {
+        for (Method method : getAnnotatedMethods(eventListenerClass, EventListener.class, void.class, Event.class)) {
             annotation = method.getAnnotation(EventListener.class);
             isStatic = Modifier.isStatic(method.getModifiers());
             if (!eventListenerStatic || isStatic) {
@@ -101,10 +101,10 @@ public class EventManager {
     protected static final List<Method> getAnnotatedMethods(Class<?> targetClass, Class<? extends Annotation> annotation, Class<?> reqType,
             Class<?>... reqArgs) {
         List<Method> methods = new ArrayList<Method>();
-        if (reqType == null) reqType = void.class;
-        for (Method method : targetClass.getMethods()) {
+        for (Method method : targetClass.getDeclaredMethods()) {
             if (method.isAnnotationPresent(annotation)) {
-                if (method.getReturnType() == reqType && Arrays.equals(method.getParameterTypes(), reqArgs)) {
+                if ((reqType == null || method.getReturnType() == reqType) && Arrays.equals(method.getParameterTypes(), reqArgs)) {
+                    method.setAccessible(true);
                     methods.add(method);
                 } else {
                     String errorMessage = "\nat " + targetClass.getName() + " at Annotation " + annotation.getName() + ":";
@@ -125,10 +125,11 @@ public class EventManager {
 
     protected static final List<Field> getAnnotatedFields(Class<?> targetClass, Class<? extends Annotation> annotation, Class<?> reqType) {
         List<Field> fields = new ArrayList<Field>();
-        if (reqType == null) return fields;
-        for (Field field : targetClass.getFields()) {
+        if (reqType == void.class) return fields;
+        for (Field field : targetClass.getDeclaredFields()) {
             if (field.isAnnotationPresent(annotation)) {
-                if (field.getType() == reqType) {
+                if (reqType == null || field.getType() == reqType) {
+                    field.setAccessible(true);
                     fields.add(field);
                 } else {
                     String errorMessage = "\nat " + targetClass.getName() + " at Annotation " + annotation.getName() + ":";

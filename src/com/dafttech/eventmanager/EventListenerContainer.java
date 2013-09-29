@@ -22,11 +22,10 @@ public class EventListenerContainer {
     }
 
     protected Object[] getFilter() {
+        Object filterObj = null;
         try {
-            if (filter != null) {
-                if (filter instanceof Field) return (Object[]) ((Field) filter).get(isStatic ? null : eventListener);
-                if (filter instanceof Method) return (Object[]) ((Method) filter).invoke(isStatic ? null : eventListener);
-            }
+            if (filter instanceof Field) filterObj = ((Field) filter).get(isStatic ? null : eventListener);
+            if (filter instanceof Method) filterObj = ((Method) filter).invoke(isStatic ? null : eventListener);
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (IllegalArgumentException e) {
@@ -34,7 +33,9 @@ public class EventListenerContainer {
         } catch (InvocationTargetException e) {
             e.printStackTrace();
         }
-        return new Object[0];
+        if (filterObj == null) return new Object[0];
+        if (filterObj instanceof Object[]) return (Object[]) filterObj;
+        return new Object[] { filterObj };
     }
 
     @Override
@@ -57,11 +58,11 @@ public class EventListenerContainer {
                     e.printStackTrace();
                 }
             }
-            for (Field field : EventManager.getAnnotatedFields(filterClass, EventFilter.class, Object[].class)) {
+            for (Field field : EventManager.getAnnotatedFields(filterClass, EventFilter.class, null)) {
                 if ((!isStatic || Modifier.isStatic(field.getModifiers())) && field.getAnnotation(EventFilter.class).name().equals(filterName))
                     return field;
             }
-            for (Method method : EventManager.getAnnotatedMethods(filterClass, EventFilter.class, Object[].class)) {
+            for (Method method : EventManager.getAnnotatedMethods(filterClass, EventFilter.class, null)) {
                 if ((!isStatic || Modifier.isStatic(method.getModifiers())) && method.getAnnotation(EventFilter.class).name().equals(filterName))
                     return method;
             }
