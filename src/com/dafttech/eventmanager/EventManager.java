@@ -3,6 +3,7 @@ package com.dafttech.eventmanager;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -61,17 +62,24 @@ public class EventManager {
     }
 
     protected final void registerAnnotatedMethods(Object eventListener, EventType eventType) {
-        EventType event = null;
+        boolean eventListenerStatic = eventListener.getClass() == Class.class;
+        Class<?> eventListenerClass = eventListenerStatic ? (Class<?>) eventListener : eventListener.getClass();
         EventListener annotation = null;
-        for (Method method : getAnnotatedMethods(eventListener.getClass(), EventListener.class, null, Event.class)) {
+        boolean isStatic = false;
+        EventType event = null;
+        for (Method method : getAnnotatedMethods(eventListenerClass, EventListener.class, null, Event.class)) {
             annotation = method.getAnnotation(EventListener.class);
-            for (String requestedEvent : annotation.events()) {
-                if (eventType == null || eventType.equals(requestedEvent)) {
-                    event = getEventByName(requestedEvent);
-                    if (event != null) {
-                        event.addEventListenerContainer(new EventListenerContainer(eventListener, method, annotation));
-                    } else {
-                        throw new NoSuchElementException(requestedEvent);
+            isStatic = Modifier.isStatic(method.getModifiers());
+            if (!eventListenerStatic || isStatic) {
+                for (String requestedEvent : annotation.events()) {
+                    if (eventType == null || eventType.equals(requestedEvent)) {
+                        event = getEventByName(requestedEvent);
+                        if (event != null) {
+                            event.addEventListenerContainer(new EventListenerContainer(isStatic, isStatic ? eventListenerClass : eventListener,
+                                    method, annotation));
+                        } else {
+                            throw new NoSuchElementException(requestedEvent);
+                        }
                     }
                 }
             }

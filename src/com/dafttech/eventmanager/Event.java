@@ -27,7 +27,7 @@ public class Event {
                 eventListenerContainer = i.next();
                 if (isFiltered(eventListenerContainer.eventListener, eventListenerContainer.getFilter())) {
                     try {
-                        eventListenerContainer.method.invoke(eventListenerContainer.eventListener, this);
+                        eventListenerContainer.method.invoke(eventListenerContainer.isStatic ? null : eventListenerContainer.eventListener, this);
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     } catch (IllegalArgumentException e) {
