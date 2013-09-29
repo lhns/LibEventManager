@@ -155,6 +155,10 @@ public class Event {
         return null;
     }
 
+    public String getType() {
+        return this.eventType.name;
+    }
+
     /**
      * Check, if this Event is a specific EventType.
      * 
