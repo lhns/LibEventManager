@@ -71,7 +71,7 @@ public class EventManager {
             annotation = method.getAnnotation(EventListener.class);
             isStatic = Modifier.isStatic(method.getModifiers());
             if (!eventListenerStatic || isStatic) {
-                for (String requestedEvent : annotation.events()) {
+                for (String requestedEvent : annotation.value()) {
                     if (eventType == null || eventType.equals(requestedEvent)) {
                         event = getEventByName(requestedEvent);
                         if (event != null) {
