@@ -86,10 +86,9 @@ public class EventType {
      *         is done, getting the output and checking if the event was
      *         cancelled
      */
-    public final Event callAsync(Object... objects) throws QueueOverflowException {
+    public final Event callAsync(Object... objects) {
         Event event = new Event(this, objects);
         new AsyncEventThread(event);
-        System.out.println("test");
         return event;
     }
 
