@@ -101,7 +101,7 @@ public class EventManager {
     protected static final List<Method> getAnnotatedMethods(Class<?> targetClass, Class<? extends Annotation> annotation, Class<?> reqType,
             Class<?>... reqArgs) {
         List<Method> methods = new ArrayList<Method>();
-        for (Method method : targetClass.getDeclaredMethods()) {
+        for (Method method : getAllDeclaredMethods(targetClass, null)) {
             if (method.isAnnotationPresent(annotation)) {
                 if ((reqType == null || method.getReturnType() == reqType) && Arrays.equals(method.getParameterTypes(), reqArgs)) {
                     method.setAccessible(true);
@@ -126,7 +126,7 @@ public class EventManager {
     protected static final List<Field> getAnnotatedFields(Class<?> targetClass, Class<? extends Annotation> annotation, Class<?> reqType) {
         List<Field> fields = new ArrayList<Field>();
         if (reqType == void.class) return fields;
-        for (Field field : targetClass.getDeclaredFields()) {
+        for (Field field : getAllDeclaredFields(targetClass, null)) {
             if (field.isAnnotationPresent(annotation)) {
                 if (reqType == null || field.getType() == reqType) {
                     field.setAccessible(true);
@@ -140,6 +140,22 @@ public class EventManager {
                 }
             }
         }
+        return fields;
+    }
+
+    private static List<Method> getAllDeclaredMethods(Class<?> targetClass, List<Method> methods) {
+        if (methods == null) methods = new ArrayList<Method>();
+        for (Method method : targetClass.getDeclaredMethods())
+            if (!methods.contains(method)) methods.add(method);
+        if (targetClass.getSuperclass() != null) getAllDeclaredMethods(targetClass.getSuperclass(), methods);
+        return methods;
+    }
+
+    private static List<Field> getAllDeclaredFields(Class<?> targetClass, List<Field> fields) {
+        if (fields == null) fields = new ArrayList<Field>();
+        for (Field field : targetClass.getDeclaredFields())
+            if (!fields.contains(field)) fields.add(field);
+        if (targetClass.getSuperclass() != null) getAllDeclaredFields(targetClass.getSuperclass(), fields);
         return fields;
     }
 }
