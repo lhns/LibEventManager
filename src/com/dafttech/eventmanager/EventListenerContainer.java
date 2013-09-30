@@ -50,13 +50,25 @@ public class EventListenerContainer {
     private static final Object getFilterContainer(boolean isStatic, Class<?> filterClass, String filterName) {
         if (!filterName.equals("")) {
             if (filterName.contains(".")) {
+                Class<?> remoteFilterClass = null;
                 try {
-                    filterClass = Class.forName(filterName.substring(0, filterName.lastIndexOf('.')));
-                    filterName = filterName.substring(filterName.lastIndexOf('.') + 1);
-                    isStatic = true;
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
+                    remoteFilterClass = Class.forName(filterName.substring(0, filterName.lastIndexOf('.')));
+                } catch (ClassNotFoundException e1) {
+                    filterName = filterClass.getPackage().getName() + '.' + filterName;
+                    try {
+                        remoteFilterClass = Class.forName(filterName.substring(0, filterName.lastIndexOf('.')));
+                    } catch (ClassNotFoundException e2) {
+                        e1.printStackTrace();
+                        e2.printStackTrace();
+                    }
                 }
+                filterName = filterName.substring(filterName.lastIndexOf('.') + 1);
+
+                if (remoteFilterClass != null) {
+                    filterClass = remoteFilterClass;
+                    isStatic = true;
+                }
+
             }
             for (Field field : EventManager.getAnnotatedFields(filterClass, EventFilter.class, null)) {
                 if ((!isStatic || Modifier.isStatic(field.getModifiers())) && field.getAnnotation(EventFilter.class).value().equals(filterName))
