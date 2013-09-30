@@ -54,7 +54,12 @@ public class EventListenerContainer {
                 try {
                     remoteFilterClass = Class.forName(filterName.substring(0, filterName.lastIndexOf('.')));
                 } catch (ClassNotFoundException e1) {
-                    filterName = filterClass.getPackage().getName() + '.' + filterName;
+                    String packageName = filterClass.getPackage().getName();
+                    while (filterName.contains("..") && packageName.contains(".")) {
+                        filterName = filterName.replaceFirst("..", "");
+                        packageName = packageName.substring(0, packageName.lastIndexOf('.'));
+                    }
+                    filterName = packageName + '.' + filterName;
                     try {
                         remoteFilterClass = Class.forName(filterName.substring(0, filterName.lastIndexOf('.')));
                     } catch (ClassNotFoundException e2) {
