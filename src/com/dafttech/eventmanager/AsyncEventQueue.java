@@ -6,7 +6,7 @@ import java.util.List;
 public class AsyncEventQueue implements Runnable {
     volatile private List<Event> eventQueue = new ArrayList<Event>();
     volatile private int queueOverflow = 2000;
-    volatile protected Thread queueThread = null;
+    volatile protected Thread starterThread = null, queueThread = null;
     volatile private boolean running = false;
     volatile private int priority = Thread.NORM_PRIORITY;
 
@@ -85,10 +85,7 @@ public class AsyncEventQueue implements Runnable {
      */
     public void start() {
         running = true;
-        if (queueThread != null) {
-            queueThread.interrupt();
-        }
-        queueThread = new Thread(this, "EventManagerAsyncQueue");
+        if (queueThread == null) queueThread = new Thread(this, "EventManagerAsyncQueue");
         if (!queueThread.isAlive()) {
             queueThread.start();
             queueThread.setPriority(priority);
