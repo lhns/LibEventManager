@@ -17,15 +17,6 @@ public class EventManager {
     }
 
     /**
-     * Used to get the asyncEventQueue of the EventManager
-     * 
-     * @return AsyncEventQueue
-     */
-    public final AsyncEventQueue getAsyncEventQueue() {
-        return asyncEventQueue;
-    }
-
-    /**
      * Used to get the instance of the EventType registered with that name.
      * 
      * @param name
