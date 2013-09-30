@@ -45,7 +45,7 @@ public class Event {
     private final boolean isFiltered(Object eventListener, Object[] eventFilter) {
         if (eventFilter.length == 0) return true;
         try {
-            return eventType.applyFilter(this, eventListener, eventFilter);
+            return eventType.applyFilter(this, eventFilter, eventListener);
         } catch (ArrayIndexOutOfBoundsException e) {
         } catch (ClassCastException e) {
         }

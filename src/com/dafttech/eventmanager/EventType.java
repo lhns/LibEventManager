@@ -104,7 +104,7 @@ public class EventType {
      *            Object[] - Is the given filter on registering an EventListener
      * @return boolean: true, if the EventListener should be called.
      */
-    protected boolean applyFilter(Event event, Object eventListener, Object[] filter) {
+    protected boolean applyFilter(Event event, Object[] filter, Object eventListener) {
         return true;
     }
 
