@@ -88,7 +88,8 @@ public class EventType {
      */
     public final Event callAsync(Object... objects) throws QueueOverflowException {
         Event event = new Event(this, objects);
-        eventManager.asyncEventQueue.add(event);
+        new AsyncEventThread(event);
+        System.out.println("test");
         return event;
     }
 

@@ -11,7 +11,6 @@ import java.util.NoSuchElementException;
 
 public class EventManager {
     volatile protected List<EventType> events = new ArrayList<EventType>();
-    volatile protected AsyncEventQueue asyncEventQueue = new AsyncEventQueue();
 
     public EventManager() {
     }
