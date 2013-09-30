@@ -20,17 +20,21 @@ public class AsyncEventQueue implements Runnable {
     }
 
     protected void notifyThread() {
-        synchronized (queueThread) {
-            queueThread.notify();
+        if (queueThread != null) {
+            synchronized (queueThread) {
+                queueThread.notify();
+            }
         }
     }
 
     protected void waitThread() {
-        synchronized (queueThread) {
-            try {
-                queueThread.wait();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        if (queueThread != null) {
+            synchronized (queueThread) {
+                try {
+                    queueThread.wait();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
         }
     }
@@ -81,9 +85,10 @@ public class AsyncEventQueue implements Runnable {
      */
     public void start() {
         running = true;
-        if (queueThread == null) {
-            queueThread = new Thread(this, "EventManagerAsyncQueue");
+        if (queueThread != null) {
+            queueThread.interrupt();
         }
+        queueThread = new Thread(this, "EventManagerAsyncQueue");
         if (!queueThread.isAlive()) {
             queueThread.start();
             queueThread.setPriority(priority);
