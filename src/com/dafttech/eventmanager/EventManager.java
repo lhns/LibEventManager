@@ -88,13 +88,12 @@ public class EventManager {
         }
     }
 
-    protected static final List<Method> getAnnotatedMethods(Class<?> targetClass, Class<? extends Annotation> annotation, Class<?> reqType,
+    public static final List<Method> getAnnotatedMethods(Class<?> targetClass, Class<? extends Annotation> annotation, Class<?> reqType,
             Class<?>... reqArgs) {
         List<Method> methods = new ArrayList<Method>();
-        for (Method method : getAllDeclaredMethods(targetClass, null)) {
+        for (Method method : getAllDeclaredMethods(targetClass)) {
             if (method.isAnnotationPresent(annotation)) {
                 if ((reqType == null || method.getReturnType() == reqType) && Arrays.equals(method.getParameterTypes(), reqArgs)) {
-                    method.setAccessible(true);
                     methods.add(method);
                 } else {
                     String errorMessage = "\nat " + targetClass.getName() + " at Annotation " + annotation.getName() + ":";
@@ -113,13 +112,12 @@ public class EventManager {
         return methods;
     }
 
-    protected static final List<Field> getAnnotatedFields(Class<?> targetClass, Class<? extends Annotation> annotation, Class<?> reqType) {
+    public static final List<Field> getAnnotatedFields(Class<?> targetClass, Class<? extends Annotation> annotation, Class<?> reqType) {
         List<Field> fields = new ArrayList<Field>();
         if (reqType == void.class) return fields;
-        for (Field field : getAllDeclaredFields(targetClass, null)) {
+        for (Field field : getAllDeclaredFields(targetClass)) {
             if (field.isAnnotationPresent(annotation)) {
                 if (reqType == null || field.getType() == reqType) {
-                    field.setAccessible(true);
                     fields.add(field);
                 } else {
                     String errorMessage = "\nat " + targetClass.getName() + " at Annotation " + annotation.getName() + ":";
@@ -133,10 +131,21 @@ public class EventManager {
         return fields;
     }
 
+    public static List<Method> getAllDeclaredMethods(Class<?> targetClass) {
+        return getAllDeclaredMethods(targetClass, null);
+    }
+
+    public static List<Field> getAllDeclaredFields(Class<?> targetClass) {
+        return getAllDeclaredFields(targetClass, null);
+    }
+
     private static List<Method> getAllDeclaredMethods(Class<?> targetClass, List<Method> methods) {
         if (methods == null) methods = new ArrayList<Method>();
         for (Method method : targetClass.getDeclaredMethods())
-            if (!methods.contains(method)) methods.add(method);
+            if (!methods.contains(method)) {
+                method.setAccessible(true);
+                methods.add(method);
+            }
         if (targetClass.getSuperclass() != null) getAllDeclaredMethods(targetClass.getSuperclass(), methods);
         return methods;
     }
@@ -144,7 +153,10 @@ public class EventManager {
     private static List<Field> getAllDeclaredFields(Class<?> targetClass, List<Field> fields) {
         if (fields == null) fields = new ArrayList<Field>();
         for (Field field : targetClass.getDeclaredFields())
-            if (!fields.contains(field)) fields.add(field);
+            if (!fields.contains(field)) {
+                field.setAccessible(true);
+                fields.add(field);
+            }
         if (targetClass.getSuperclass() != null) getAllDeclaredFields(targetClass.getSuperclass(), fields);
         return fields;
     }
