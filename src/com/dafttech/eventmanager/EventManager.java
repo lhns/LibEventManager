@@ -57,7 +57,7 @@ public class EventManager {
         EventListener annotation = null;
         boolean isStatic = false;
         EventType event = null;
-        for (Method method : getAnnotatedMethods(eventListenerClass, EventListener.class, void.class, Event.class)) {
+        for (Method method : getAnnotatedMethods(eventListenerClass, EventListener.class, true, void.class, Event.class)) {
             annotation = method.getAnnotation(EventListener.class);
             isStatic = Modifier.isStatic(method.getModifiers());
             if (!eventListenerStatic || isStatic) {
@@ -88,14 +88,15 @@ public class EventManager {
         }
     }
 
-    public static final List<Method> getAnnotatedMethods(Class<?> targetClass, Class<? extends Annotation> annotation, Class<?> reqType,
-            Class<?>... reqArgs) {
+    public static final List<Method> getAnnotatedMethods(Class<?> targetClass, Class<? extends Annotation> annotation, boolean throwException,
+            Class<?> reqType, Class<?>... reqArgs) {
         List<Method> methods = new ArrayList<Method>();
         for (Method method : getAllDeclaredMethods(targetClass)) {
             if (method.isAnnotationPresent(annotation)) {
-                if ((reqType == null || method.getReturnType() == reqType) && Arrays.equals(method.getParameterTypes(), reqArgs)) {
+                if ((reqType == null || method.getReturnType() == reqType)
+                        && (reqArgs.length == 1 && reqArgs[0] == null || Arrays.equals(method.getParameterTypes(), reqArgs))) {
                     methods.add(method);
-                } else {
+                } else if (throwException) {
                     String errorMessage = "\nat " + targetClass.getName() + " at Annotation " + annotation.getName() + ":";
                     errorMessage += "\nexpected: " + reqType.getName() + " with " + (reqArgs.length == 0 ? "no args" : "args:");
                     for (Class<?> arg : reqArgs)
@@ -112,14 +113,15 @@ public class EventManager {
         return methods;
     }
 
-    public static final List<Field> getAnnotatedFields(Class<?> targetClass, Class<? extends Annotation> annotation, Class<?> reqType) {
+    public static final List<Field> getAnnotatedFields(Class<?> targetClass, Class<? extends Annotation> annotation, boolean throwException,
+            Class<?> reqType) {
         List<Field> fields = new ArrayList<Field>();
         if (reqType == void.class) return fields;
         for (Field field : getAllDeclaredFields(targetClass)) {
             if (field.isAnnotationPresent(annotation)) {
                 if (reqType == null || field.getType() == reqType) {
                     fields.add(field);
-                } else {
+                } else if (throwException) {
                     String errorMessage = "\nat " + targetClass.getName() + " at Annotation " + annotation.getName() + ":";
                     errorMessage += "\nexpected: " + reqType.getName();
                     errorMessage += "\nand got:  " + field.getType();

@@ -75,11 +75,11 @@ public class EventListenerContainer {
                 }
 
             }
-            for (Field field : EventManager.getAnnotatedFields(filterClass, EventFilter.class, null)) {
+            for (Field field : EventManager.getAnnotatedFields(filterClass, EventFilter.class, true, null)) {
                 if ((!isStatic || Modifier.isStatic(field.getModifiers())) && field.getAnnotation(EventFilter.class).value().equals(filterName))
                     return field;
             }
-            for (Method method : EventManager.getAnnotatedMethods(filterClass, EventFilter.class, null)) {
+            for (Method method : EventManager.getAnnotatedMethods(filterClass, EventFilter.class, true, null)) {
                 if ((!isStatic || Modifier.isStatic(method.getModifiers())) && method.getAnnotation(EventFilter.class).value().equals(filterName))
                     return method;
             }
