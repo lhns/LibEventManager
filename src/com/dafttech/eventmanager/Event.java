@@ -14,7 +14,7 @@ public class Event {
     volatile private boolean cancelled = false;
 
     protected Event(EventType event, Object[] in) {
-        this.eventType = event;
+        eventType = event;
         this.in = in;
     }
 
@@ -25,7 +25,7 @@ public class Event {
             EventListenerContainer eventListenerContainer = null;
             for (Iterator<EventListenerContainer> i = eventType.eventListenerContainer.iterator(); i.hasNext();) {
                 eventListenerContainer = i.next();
-                if (isFiltered(eventListenerContainer.eventListener, eventListenerContainer.getFilter())) {
+                if (isFiltered(eventListenerContainer.eventListener, eventListenerContainer.getFilters())) {
                     try {
                         eventListenerContainer.method.invoke(eventListenerContainer.isStatic ? null : eventListenerContainer.eventListener, this);
                     } catch (IllegalAccessException e) {
@@ -42,12 +42,16 @@ public class Event {
         done = true;
     }
 
-    private final boolean isFiltered(Object eventListener, Object[] eventFilter) {
-        if (eventFilter.length == 0) return true;
-        try {
-            return eventType.applyFilter(this, eventFilter, eventListener);
-        } catch (ArrayIndexOutOfBoundsException e) {
-        } catch (ClassCastException e) {
+    private final boolean isFiltered(Object eventListener, Object[][] eventFilters) {
+        if (eventFilters.length == 0) return true;
+        for (int i = 0; i < eventFilters.length; i++) {
+            if (eventFilters[i].length > 0) {
+                try {
+                    if (eventType.applyFilter(this, eventFilters[i], eventListener)) return true;
+                } catch (ArrayIndexOutOfBoundsException e) {
+                } catch (ClassCastException e) {
+                }
+            }
         }
         return false;
     }
@@ -156,7 +160,7 @@ public class Event {
     }
 
     public String getType() {
-        return this.eventType.name;
+        return eventType.name;
     }
 
     /**

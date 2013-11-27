@@ -14,7 +14,7 @@ public class EventType {
     public EventType(EventManager eventManager, String name) {
         this.eventManager = eventManager;
         eventManager.events.add(this);
-        this.id = eventManager.events.size();
+        id = eventManager.events.size();
         this.name = name;
     }
 

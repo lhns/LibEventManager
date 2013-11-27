@@ -11,31 +11,40 @@ public class EventListenerContainer {
     volatile protected Method method;
     volatile protected int priority;
 
-    volatile private Object filter;
+    volatile private Object[] filters;
 
     protected EventListenerContainer(boolean isStatic, Object eventListener, Method method, EventListener annotation) {
         this.isStatic = isStatic;
         this.eventListener = eventListener;
         this.method = method;
-        this.priority = annotation.priority();
-        this.filter = getFilterContainer(isStatic, isStatic ? (Class<?>) this.eventListener : this.eventListener.getClass(), annotation.filter());
+        priority = annotation.priority();
+        filters = getFilterContainer(isStatic, isStatic ? (Class<?>) this.eventListener : this.eventListener.getClass(), annotation.filter());
     }
 
-    protected Object[] getFilter() {
-        Object filterObj = null;
-        try {
-            if (filter instanceof Field) filterObj = ((Field) filter).get(isStatic ? null : eventListener);
-            if (filter instanceof Method) filterObj = ((Method) filter).invoke(isStatic ? null : eventListener);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
+    protected Object[][] getFilters() {
+        Object[][] filterArray = new Object[filters.length][];
+        Object filterObj;
+        for (int i = 0; i < filters.length; i++) {
+            filterObj = null;
+            try {
+                if (filters[i] instanceof Field) filterObj = ((Field) filters[i]).get(isStatic ? null : eventListener);
+                if (filters[i] instanceof Method) filterObj = ((Method) filters[i]).invoke(isStatic ? null : eventListener);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+            if (filterObj == null) {
+                filterArray[i] = new Object[0];
+            } else if (filterObj instanceof Object[]) {
+                filterArray[i] = (Object[]) filterObj;
+            } else {
+                filterArray[i] = new Object[] { filterObj };
+            }
         }
-        if (filterObj == null) return new Object[0];
-        if (filterObj instanceof Object[]) return (Object[]) filterObj;
-        return new Object[] { filterObj };
+        return filterArray;
     }
 
     @Override
@@ -47,43 +56,48 @@ public class EventListenerContainer {
         }
     }
 
-    private static final Object getFilterContainer(boolean isStatic, Class<?> filterClass, String filterName) {
-        if (!filterName.equals("")) {
-            if (filterName.contains(".")) {
-                Class<?> remoteFilterClass = null;
-                try {
-                    remoteFilterClass = Class.forName(filterName.substring(0, filterName.lastIndexOf('.')));
-                } catch (ClassNotFoundException e1) {
-                    String packageName = filterClass.getPackage().getName();
-                    while (filterName.contains("..") && packageName.contains(".")) {
-                        filterName = filterName.replaceFirst("..", "");
-                        packageName = packageName.substring(0, packageName.lastIndexOf('.'));
-                    }
-                    filterName = packageName + '.' + filterName;
+    private static final Object[] getFilterContainer(boolean isStatic, Class<?> filterClass, String[] filterNames) {
+        Object[] filterArray = new Object[filterNames.length];
+        String filterName = null;
+        for (int i = 0; i < filterNames.length; i++) {
+            filterName = filterNames[i];
+            if (!filterName.equals("")) {
+                if (filterName.contains(".")) {
+                    Class<?> remoteFilterClass = null;
                     try {
                         remoteFilterClass = Class.forName(filterName.substring(0, filterName.lastIndexOf('.')));
-                    } catch (ClassNotFoundException e2) {
-                        e1.printStackTrace();
-                        e2.printStackTrace();
+                    } catch (ClassNotFoundException e1) {
+                        String packageName = filterClass.getPackage().getName();
+                        while (filterName.contains("..") && packageName.contains(".")) {
+                            filterName = filterName.replaceFirst("..", "");
+                            packageName = packageName.substring(0, packageName.lastIndexOf('.'));
+                        }
+                        filterName = packageName + '.' + filterName;
+                        try {
+                            remoteFilterClass = Class.forName(filterName.substring(0, filterName.lastIndexOf('.')));
+                        } catch (ClassNotFoundException e2) {
+                            e1.printStackTrace();
+                            e2.printStackTrace();
+                        }
                     }
-                }
-                filterName = filterName.substring(filterName.lastIndexOf('.') + 1);
+                    filterName = filterName.substring(filterName.lastIndexOf('.') + 1);
 
-                if (remoteFilterClass != null) {
-                    filterClass = remoteFilterClass;
-                    isStatic = true;
-                }
+                    if (remoteFilterClass != null) {
+                        filterClass = remoteFilterClass;
+                        isStatic = true;
+                    }
 
-            }
-            for (Field field : EventManager.getAnnotatedFields(filterClass, EventFilter.class, true, null)) {
-                if ((!isStatic || Modifier.isStatic(field.getModifiers())) && field.getAnnotation(EventFilter.class).value().equals(filterName))
-                    return field;
-            }
-            for (Method method : EventManager.getAnnotatedMethods(filterClass, EventFilter.class, true, null)) {
-                if ((!isStatic || Modifier.isStatic(method.getModifiers())) && method.getAnnotation(EventFilter.class).value().equals(filterName))
-                    return method;
+                }
+                for (Field field : EventManager.getAnnotatedFields(filterClass, EventFilter.class, true, null)) {
+                    if ((!isStatic || Modifier.isStatic(field.getModifiers())) && field.getAnnotation(EventFilter.class).value().equals(filterName))
+                        filterArray[i] = field;
+                }
+                for (Method method : EventManager.getAnnotatedMethods(filterClass, EventFilter.class, true, null)) {
+                    if ((!isStatic || Modifier.isStatic(method.getModifiers())) && method.getAnnotation(EventFilter.class).value().equals(filterName))
+                        filterArray[i] = method;
+                }
             }
         }
-        return null;
+        return filterArray;
     }
 }
