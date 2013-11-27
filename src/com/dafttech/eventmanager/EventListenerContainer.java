@@ -27,7 +27,7 @@ public class EventListenerContainer {
         for (int i = 0; i < filters.length; i++) {
             filter = filters[i];
             filterObj = null;
-            if (filter == null) {
+            if (filter != null) {
                 try {
                     if (filter instanceof Field) filterObj = ((Field) filter).get(isStatic ? null : eventListener);
                     if (filter instanceof Method) filterObj = ((Method) filter).invoke(isStatic ? null : eventListener);
