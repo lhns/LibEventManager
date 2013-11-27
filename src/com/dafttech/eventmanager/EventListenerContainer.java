@@ -4,6 +4,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 
 public class EventListenerContainer {
     volatile protected boolean isStatic;
@@ -60,7 +62,7 @@ public class EventListenerContainer {
     }
 
     private static final Object[] getFilterContainer(boolean isStatic, Class<?> filterClass, String[] filterNames) {
-        Object[] filterArray = new Object[filterNames.length];
+        List<Object> filterList = new ArrayList<Object>();
         String filterName;
         for (int i = 0; i < filterNames.length; i++) {
             filterName = filterNames[i];
@@ -93,14 +95,14 @@ public class EventListenerContainer {
                 }
                 for (Field field : EventManager.getAnnotatedFields(filterClass, EventFilter.class, true, null)) {
                     if ((!isStatic || Modifier.isStatic(field.getModifiers())) && field.getAnnotation(EventFilter.class).value().equals(filterName))
-                        filterArray[i] = field;
+                        filterList.set(filterList.size(), field);
                 }
                 for (Method method : EventManager.getAnnotatedMethods(filterClass, EventFilter.class, true, null)) {
                     if ((!isStatic || Modifier.isStatic(method.getModifiers())) && method.getAnnotation(EventFilter.class).value().equals(filterName))
-                        filterArray[i] = method;
+                        filterList.set(filterList.size(), method);
                 }
             }
         }
-        return filterArray;
+        return filterList.toArray();
     }
 }
