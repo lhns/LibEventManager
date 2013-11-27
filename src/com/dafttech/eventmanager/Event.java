@@ -50,6 +50,7 @@ public class Event {
                     if (eventType.applyFilter(this, eventFilters[i], eventListener)) return true;
                 } catch (ArrayIndexOutOfBoundsException e) {
                 } catch (ClassCastException e) {
+                } catch (NullPointerException e) {
                 }
             }
         }
