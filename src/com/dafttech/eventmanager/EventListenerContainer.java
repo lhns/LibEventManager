@@ -23,18 +23,21 @@ public class EventListenerContainer {
 
     protected Object[][] getFilters() {
         Object[][] filterArray = new Object[filters.length][];
-        Object filterObj;
+        Object filter, filterObj;
         for (int i = 0; i < filters.length; i++) {
+            filter = filters[i];
             filterObj = null;
-            try {
-                if (filters[i] instanceof Field) filterObj = ((Field) filters[i]).get(isStatic ? null : eventListener);
-                if (filters[i] instanceof Method) filterObj = ((Method) filters[i]).invoke(isStatic ? null : eventListener);
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
+            if (filter == null) {
+                try {
+                    if (filter instanceof Field) filterObj = ((Field) filter).get(isStatic ? null : eventListener);
+                    if (filter instanceof Method) filterObj = ((Method) filter).invoke(isStatic ? null : eventListener);
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (IllegalArgumentException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
             }
             if (filterObj == null) {
                 filterArray[i] = new Object[0];
@@ -58,7 +61,7 @@ public class EventListenerContainer {
 
     private static final Object[] getFilterContainer(boolean isStatic, Class<?> filterClass, String[] filterNames) {
         Object[] filterArray = new Object[filterNames.length];
-        String filterName = null;
+        String filterName;
         for (int i = 0; i < filterNames.length; i++) {
             filterName = filterNames[i];
             if (!filterName.equals("")) {
