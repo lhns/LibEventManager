@@ -22,5 +22,5 @@ public @interface EventListener {
 
     int priority() default EventType.PRIORITY_STANDARD;
 
-    String[] filter() default "";
+    String[] filter() default {};
 }
