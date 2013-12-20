@@ -27,7 +27,7 @@ public class EventManager {
      *            Object... - Sets the filter that is customizable in EventType
      *            subclasses
      */
-    public final void registerEventListener(EventType type, Object eventListener) {
+    public final void registerEventListener(Object eventListener) {
         boolean eventListenerStatic = eventListener.getClass() == Class.class;
         Class<?> eventListenerClass = eventListenerStatic ? (Class<?>) eventListener : eventListener.getClass();
         EventListener annotation = null;
@@ -38,14 +38,12 @@ public class EventManager {
             isStatic = Modifier.isStatic(method.getModifiers());
             if (!eventListenerStatic || isStatic) {
                 for (String requestedEvent : annotation.value()) {
-                    if (type == null || type.equals(requestedEvent)) {
-                        typeFound = EventType.types.get(requestedEvent);
-                        if (typeFound != null) {
-                            addEventListenerContainer(typeFound, new EventListenerContainer(isStatic, isStatic ? eventListenerClass : eventListener,
-                                    method, annotation));
-                        } else {
-                            throw new NoSuchElementException(requestedEvent);
-                        }
+                    typeFound = EventType.types.get(requestedEvent);
+                    if (typeFound != null) {
+                        addEventListenerContainer(typeFound, new EventListenerContainer(isStatic, isStatic ? eventListenerClass : eventListener,
+                                method, annotation));
+                    } else {
+                        throw new NoSuchElementException(requestedEvent);
                     }
                 }
             }
@@ -96,7 +94,6 @@ public class EventManager {
      * @return Event - to manage the called event such as getting the output and
      *         checking if the event was cancelled
      */
-    @Deprecated
     public final Event callSync(EventType type, Object... objects) {
         Event event = new Event(this, type, objects);
         event.shedule();
@@ -115,7 +112,6 @@ public class EventManager {
      *         is done, getting the output and checking if the event was
      *         cancelled
      */
-    @Deprecated
     public final Event callAsync(EventType type, Object... objects) {
         Event event = new Event(this, type, objects);
         new AsyncEventThread(event);
