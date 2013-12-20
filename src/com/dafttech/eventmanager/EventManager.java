@@ -6,35 +6,15 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 
 public class EventManager {
-    volatile protected List<EventType> events = new ArrayList<EventType>();
+    volatile protected Map<EventType, List<EventListenerContainer>> registeredListeners = new HashMap<EventType, List<EventListenerContainer>>();
 
     public EventManager() {
-    }
-
-    /**
-     * Used to get the instance of the EventType registered with that name.
-     * 
-     * @param name
-     *            String
-     * @return EventType
-     */
-    public final EventType getEventByName(String name) {
-        return new EventTypeGetter(name).getFromList(events);
-    }
-
-    /**
-     * Used to get the instance of the EventType registered with that id.
-     * 
-     * @param id
-     *            int
-     * @return EventType
-     */
-    public final EventType getEventById(int id) {
-        return new EventTypeGetter(id).getFromList(events);
     }
 
     /**
@@ -47,25 +27,21 @@ public class EventManager {
      *            Object... - Sets the filter that is customizable in EventType
      *            subclasses
      */
-    public final void registerEventListener(Object eventListener) {
-        registerAnnotatedMethods(eventListener, null);
-    }
-
-    protected final void registerAnnotatedMethods(Object eventListener, EventType eventType) {
+    public final void registerEventListener(EventType type, Object eventListener) {
         boolean eventListenerStatic = eventListener.getClass() == Class.class;
         Class<?> eventListenerClass = eventListenerStatic ? (Class<?>) eventListener : eventListener.getClass();
         EventListener annotation = null;
         boolean isStatic = false;
-        EventType event = null;
+        EventType typeFound = null;
         for (Method method : getAnnotatedMethods(eventListenerClass, EventListener.class, true, void.class, Event.class)) {
             annotation = method.getAnnotation(EventListener.class);
             isStatic = Modifier.isStatic(method.getModifiers());
             if (!eventListenerStatic || isStatic) {
                 for (String requestedEvent : annotation.value()) {
-                    if (eventType == null || eventType.equals(requestedEvent)) {
-                        event = getEventByName(requestedEvent);
-                        if (event != null) {
-                            event.addEventListenerContainer(new EventListenerContainer(isStatic, isStatic ? eventListenerClass : eventListener,
+                    if (type == null || type.equals(requestedEvent)) {
+                        typeFound = EventType.types.get(requestedEvent);
+                        if (typeFound != null) {
+                            addEventListenerContainer(typeFound, new EventListenerContainer(isStatic, isStatic ? eventListenerClass : eventListener,
                                     method, annotation));
                         } else {
                             throw new NoSuchElementException(requestedEvent);
@@ -82,11 +58,71 @@ public class EventManager {
      * @param eventListener
      *            Object - Instance of the listening class
      */
-    public final void unregisterEventListener(Object eventListener) {
-        for (EventType eventType : events) {
-            eventType.unregisterEventListener(eventListener);
+    public final void unregisterEventListener(EventType type, Object eventListener) {
+        if (registeredListeners.containsKey(type)) {
+            List<EventListenerContainer> eventListenerContainerList = getEventListenerContainerList(type);
+            List<EventListenerContainer> eventListenerContainerListRead = new ArrayList<EventListenerContainer>(eventListenerContainerList);
+            for (EventListenerContainer eventListenerContainer : eventListenerContainerListRead) {
+                if (eventListenerContainer.eventListener == eventListener) eventListenerContainerList.remove(eventListenerContainer);
+            }
         }
     }
+
+    private void addEventListenerContainer(EventType type, EventListenerContainer eventListener) {
+        List<EventListenerContainer> eventListenerContainerList = getEventListenerContainerList(type);
+        EventListenerContainer currEventListenerContainer;
+        for (int count = 0; count < eventListenerContainerList.size(); count++) {
+            currEventListenerContainer = eventListenerContainerList.get(count);
+            if (currEventListenerContainer.priority < eventListener.priority) {
+                eventListenerContainerList.add(count, eventListener);
+                return;
+            }
+        }
+        eventListenerContainerList.add(eventListener);
+    }
+
+    protected List<EventListenerContainer> getEventListenerContainerList(EventType type) {
+        if (!registeredListeners.containsKey(type)) registeredListeners.put(type, new ArrayList<EventListenerContainer>());
+        return registeredListeners.get(type);
+    }
+
+    /**
+     * Calls this event and asks all registered EventListeners and sends the
+     * objects to them.
+     * 
+     * @param objects
+     *            Object... - You can send any objects to the registered
+     *            classes.
+     * @return Event - to manage the called event such as getting the output and
+     *         checking if the event was cancelled
+     */
+    @Deprecated
+    public final Event callSync(EventType type, Object... objects) {
+        Event event = new Event(this, type, objects);
+        event.shedule();
+        return event;
+    }
+
+    /**
+     * Calls this event in another thread that has to be started with
+     * eventManagerInstance.asyncEventQueue.start(). It asks all registered
+     * EventListeners and sends the objects to them.
+     * 
+     * @param objects
+     *            Object... - You can send any objects to the registered
+     *            classes.
+     * @return Event - to manage the called event such as checking if the event
+     *         is done, getting the output and checking if the event was
+     *         cancelled
+     */
+    @Deprecated
+    public final Event callAsync(EventType type, Object... objects) {
+        Event event = new Event(this, type, objects);
+        new AsyncEventThread(event);
+        return event;
+    }
+
+    // STATIC METHODS
 
     public static final List<Method> getAnnotatedMethods(Class<?> targetClass, Class<? extends Annotation> annotation, boolean throwException,
             Class<?> reqType, Class<?>... reqArgs) {

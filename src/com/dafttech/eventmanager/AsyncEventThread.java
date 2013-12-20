@@ -10,6 +10,6 @@ public class AsyncEventThread extends Thread {
 
     @Override
     public void run() {
-        event.sheduleEvent();
+        event.shedule();
     }
 }

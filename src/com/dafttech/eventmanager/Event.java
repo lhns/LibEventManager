@@ -7,23 +7,26 @@ import java.util.Iterator;
 import java.util.List;
 
 public class Event {
-    volatile private EventType eventType = null;
+    volatile private EventManager eventManager = null;
+    volatile private EventType type = null;
     volatile private Object[] in = null;
     volatile private List<Object> out = new ArrayList<Object>();
     volatile private boolean done = false;
     volatile private boolean cancelled = false;
 
-    protected Event(EventType event, Object[] in) {
-        eventType = event;
+    protected Event(EventManager eventManager, EventType type, Object[] in) {
+        this.eventManager = eventManager;
+        this.type = type;
         this.in = in;
     }
 
-    protected void sheduleEvent() {
-        eventType.onEvent(this);
+    protected void shedule() {
+        type.onEvent(this);
         if (cancelled) return;
-        if (eventType.eventListenerContainer.size() > 0) {
+        List<EventListenerContainer> eventListenerContainerList = eventManager.getEventListenerContainerList(type);
+        if (eventListenerContainerList.size() > 0) {
             EventListenerContainer eventListenerContainer = null;
-            for (Iterator<EventListenerContainer> i = eventType.eventListenerContainer.iterator(); i.hasNext();) {
+            for (Iterator<EventListenerContainer> i = eventListenerContainerList.iterator(); i.hasNext();) {
                 eventListenerContainer = i.next();
                 if (isFiltered(eventListenerContainer.eventListener, eventListenerContainer.getFilters())) {
                     try {
@@ -47,7 +50,7 @@ public class Event {
         for (int i = 0; i < eventFilters.length; i++) {
             if (eventFilters[i].length > 0) {
                 try {
-                    if (eventType.applyFilter(this, eventFilters[i], eventListener)) return true;
+                    if (type.applyFilter(this, eventFilters[i], eventListener)) return true;
                 } catch (ArrayIndexOutOfBoundsException e) {
                 } catch (ClassCastException e) {
                 } catch (NullPointerException e) {
@@ -57,11 +60,19 @@ public class Event {
         return false;
     }
 
+    public final EventManager getEventManager() {
+        return eventManager;
+    }
+
+    public final EventType getEventType() {
+        return type;
+    }
+
     /**
      * Cancel this EventStream to stop the process of calling all the other
      * EventListeners.
      */
-    public void cancel() {
+    public final void cancel() {
         if (done) return;
         cancelled = true;
     }
@@ -72,7 +83,7 @@ public class Event {
      * @param obj
      *            Object - object to add to the output list.
      */
-    public void addOutput(Object obj) {
+    public final void addOutput(Object obj) {
         out.add(obj);
     }
 
@@ -81,7 +92,7 @@ public class Event {
      * 
      * @return boolean - true, if the event was cancelled.
      */
-    public boolean isCancelled() {
+    public final boolean isCancelled() {
         return cancelled;
     }
 
@@ -90,7 +101,7 @@ public class Event {
      * 
      * @return boolean - true, if the event is done.
      */
-    public boolean isDone() {
+    public final boolean isDone() {
         if (cancelled) return true;
         return done;
     }
@@ -112,7 +123,7 @@ public class Event {
      * @return Object - the requested object, or null if the number was out of
      *         range
      */
-    public Object getInput(int num) {
+    public final Object getInput(int num) {
         if (num < 0 || num >= in.length) return null;
         return in[num];
     }
@@ -129,7 +140,7 @@ public class Event {
      *         out of range
      */
     @SuppressWarnings("unchecked")
-    public <T> T getInput(int num, Class<T> cast) {
+    public final <T> T getInput(int num, Class<T> cast) {
         if (num < 0 || num >= in.length || !cast.isInstance(in[num])) return null;
         return (T) in[num];
     }
@@ -139,7 +150,7 @@ public class Event {
      * 
      * @return List<Object> - output list, or null if the event is not done.
      */
-    public List<Object> getOutput() {
+    public final List<Object> getOutput() {
         if (isDone()) return out;
         return null;
     }
@@ -151,7 +162,7 @@ public class Event {
      * @return List<Object> - output list without null values, or null if the
      *         event is not done.
      */
-    public List<Object> getCleanOutput() {
+    public final List<Object> getCleanOutput() {
         if (isDone()) {
             List<Object> cleanOut = new ArrayList<Object>(out);
             cleanOut.removeAll(Collections.singleton(null));
@@ -160,18 +171,8 @@ public class Event {
         return null;
     }
 
-    public String getType() {
-        return eventType.name;
-    }
-
-    /**
-     * Check, if this Event is a specific EventType.
-     * 
-     * @param eventType
-     *            EventType - EventType to check for.
-     * @return boolean - if this event is of that EventType.
-     */
-    public boolean isEventType(EventType eventType) {
-        return this.eventType.equals(eventType);
+    @Deprecated
+    public final String getType() {
+        return type.name;
     }
 }
