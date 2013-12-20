@@ -80,7 +80,8 @@ public class EventManager {
     }
 
     protected List<EventListenerContainer> getEventListenerContainerList(EventType type) {
-        if (!registeredListeners.containsKey(type)) registeredListeners.put(type, new ArrayList<EventListenerContainer>());
+        if (!registeredListeners.containsKey(type) || registeredListeners.get(type) == null)
+            registeredListeners.put(type, new ArrayList<EventListenerContainer>());
         return registeredListeners.get(type);
     }
 
