@@ -20,7 +20,7 @@ public class Event {
         this.in = in;
     }
 
-    protected void shedule() {
+    protected void schedule() {
         type.onEvent(this);
         if (cancelled) return;
         List<EventListenerContainer> eventListenerContainerList = eventManager.getEventListenerContainerList(type);

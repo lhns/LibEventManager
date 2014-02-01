@@ -40,7 +40,7 @@ public class ClassLoader {
     }
 
     public ClassLoader setCorrectPathSpaces(boolean value) {
-        this.correctPathSpaces = value;
+        correctPathSpaces = value;
         return this;
     }
 

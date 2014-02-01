@@ -97,7 +97,7 @@ public class EventManager {
      */
     public final Event callSync(EventType type, Object... objects) {
         Event event = new Event(this, type, objects);
-        event.shedule();
+        event.schedule();
         return event;
     }
 
