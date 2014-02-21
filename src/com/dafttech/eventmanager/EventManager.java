@@ -39,7 +39,7 @@ public class EventManager {
             if (!eventListenerStatic || isStatic) {
                 for (String requestedEvent : annotation.value()) {
                     typeFound = EventType.types.get(requestedEvent);
-                    if (typeFound != null) {
+                    if (typeFound != null && (typeFound.validEventManagers.length == 0 || Arrays.asList(typeFound.validEventManagers).contains(this))) {
                         addEventListenerContainer(typeFound, new EventListenerContainer(isStatic, isStatic ? eventListenerClass : eventListener,
                                 method, annotation));
                     } else {

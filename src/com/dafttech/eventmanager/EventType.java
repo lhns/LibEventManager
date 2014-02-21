@@ -5,13 +5,15 @@ import java.util.Map;
 
 public class EventType {
     volatile protected String name = "";
+    volatile protected EventManager[] validEventManagers;
 
     protected static Map<String, EventType> types = new HashMap<String, EventType>();
     public static final int PRIORITY_STANDARD = 0;
 
-    public EventType(String name) {
+    public EventType(String name, EventManager... eventManagers) {
         this.name = name;
         types.put(name, this);
+        validEventManagers = eventManagers;
     }
 
     public final String getName() {
