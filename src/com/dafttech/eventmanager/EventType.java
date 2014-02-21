@@ -9,7 +9,7 @@ public class EventType {
     protected static Map<String, EventType> types = new HashMap<String, EventType>();
     public static final int PRIORITY_STANDARD = 0;
 
-    public EventType(EventManager eventManager, String name) {
+    public EventType(String name) {
         this.name = name;
         types.put(name, this);
     }
