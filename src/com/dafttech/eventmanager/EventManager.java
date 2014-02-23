@@ -66,17 +66,18 @@ public class EventManager {
         }
     }
 
-    private void addEventListenerContainer(EventType type, EventListenerContainer eventListener) {
+    private void addEventListenerContainer(EventType type, EventListenerContainer eventListenerContainer) {
         List<EventListenerContainer> eventListenerContainerList = getEventListenerContainerList(type);
         EventListenerContainer currEventListenerContainer;
-        for (int count = 0; count < eventListenerContainerList.size(); count++) {
-            currEventListenerContainer = eventListenerContainerList.get(count);
-            if (currEventListenerContainer.priority < eventListener.priority) {
-                eventListenerContainerList.add(count, eventListener);
+        for (int i = 0; i < eventListenerContainerList.size(); i++) {
+            currEventListenerContainer = eventListenerContainerList.get(i);
+            if (currEventListenerContainer.equals(eventListenerContainer)) return;
+            if (currEventListenerContainer.priority < eventListenerContainer.priority) {
+                eventListenerContainerList.add(i, eventListenerContainer);
                 return;
             }
         }
-        eventListenerContainerList.add(eventListener);
+        eventListenerContainerList.add(eventListenerContainer);
     }
 
     protected List<EventListenerContainer> getEventListenerContainerList(EventType type) {

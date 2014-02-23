@@ -55,7 +55,7 @@ public class EventListenerContainer {
     @Override
     public boolean equals(Object paramObject) {
         if (paramObject instanceof EventListenerContainer) {
-            return paramObject == this;
+            return ((EventListenerContainer) paramObject).method.equals(method) && ((EventListenerContainer) paramObject).isStatic == isStatic;
         } else {
             return paramObject == eventListener;
         }
