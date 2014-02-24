@@ -20,11 +20,10 @@ public class Event {
         this.in = in;
     }
 
-    protected void schedule() {
+    protected void schedule(List<EventListenerContainer> eventListenerContainerList) {
         type.onEvent(this);
         if (cancelled) return;
-        List<EventListenerContainer> eventListenerContainerList = eventManager.getEventListenerContainerList(type);
-        if (eventListenerContainerList.size() > 0) {
+        if (eventListenerContainerList != null && eventListenerContainerList.size() > 0) {
             EventListenerContainer eventListenerContainer = null;
             for (Iterator<EventListenerContainer> i = eventListenerContainerList.iterator(); i.hasNext();) {
                 eventListenerContainer = i.next();

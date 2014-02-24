@@ -58,16 +58,19 @@ public class EventManager {
      */
     public final void unregisterEventListener(EventType type, Object eventListener) {
         if (registeredListeners.containsKey(type)) {
-            List<EventListenerContainer> eventListenerContainerList = getEventListenerContainerList(type);
+            List<EventListenerContainer> eventListenerContainerList = registeredListeners.get(type);
             List<EventListenerContainer> eventListenerContainerListRead = new ArrayList<EventListenerContainer>(eventListenerContainerList);
             for (EventListenerContainer eventListenerContainer : eventListenerContainerListRead) {
                 if (eventListenerContainer.eventListener == eventListener) eventListenerContainerList.remove(eventListenerContainer);
             }
+            if (eventListenerContainerList.size() == 0) registeredListeners.remove(type);
         }
     }
 
     private void addEventListenerContainer(EventType type, EventListenerContainer eventListenerContainer) {
-        List<EventListenerContainer> eventListenerContainerList = getEventListenerContainerList(type);
+        if (!registeredListeners.containsKey(type) || registeredListeners.get(type) == null)
+            registeredListeners.put(type, new ArrayList<EventListenerContainer>());
+        List<EventListenerContainer> eventListenerContainerList = registeredListeners.get(type);
         EventListenerContainer currEventListenerContainer;
         for (int i = 0; i < eventListenerContainerList.size(); i++) {
             currEventListenerContainer = eventListenerContainerList.get(i);
@@ -78,12 +81,6 @@ public class EventManager {
             }
         }
         eventListenerContainerList.add(eventListenerContainer);
-    }
-
-    protected List<EventListenerContainer> getEventListenerContainerList(EventType type) {
-        if (!registeredListeners.containsKey(type) || registeredListeners.get(type) == null)
-            registeredListeners.put(type, new ArrayList<EventListenerContainer>());
-        return registeredListeners.get(type);
     }
 
     /**
@@ -98,7 +95,7 @@ public class EventManager {
      */
     public final Event callSync(EventType type, Object... objects) {
         Event event = new Event(this, type, objects);
-        event.schedule();
+        event.schedule(registeredListeners.get(type));
         return event;
     }
 
@@ -116,7 +113,7 @@ public class EventManager {
      */
     public final Event callAsync(EventType type, Object... objects) {
         Event event = new Event(this, type, objects);
-        new AsyncEventThread(event);
+        new AsyncEventThread(event, registeredListeners.get(type));
         return event;
     }
 
