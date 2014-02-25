@@ -106,8 +106,8 @@ public class ClassLoader {
     }
 
     private String getCurrentPackage(File dir) {
-        if (!dir.getAbsolutePath().startsWith(sourceDir.getAbsolutePath()) || dir.getAbsolutePath().length() <= sourceDir.getAbsolutePath().length())
-            return "";
+        if (!dir.getAbsolutePath().startsWith(sourceDir.getAbsolutePath())
+                || dir.getAbsolutePath().length() <= sourceDir.getAbsolutePath().length()) return "";
         return dir.getAbsolutePath().substring(sourceDir.getAbsolutePath().length() + 1).replace("\\", ".").replace("/", ".");
     }
 
@@ -120,11 +120,13 @@ public class ClassLoader {
             Enumeration<URL> resources;
             String parentPackage = "";
             for (Package pck : Package.getPackages()) {
-                parentPackage = pck.getName().contains(".") ? pck.getName().substring(0, pck.getName().indexOf(".")) : pck.getName();
+                parentPackage = pck.getName().contains(".") ? pck.getName().substring(0, pck.getName().indexOf(".")) : pck
+                        .getName();
                 resources = java.lang.ClassLoader.getSystemResources(parentPackage);
                 if (resources.hasMoreElements()) {
                     String currPath = resources.nextElement().getFile();
-                    if (currPath.endsWith(parentPackage)) return new File(currPath.substring(0, currPath.length() - parentPackage.length()));
+                    if (currPath.endsWith(parentPackage))
+                        return new File(currPath.substring(0, currPath.length() - parentPackage.length()));
                 }
             }
         } catch (IOException e) {

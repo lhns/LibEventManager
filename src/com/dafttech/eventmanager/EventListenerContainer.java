@@ -20,7 +20,8 @@ public class EventListenerContainer {
         this.eventListener = eventListener;
         this.method = method;
         priority = annotation.priority();
-        filters = getFilterContainer(isStatic, isStatic ? (Class<?>) this.eventListener : this.eventListener.getClass(), annotation.filter());
+        filters = getFilterContainer(isStatic, isStatic ? (Class<?>) this.eventListener : this.eventListener.getClass(),
+                annotation.filter());
     }
 
     protected Object[][] getFilters() {
@@ -55,7 +56,8 @@ public class EventListenerContainer {
     @Override
     public boolean equals(Object paramObject) {
         if (paramObject instanceof EventListenerContainer) {
-            return ((EventListenerContainer) paramObject).method.equals(method) && ((EventListenerContainer) paramObject).isStatic == isStatic;
+            return ((EventListenerContainer) paramObject).method.equals(method)
+                    && ((EventListenerContainer) paramObject).isStatic == isStatic;
         } else {
             return paramObject == eventListener;
         }
@@ -94,12 +96,12 @@ public class EventListenerContainer {
 
                 }
                 for (Field field : EventManager.getAnnotatedFields(filterClass, EventFilter.class, true, null)) {
-                    if ((!isStatic || Modifier.isStatic(field.getModifiers())) && field.getAnnotation(EventFilter.class).value().equals(filterName))
-                        filterList.add(field);
+                    if ((!isStatic || Modifier.isStatic(field.getModifiers()))
+                            && field.getAnnotation(EventFilter.class).value().equals(filterName)) filterList.add(field);
                 }
                 for (Method method : EventManager.getAnnotatedMethods(filterClass, EventFilter.class, true, null)) {
-                    if ((!isStatic || Modifier.isStatic(method.getModifiers())) && method.getAnnotation(EventFilter.class).value().equals(filterName))
-                        filterList.add(method);
+                    if ((!isStatic || Modifier.isStatic(method.getModifiers()))
+                            && method.getAnnotation(EventFilter.class).value().equals(filterName)) filterList.add(method);
                 }
             }
         }

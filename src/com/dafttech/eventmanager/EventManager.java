@@ -39,9 +39,11 @@ public class EventManager {
             if (!eventListenerStatic || isStatic) {
                 for (String requestedEvent : annotation.value()) {
                     typeFound = EventType.types.get(requestedEvent);
-                    if (typeFound != null && (typeFound.validEventManagers.length == 0 || Arrays.asList(typeFound.validEventManagers).contains(this))) {
-                        addEventListenerContainer(typeFound, new EventListenerContainer(isStatic, isStatic ? eventListenerClass : eventListener,
-                                method, annotation));
+                    if (typeFound != null
+                            && (typeFound.validEventManagers.length == 0 || Arrays.asList(typeFound.validEventManagers).contains(
+                                    this))) {
+                        addEventListenerContainer(typeFound, new EventListenerContainer(isStatic, isStatic ? eventListenerClass
+                                : eventListener, method, annotation));
                     } else {
                         throw new NoSuchElementException(requestedEvent);
                     }
@@ -66,9 +68,11 @@ public class EventManager {
     public final void unregisterEventListener(EventType type, Object eventListener) {
         if (registeredListeners.containsKey(type)) {
             List<EventListenerContainer> eventListenerContainerList = registeredListeners.get(type);
-            List<EventListenerContainer> eventListenerContainerListRead = new ArrayList<EventListenerContainer>(eventListenerContainerList);
+            List<EventListenerContainer> eventListenerContainerListRead = new ArrayList<EventListenerContainer>(
+                    eventListenerContainerList);
             for (EventListenerContainer eventListenerContainer : eventListenerContainerListRead) {
-                if (eventListenerContainer.eventListener == eventListener) eventListenerContainerList.remove(eventListenerContainer);
+                if (eventListenerContainer.eventListener == eventListener)
+                    eventListenerContainerList.remove(eventListenerContainer);
             }
             if (eventListenerContainerList.size() == 0) registeredListeners.remove(type);
         }
@@ -126,8 +130,8 @@ public class EventManager {
 
     // STATIC METHODS
 
-    public static final List<Method> getAnnotatedMethods(Class<?> targetClass, Class<? extends Annotation> annotation, boolean throwException,
-            Class<?> reqType, Class<?>... reqArgs) {
+    public static final List<Method> getAnnotatedMethods(Class<?> targetClass, Class<? extends Annotation> annotation,
+            boolean throwException, Class<?> reqType, Class<?>... reqArgs) {
         List<Method> methods = new ArrayList<Method>();
         for (Method method : getAllDeclaredMethods(targetClass)) {
             if (method.isAnnotationPresent(annotation)) {
@@ -151,8 +155,8 @@ public class EventManager {
         return methods;
     }
 
-    public static final List<Field> getAnnotatedFields(Class<?> targetClass, Class<? extends Annotation> annotation, boolean throwException,
-            Class<?> reqType) {
+    public static final List<Field> getAnnotatedFields(Class<?> targetClass, Class<? extends Annotation> annotation,
+            boolean throwException, Class<?> reqType) {
         List<Field> fields = new ArrayList<Field>();
         if (reqType == void.class) return fields;
         for (Field field : getAllDeclaredFields(targetClass)) {
