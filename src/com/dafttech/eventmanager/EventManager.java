@@ -50,6 +50,13 @@ public class EventManager {
         }
     }
 
+    public final void tryRegisterEventListener(String staticEventListener) {
+        try {
+            registerEventListener(Class.forName(staticEventListener));
+        } catch (ClassNotFoundException e) {
+        }
+    }
+
     /**
      * Used to unregister an EventListener in all events.
      * 
