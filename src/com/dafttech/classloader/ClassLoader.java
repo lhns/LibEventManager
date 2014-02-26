@@ -120,8 +120,7 @@ public class ClassLoader {
             Enumeration<URL> resources;
             String parentPackage = "";
             for (Package pck : Package.getPackages()) {
-                parentPackage = pck.getName().contains(".") ? pck.getName().substring(0, pck.getName().indexOf(".")) : pck
-                        .getName();
+                parentPackage = pck.getName().contains(".") ? pck.getName().substring(0, pck.getName().indexOf(".")) : pck.getName();
                 resources = java.lang.ClassLoader.getSystemResources(parentPackage);
                 if (resources.hasMoreElements()) {
                     String currPath = resources.nextElement().getFile();

@@ -27,7 +27,7 @@ public class EventManager {
      *            Object... - Sets the filter that is customizable in EventType
      *            subclasses
      */
-    public final void registerEventListener(Object eventListener) {
+    public final void registerEventListener(Object eventListener, EventType... typeWhitelist) {
         boolean eventListenerStatic = eventListener.getClass() == Class.class;
         Class<?> eventListenerClass = eventListenerStatic ? (Class<?>) eventListener : eventListener.getClass();
         EventListener annotation = null;
@@ -40,8 +40,8 @@ public class EventManager {
                 for (String requestedEvent : annotation.value()) {
                     typeFound = EventType.types.get(requestedEvent);
                     if (typeFound != null
-                            && (typeFound.validEventManagers.length == 0 || Arrays.asList(typeFound.validEventManagers).contains(
-                                    this))) {
+                            && (typeFound.validEventManagers.length == 0 || Arrays.asList(typeFound.validEventManagers).contains(this))
+                            && (typeWhitelist.length == 0 || Arrays.asList(typeWhitelist).contains(typeFound))) {
                         addEventListenerContainer(typeFound, new EventListenerContainer(isStatic, isStatic ? eventListenerClass
                                 : eventListener, method, annotation));
                     } else {
@@ -68,11 +68,9 @@ public class EventManager {
     public final void unregisterEventListener(EventType type, Object eventListener) {
         if (registeredListeners.containsKey(type)) {
             List<EventListenerContainer> eventListenerContainerList = registeredListeners.get(type);
-            List<EventListenerContainer> eventListenerContainerListRead = new ArrayList<EventListenerContainer>(
-                    eventListenerContainerList);
+            List<EventListenerContainer> eventListenerContainerListRead = new ArrayList<EventListenerContainer>(eventListenerContainerList);
             for (EventListenerContainer eventListenerContainer : eventListenerContainerListRead) {
-                if (eventListenerContainer.eventListener == eventListener)
-                    eventListenerContainerList.remove(eventListenerContainer);
+                if (eventListenerContainer.eventListener == eventListener) eventListenerContainerList.remove(eventListenerContainer);
             }
             if (eventListenerContainerList.size() == 0) registeredListeners.remove(type);
         }
