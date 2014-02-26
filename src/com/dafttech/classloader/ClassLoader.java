@@ -103,23 +103,31 @@ public class ClassLoader {
         return dir.getAbsolutePath().substring(sourceDir.getAbsolutePath().length() + 1).replace("\\", ".").replace("/", ".");
     }
 
-    public static File getPackagePath(Class<?> sourceClass, String packageName) {
-        URL resource = sourceClass.getResource("/" + packageName.replace(".", "/"));
-        if (resource == null) resource = sourceClass.getResource("/" + packageName.replace(".", "/") + ".class");
-        if (resource == null) return null;
-        String path = resource.toString();
+    public static File getClassPath(Class<?> context) {
+        URL url = context.getResource("/" + context.getName().replace(".", "/") + ".class");
+        if (url == null) return null;
+        String path = url.toString();
         if (path.startsWith("rsrc:")) {
             path = "jar:file:/" + new File(System.getProperty("java.class.path")).getAbsolutePath().replace("\\", "/") + "!/"
                     + path.substring(5);
         }
-        if (path.startsWith("jar:")) {
-            return new File(path);
+        if (!path.startsWith("jar:")) {
+            try {
+                return new File(new URL(path).getPath());
+            } catch (MalformedURLException e) {
+            }
         }
-        try {
-            return new File(new URL(path).getPath());
-        } catch (MalformedURLException e) {
-            return new File(path);
+        return new File(path);
+    }
+
+    public static File getPackagePath(Class<?> context, String packageName) {
+        File path = getClassPath(context);
+        if (path != null) {
+            String packagePath = path.toString();
+            packagePath = packagePath.substring(0, packagePath.length() - (context.getName() + ".class").length());
+            return new File(packagePath, packageName.replace(".", "/"));
         }
+        return null;
     }
 
     @Deprecated
