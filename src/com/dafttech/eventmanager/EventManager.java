@@ -27,7 +27,8 @@ public class EventManager {
      *            Object... - Sets the filter that is customizable in EventType
      *            subclasses
      */
-    public final void registerEventListener(Object eventListener, EventType... typeWhitelist) {
+    public final void registerEventListener(Object eventListener, boolean whitelist, EventType... typeList) {
+        if (whitelist && typeList.length == 0) return;
         boolean eventListenerStatic = eventListener.getClass() == Class.class;
         Class<?> eventListenerClass = eventListenerStatic ? (Class<?>) eventListener : eventListener.getClass();
         EventListener annotation = null;
@@ -41,7 +42,8 @@ public class EventManager {
                     typeFound = EventType.types.get(requestedEvent);
                     if (typeFound != null
                             && (typeFound.validEventManagers.length == 0 || Arrays.asList(typeFound.validEventManagers).contains(this))
-                            && (typeWhitelist.length == 0 || Arrays.asList(typeWhitelist).contains(typeFound))) {
+                            && (typeList.length == 0 || whitelist && Arrays.asList(typeList).contains(typeFound) || !whitelist
+                                    && !Arrays.asList(typeList).contains(typeFound))) {
                         addEventListenerContainer(typeFound, new EventListenerContainer(isStatic, isStatic ? eventListenerClass
                                 : eventListener, method, annotation));
                     } else {
@@ -50,6 +52,10 @@ public class EventManager {
                 }
             }
         }
+    }
+
+    public final void registerEventListener(Object eventListener, EventType... blackList) {
+        registerEventListener(eventListener, false, blackList);
     }
 
     public final void tryRegisterEventListener(String staticEventListener) {

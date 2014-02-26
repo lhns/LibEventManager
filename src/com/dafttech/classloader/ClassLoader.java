@@ -16,17 +16,20 @@ public class ClassLoader {
     private String sourcePackage = "";
     private boolean isJarfile = false;
     private boolean canLoadItself = false;
-    private boolean correctPathSpaces = true;
     private List<Class<?>> loaded = new ArrayList<Class<?>>();
 
     public ClassLoader(File dir) {
         dir = new File(dir.toString().replace("\\", "/"));
-        if (dir.toString().startsWith("file:") && dir.toString().endsWith("!")) {
+        if (dir.toString().startsWith("jar:file:") && dir.toString().endsWith("!")) {
             isJarfile = true;
-            sourceDir = new File(dir.toString().substring(6, dir.toString().length() - 1));
+            sourceDir = new File(dir.toString().substring(10, dir.toString().length() - 1).replace("%20", " "));
         } else {
             sourceDir = dir;
         }
+    }
+
+    public ClassLoader(Class<?> sourceClass, String packageName) {
+        this(getPackagePath(sourceClass, packageName));
     }
 
     public ClassLoader setSourcePackage(String packageName) {
@@ -34,18 +37,7 @@ public class ClassLoader {
         return this;
     }
 
-    public ClassLoader setCanLoadItself(boolean value) {
-        canLoadItself = value;
-        return this;
-    }
-
-    public ClassLoader setCorrectPathSpaces(boolean value) {
-        correctPathSpaces = value;
-        return this;
-    }
-
     public ClassLoader load() {
-        if (correctPathSpaces) correctPathSpaces();
         if (isJarfile) {
             loadJar(sourceDir);
         } else {
@@ -111,10 +103,26 @@ public class ClassLoader {
         return dir.getAbsolutePath().substring(sourceDir.getAbsolutePath().length() + 1).replace("\\", ".").replace("/", ".");
     }
 
-    private void correctPathSpaces() {
-        sourceDir = new File(sourceDir.toString().replace("%20", " "));
+    public static File getPackagePath(Class<?> sourceClass, String packageName) {
+        URL resource = sourceClass.getResource("/" + packageName.replace(".", "/"));
+        if (resource == null) resource = sourceClass.getResource("/" + packageName.replace(".", "/") + ".class");
+        if (resource == null) return null;
+        String path = resource.toString();
+        if (path.startsWith("rsrc:")) {
+            path = "jar:file:/" + new File(System.getProperty("java.class.path")).getAbsolutePath().replace("\\", "/") + "!/"
+                    + path.substring(5);
+        }
+        if (path.startsWith("jar:")) {
+            return new File(path);
+        }
+        try {
+            return new File(new URL(path).getPath());
+        } catch (MalformedURLException e) {
+            return new File(path);
+        }
     }
 
+    @Deprecated
     public static File getCurrentPath() {
         try {
             Enumeration<URL> resources;
