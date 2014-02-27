@@ -15,6 +15,7 @@ public class ClassLoader {
     private static final String jarPre = "file:";
     private static final String jarPost = ".jar!";
     private static final String fakeSpaces = "%20";
+    private static final String classExt = ".class";
 
     private File sourceDir = null;
     private String sourcePackage = "";
@@ -63,7 +64,7 @@ public class ClassLoader {
         for (File file : files) {
             if (file.isDirectory()) {
                 loadDir(file);
-            } else if (file.getName().endsWith(".class")) {
+            } else if (file.getName().endsWith(classExt)) {
                 loadClass(file);
             }
         }
@@ -75,7 +76,7 @@ public class ClassLoader {
             Enumeration<JarEntry> entries = jarfile.entries();
             while (entries.hasMoreElements()) {
                 JarEntry entry = entries.nextElement();
-                if (!entry.isDirectory() && entry.getName().endsWith(".class")) {
+                if (!entry.isDirectory() && entry.getName().endsWith(classExt)) {
                     loadClass(new File(dir.getAbsolutePath() + "/" + entry.getName()));
                 }
             }
@@ -86,7 +87,7 @@ public class ClassLoader {
     }
 
     private void loadClass(File dir) {
-        String currPackage = getCurrentPackage(dir.getName().endsWith(".class") ? new File(dir.getAbsolutePath().substring(0,
+        String currPackage = getCurrentPackage(dir.getName().endsWith(classExt) ? new File(dir.getAbsolutePath().substring(0,
                 dir.getAbsolutePath().length() - 6)) : dir);
         if (currPackage.startsWith(sourcePackage)) {
             try {
@@ -111,7 +112,7 @@ public class ClassLoader {
     }
 
     public static File getClassPath(Class<?> context) {
-        URL url = context.getResource("/" + context.getName().replace(".", "/") + ".class");
+        URL url = context.getResource("/" + context.getName().replace(".", "/") + classExt);
         if (url == null) return null;
         String path = url.toString();
         if (path.startsWith("rsrc:")) {
@@ -131,7 +132,7 @@ public class ClassLoader {
         File path = getClassPath(context);
         if (path != null) {
             String packagePath = path.toString();
-            packagePath = packagePath.substring(0, packagePath.length() - (context.getName() + ".class").length());
+            packagePath = packagePath.substring(0, packagePath.length() - (context.getName() + classExt).length());
             return new File(packagePath, packageName.replace(".", "/"));
         }
         return null;
