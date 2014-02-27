@@ -16,7 +16,6 @@ public class EventManager {
 
     volatile protected Map<EventType, List<EventListenerContainer>> registeredListeners = new HashMap<EventType, List<EventListenerContainer>>();
 
-    // TODO JAVADOC!!!
     public EventManager() {
     }
 
@@ -26,9 +25,11 @@ public class EventManager {
      * 
      * @param eventListener
      *            Object - Instance of the listening class
-     * @param filter
-     *            Object... - Sets the filter that is customizable in EventType
-     *            subclasses
+     * @param blacklist
+     *            EventType... - Sets a blacklist of EventTypes that are then
+     *            not registered in the given eventListener class. That can be
+     *            converted to a whitelist if you put EventManager.WHITELIST at
+     *            the first place.
      */
     public final void registerEventListener(Object eventListener, EventType... blacklist) {
         if (blacklist.length == 1 && blacklist[0] == WHITELIST) return;
@@ -69,8 +70,10 @@ public class EventManager {
     /**
      * Used to unregister an EventListener in all events.
      * 
+     * @param type
+     *            EventType - The EventType you want to unregister.
      * @param eventListener
-     *            Object - Instance of the listening class
+     *            Object - The eventListener.
      */
     public final void unregisterEventListener(EventType type, Object eventListener) {
         if (registeredListeners.containsKey(type)) {
@@ -105,6 +108,8 @@ public class EventManager {
      * Calls this event and asks all registered EventListeners and sends the
      * objects to them.
      * 
+     * @param type
+     *            EventType - The EventType you want to call.
      * @param objects
      *            Object... - You can send any objects to the registered
      *            classes.
@@ -122,6 +127,8 @@ public class EventManager {
      * eventManagerInstance.asyncEventQueue.start(). It asks all registered
      * EventListeners and sends the objects to them.
      * 
+     * @param type
+     *            EventType - The EventType you want to call.
      * @param objects
      *            Object... - You can send any objects to the registered
      *            classes.

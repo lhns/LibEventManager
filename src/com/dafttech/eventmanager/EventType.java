@@ -30,10 +30,11 @@ public class EventType {
      * 
      * @param event
      *            Event - the called event
-     * @param eventListener
-     *            Object - Is the instance of the EventListener class
      * @param filter
      *            Object[] - Is the given filter on registering an EventListener
+     * @param eventListener
+     *            Object - Is the instance of the EventListener class
+     * 
      * @return boolean: true, if the EventListener should be called.
      */
     protected boolean applyFilter(Event event, Object[] filter, Object eventListener) {
