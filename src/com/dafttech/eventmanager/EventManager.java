@@ -14,6 +14,7 @@ import java.util.NoSuchElementException;
 public class EventManager {
     volatile protected Map<EventType, List<EventListenerContainer>> registeredListeners = new HashMap<EventType, List<EventListenerContainer>>();
 
+    // TOFIX JAVADOC!!!
     public EventManager() {
     }
 
@@ -27,6 +28,7 @@ public class EventManager {
      *            Object... - Sets the filter that is customizable in EventType
      *            subclasses
      */
+    // TODO I don't really like this.
     public final void registerEventListener(Object eventListener, boolean whitelist, EventType... typeList) {
         if (whitelist && typeList.length == 0) return;
         boolean eventListenerStatic = eventListener.getClass() == Class.class;
@@ -55,6 +57,7 @@ public class EventManager {
         }
     }
 
+    // TODO I don't really like this either.
     public final void registerEventListener(Object eventListener, EventType... blackList) {
         registerEventListener(eventListener, false, blackList);
     }
