@@ -1,1 +1,2 @@
-gradle build
+@echo off
+gradlew build
