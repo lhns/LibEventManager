@@ -1,0 +1,11 @@
+apply plugin: 'java'
+
+sourceSets {
+    main {
+        java { srcDirs = ["$projectDir/src"] }
+	}
+}
+
+archivesBaseName = "EventManager"
+version = "10.0"
+group = "com.dafttech"

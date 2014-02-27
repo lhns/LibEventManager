@@ -1,3 +1,8 @@
-/bin/*
-/bin
-/bin
+bin
+
+# Gradle #
+.gradle
+build
+
+# Git #
+.git
