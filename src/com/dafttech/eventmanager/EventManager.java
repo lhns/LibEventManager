@@ -40,12 +40,13 @@ public class EventManager {
             if (!eventListenerStatic || isStatic) {
                 for (String requestedEvent : annotation.value()) {
                     typeFound = EventType.types.get(requestedEvent);
-                    if (typeFound != null
-                            && (typeFound.validEventManagers.length == 0 || Arrays.asList(typeFound.validEventManagers).contains(this))
-                            && (typeList.length == 0 || whitelist && Arrays.asList(typeList).contains(typeFound) || !whitelist
-                                    && !Arrays.asList(typeList).contains(typeFound))) {
-                        addEventListenerContainer(typeFound, new EventListenerContainer(isStatic, isStatic ? eventListenerClass
-                                : eventListener, method, annotation));
+                    if (typeFound != null) {
+                        if ((typeFound.validEventManagers.length == 0 || Arrays.asList(typeFound.validEventManagers).contains(this))
+                                && (typeList.length == 0 || whitelist && Arrays.asList(typeList).contains(typeFound) || !whitelist
+                                        && !Arrays.asList(typeList).contains(typeFound))) {
+                            addEventListenerContainer(typeFound, new EventListenerContainer(isStatic, isStatic ? eventListenerClass
+                                    : eventListener, method, annotation));
+                        }
                     } else {
                         throw new NoSuchElementException(requestedEvent);
                     }
