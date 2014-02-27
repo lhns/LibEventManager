@@ -20,8 +20,8 @@ public class ClassLoader {
     private File sourceDir = null;
     private String sourcePackage = "";
     private boolean isJarfile = false;
-    private boolean canLoadItself = false;
     private List<Class<?>> loaded = new ArrayList<Class<?>>();
+    private boolean canLoadItself = false;
 
     public ClassLoader(File dir) {
         String path = dir.toString().replace("\\", "/");
@@ -38,11 +38,6 @@ public class ClassLoader {
 
     public ClassLoader(Class<?> sourceClass, String packageName) {
         this(getPackagePath(sourceClass, packageName));
-    }
-
-    public ClassLoader setSourcePackage(String packageName) {
-        if (packageName != null) sourcePackage = packageName.replace("\\", ".").replace("/", ".");
-        return this;
     }
 
     public ClassLoader load() {
