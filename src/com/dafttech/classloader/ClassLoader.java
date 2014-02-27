@@ -23,21 +23,21 @@ public class ClassLoader {
     private List<Class<?>> loaded = new ArrayList<Class<?>>();
     private boolean canLoadItself = false;
 
-    public ClassLoader(File dir) {
+    public ClassLoader(File dir, String packageFilter) {
         String path = dir.toString().replace("\\", "/");
+        sourcePackage = packageFilter.replace("\\", "/").replace("/", ".");
         if (path.contains(jarPre) && path.toLowerCase().contains(jarPost)) {
             isJarfile = true;
             int jarPreIndex = path.indexOf(jarPre);
             int jarPostIndex = path.toLowerCase().indexOf(jarPost);
             sourceDir = new File(path.substring(jarPreIndex + jarPre.length(), jarPostIndex + 4).replace(fakeSpaces, " "));
-            sourcePackage = path.substring(jarPostIndex + jarPost.length() + 1).replace("/", ".");
         } else {
             sourceDir = new File(path);
         }
     }
 
-    public ClassLoader(Class<?> sourceClass, String packageName) {
-        this(getPackagePath(sourceClass, packageName));
+    public ClassLoader(Class<?> sourceClass, String packageFilter) {
+        this(getPackagePath(sourceClass, ""), packageFilter);
     }
 
     public ClassLoader load() {
@@ -132,6 +132,12 @@ public class ClassLoader {
             return new File(packagePath, packageName.replace(".", "/"));
         }
         return null;
+    }
+
+    public static String exractJarPathPackage(File jarPath) {
+        String path = jarPath.toString().replace("\\", "/");
+        int jarPostIndex = path.toLowerCase().indexOf(jarPost);
+        return path.substring(jarPostIndex + jarPost.length() + 1).replace("/", ".");
     }
 
     @Deprecated
