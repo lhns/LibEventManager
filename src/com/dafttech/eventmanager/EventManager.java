@@ -88,7 +88,7 @@ public class EventManager {
         }
     }
 
-    private void addEventListenerContainer(EventType type, EventListenerContainer eventListenerContainer) {
+    private final void addEventListenerContainer(EventType type, EventListenerContainer eventListenerContainer) {
         if (!registeredListeners.containsKey(type) || registeredListeners.get(type) == null)
             registeredListeners.put(type, new ArrayList<EventListenerContainer>());
         List<EventListenerContainer> eventListenerContainerList = registeredListeners.get(type);
@@ -189,15 +189,15 @@ public class EventManager {
         return fields;
     }
 
-    public static List<Method> getAllDeclaredMethods(Class<?> targetClass) {
+    public static final List<Method> getAllDeclaredMethods(Class<?> targetClass) {
         return getAllDeclaredMethods(targetClass, null);
     }
 
-    public static List<Field> getAllDeclaredFields(Class<?> targetClass) {
+    public static final List<Field> getAllDeclaredFields(Class<?> targetClass) {
         return getAllDeclaredFields(targetClass, null);
     }
 
-    private static List<Method> getAllDeclaredMethods(Class<?> targetClass, List<Method> methods) {
+    private static final List<Method> getAllDeclaredMethods(Class<?> targetClass, List<Method> methods) {
         if (methods == null) methods = new ArrayList<Method>();
         for (Method method : targetClass.getDeclaredMethods())
             if (!methods.contains(method)) {
@@ -208,7 +208,7 @@ public class EventManager {
         return methods;
     }
 
-    private static List<Field> getAllDeclaredFields(Class<?> targetClass, List<Field> fields) {
+    private static final List<Field> getAllDeclaredFields(Class<?> targetClass, List<Field> fields) {
         if (fields == null) fields = new ArrayList<Field>();
         for (Field field : targetClass.getDeclaredFields())
             if (!fields.contains(field)) {

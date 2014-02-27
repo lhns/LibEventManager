@@ -60,12 +60,33 @@ public class Event {
         return false;
     }
 
+    /**
+     * Returns the EventManager, that handles this Event
+     * 
+     * @return EventManager - the EventManager which handles this Event.
+     */
     public final EventManager getEventManager() {
         return eventManager;
     }
 
+    /**
+     * Returns the EventType of this Event
+     * 
+     * @return EventType - the EventType this event is of.
+     */
     public final EventType getEventType() {
         return type;
+    }
+
+    /**
+     * Check if the Event is of the given EventType
+     * 
+     * @param eventType
+     *            EventType - EventType to check for.
+     * @return boolean - if the EventType was equal to the given one.
+     */
+    public final boolean isEventType(EventType eventType) {
+        return type.equals(eventType);
     }
 
     /**
@@ -111,7 +132,7 @@ public class Event {
      * 
      * @return Object[] - the objects
      */
-    public Object[] getInput() {
+    public final Object[] getInput() {
         return in;
     }
 

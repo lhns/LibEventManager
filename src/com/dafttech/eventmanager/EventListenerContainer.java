@@ -24,7 +24,7 @@ public class EventListenerContainer {
                 annotation.filter());
     }
 
-    protected Object[][] getFilters() {
+    protected final Object[][] getFilters() {
         Object[][] filterArray = new Object[filters.length][];
         Object filter, filterObj;
         for (int i = 0; i < filters.length; i++) {
