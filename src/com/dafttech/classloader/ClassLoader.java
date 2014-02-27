@@ -87,9 +87,10 @@ public class ClassLoader {
     }
 
     private void loadClass(File dir) {
-        String currPackage = getCurrentPackage(dir.getName().endsWith(classExt) ? new File(dir.getAbsolutePath().substring(0,
-                dir.getAbsolutePath().length() - 6)) : dir);
+        boolean isClass = dir.toString().endsWith(classExt);
+        String currPackage = getCurrentPackage(dir);
         if (currPackage.startsWith(sourcePackage)) {
+            if (isClass) currPackage = currPackage.substring(0, currPackage.length() - 6);
             try {
                 URL[] urls = { sourceDir.toURI().toURL() };
                 URLClassLoader classloader = URLClassLoader.newInstance(urls, getClass().getClassLoader());
@@ -108,7 +109,7 @@ public class ClassLoader {
     private String getCurrentPackage(File dir) {
         if (!dir.getAbsolutePath().startsWith(sourceDir.getAbsolutePath())
                 || dir.getAbsolutePath().length() <= sourceDir.getAbsolutePath().length()) return "";
-        return dir.getAbsolutePath().substring(sourceDir.getAbsolutePath().length() + 1).replace("\\", ".").replace("/", ".");
+        return dir.getAbsolutePath().substring(sourceDir.getAbsolutePath().length() + 1).replace("\\", "/").replace("/", ".");
     }
 
     public static File getClassPath(Class<?> context) {
