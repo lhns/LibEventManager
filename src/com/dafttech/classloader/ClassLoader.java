@@ -12,6 +12,10 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class ClassLoader {
+    private static final String jarPre = "file:";
+    private static final String jarPost = ".jar!";
+    private static final String fakeSpaces = "%20";
+
     private File sourceDir = null;
     private String sourcePackage = "";
     private boolean isJarfile = false;
@@ -19,12 +23,15 @@ public class ClassLoader {
     private List<Class<?>> loaded = new ArrayList<Class<?>>();
 
     public ClassLoader(File dir) {
-        dir = new File(dir.toString().replace("\\", "/"));
-        if (dir.toString().startsWith("jar:file:") && dir.toString().endsWith("!")) {
+        String path = dir.toString().replace("\\", "/");
+        if (path.contains(jarPre) && path.toLowerCase().contains(jarPost)) {
             isJarfile = true;
-            sourceDir = new File(dir.toString().substring(10, dir.toString().length() - 1).replace("%20", " "));
+            int jarPreIndex = path.indexOf(jarPre);
+            int jarPostIndex = path.toLowerCase().indexOf(jarPost);
+            sourceDir = new File(path.substring(jarPreIndex + jarPre.length(), jarPostIndex + 4).replace(fakeSpaces, " "));
+            sourcePackage = path.substring(jarPostIndex + jarPost.length() + 1).replace("/", ".");
         } else {
-            sourceDir = dir;
+            sourceDir = new File(path);
         }
     }
 
@@ -79,13 +86,13 @@ public class ClassLoader {
     }
 
     private void loadClass(File dir) {
-        String currPckge = getCurrentPackage(dir.getName().endsWith(".class") ? new File(dir.getAbsolutePath().substring(0,
+        String currPackage = getCurrentPackage(dir.getName().endsWith(".class") ? new File(dir.getAbsolutePath().substring(0,
                 dir.getAbsolutePath().length() - 6)) : dir);
-        if (currPckge.startsWith(sourcePackage)) {
+        if (currPackage.startsWith(sourcePackage)) {
             try {
                 URL[] urls = { sourceDir.toURI().toURL() };
                 URLClassLoader classloader = URLClassLoader.newInstance(urls, getClass().getClassLoader());
-                Class<?> tmpClass = classloader.loadClass(currPckge);
+                Class<?> tmpClass = classloader.loadClass(currPackage);
                 if (tmpClass != null && (canLoadItself || tmpClass != getClass())) loaded.add(tmpClass);
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
