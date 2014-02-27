@@ -12,9 +12,11 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 
 public class EventManager {
+    public static final EventType WHITELIST = new EventType();
+
     volatile protected Map<EventType, List<EventListenerContainer>> registeredListeners = new HashMap<EventType, List<EventListenerContainer>>();
 
-    // TOFIX JAVADOC!!!
+    // TODO JAVADOC!!!
     public EventManager() {
     }
 
@@ -28,9 +30,8 @@ public class EventManager {
      *            Object... - Sets the filter that is customizable in EventType
      *            subclasses
      */
-    // TODO I don't really like this.
-    public final void registerEventListener(Object eventListener, boolean whitelist, EventType... typeList) {
-        if (whitelist && typeList.length == 0) return;
+    public final void registerEventListener(Object eventListener, EventType... blacklist) {
+        if (blacklist.length == 1 && blacklist[0] == WHITELIST) return;
         boolean eventListenerStatic = eventListener.getClass() == Class.class;
         Class<?> eventListenerClass = eventListenerStatic ? (Class<?>) eventListener : eventListener.getClass();
         EventListener annotation = null;
@@ -43,11 +44,12 @@ public class EventManager {
                 for (String requestedEvent : annotation.value()) {
                     typeFound = EventType.types.get(requestedEvent);
                     if (typeFound != null) {
-                        if ((typeFound.validEventManagers.length == 0 || Arrays.asList(typeFound.validEventManagers).contains(this))
-                                && (typeList.length == 0 || whitelist && Arrays.asList(typeList).contains(typeFound) || !whitelist
-                                        && !Arrays.asList(typeList).contains(typeFound))) {
-                            addEventListenerContainer(typeFound, new EventListenerContainer(isStatic, isStatic ? eventListenerClass
-                                    : eventListener, method, annotation));
+                        if (typeFound.isValidEventManager(this)
+                                && (blacklist.length == 0 || blacklist[0] == WHITELIST
+                                        && Arrays.asList(blacklist).contains(typeFound) || blacklist[0] != WHITELIST
+                                        && !Arrays.asList(blacklist).contains(typeFound))) {
+                            addEventListenerContainer(typeFound, new EventListenerContainer(isStatic,
+                                    isStatic ? eventListenerClass : eventListener, method, annotation));
                         }
                     } else {
                         throw new NoSuchElementException(requestedEvent);
@@ -55,11 +57,6 @@ public class EventManager {
                 }
             }
         }
-    }
-
-    // TODO I don't really like this either.
-    public final void registerEventListener(Object eventListener, EventType... blackList) {
-        registerEventListener(eventListener, false, blackList);
     }
 
     public final void tryRegisterEventListener(String staticEventListener) {
@@ -78,9 +75,11 @@ public class EventManager {
     public final void unregisterEventListener(EventType type, Object eventListener) {
         if (registeredListeners.containsKey(type)) {
             List<EventListenerContainer> eventListenerContainerList = registeredListeners.get(type);
-            List<EventListenerContainer> eventListenerContainerListRead = new ArrayList<EventListenerContainer>(eventListenerContainerList);
+            List<EventListenerContainer> eventListenerContainerListRead = new ArrayList<EventListenerContainer>(
+                    eventListenerContainerList);
             for (EventListenerContainer eventListenerContainer : eventListenerContainerListRead) {
-                if (eventListenerContainer.eventListener == eventListener) eventListenerContainerList.remove(eventListenerContainer);
+                if (eventListenerContainer.eventListener == eventListener)
+                    eventListenerContainerList.remove(eventListenerContainer);
             }
             if (eventListenerContainerList.size() == 0) registeredListeners.remove(type);
         }

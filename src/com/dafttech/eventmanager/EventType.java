@@ -1,5 +1,6 @@
 package com.dafttech.eventmanager;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,6 +15,9 @@ public class EventType {
         this.name = name;
         types.put(name, this);
         validEventManagers = eventManagers;
+    }
+
+    protected EventType() {
     }
 
     public final String getName() {
@@ -44,6 +48,10 @@ public class EventType {
      *            Event - Is the called event (can be cancelled)
      */
     protected void onEvent(Event event) {
+    }
+
+    protected final boolean isValidEventManager(EventManager eventManager) {
+        return validEventManagers.length == 0 || Arrays.asList(validEventManagers).contains(eventManager);
     }
 
     @Override
