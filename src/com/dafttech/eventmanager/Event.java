@@ -155,7 +155,7 @@ public class Event {
      * 
      * @param num
      *            int - number of the object to request
-     * @param calst
+     * @param cast
      *            Class<T> the class to cast to
      * @return T - the requested object casted to T, or null if the number was
      *         out of range
