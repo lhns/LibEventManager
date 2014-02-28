@@ -199,22 +199,28 @@ public class EventManager {
 
     private static final List<Method> getAllDeclaredMethods(Class<?> targetClass, List<Method> methods) {
         if (methods == null) methods = new ArrayList<Method>();
-        for (Method method : targetClass.getDeclaredMethods())
-            if (!methods.contains(method)) {
-                method.setAccessible(true);
-                methods.add(method);
-            }
+        try {
+            for (Method method : targetClass.getDeclaredMethods())
+                if (!methods.contains(method)) {
+                    method.setAccessible(true);
+                    methods.add(method);
+                }
+        } catch (NoClassDefFoundError e) {
+        }
         if (targetClass.getSuperclass() != null) getAllDeclaredMethods(targetClass.getSuperclass(), methods);
         return methods;
     }
 
     private static final List<Field> getAllDeclaredFields(Class<?> targetClass, List<Field> fields) {
         if (fields == null) fields = new ArrayList<Field>();
-        for (Field field : targetClass.getDeclaredFields())
-            if (!fields.contains(field)) {
-                field.setAccessible(true);
-                fields.add(field);
-            }
+        try {
+            for (Field field : targetClass.getDeclaredFields())
+                if (!fields.contains(field)) {
+                    field.setAccessible(true);
+                    fields.add(field);
+                }
+        } catch (NoClassDefFoundError e) {
+        }
         if (targetClass.getSuperclass() != null) getAllDeclaredFields(targetClass.getSuperclass(), fields);
         return fields;
     }

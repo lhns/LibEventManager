@@ -96,7 +96,6 @@ public class ClassLoader {
             } catch (MalformedURLException e) {
                 e.printStackTrace();
             } catch (NoClassDefFoundError e) {
-                e.printStackTrace();
             }
         }
     }
