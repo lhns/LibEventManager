@@ -118,7 +118,11 @@ public class EventManager {
      */
     public final Event callSync(EventType type, Object... objects) {
         Event event = new Event(this, type, objects);
-        event.schedule(registeredListeners.get(type));
+        if (registeredListeners.get(type) != null) {
+            event.schedule(registeredListeners.get(type));
+        } else {
+            event.setDone();
+        }
         return event;
     }
 
@@ -138,7 +142,11 @@ public class EventManager {
      */
     public final Event callAsync(EventType type, Object... objects) {
         Event event = new Event(this, type, objects);
-        new AsyncEventThread(event, registeredListeners.get(type));
+        if (registeredListeners.get(type) != null) {
+            new AsyncEventThread(event, registeredListeners.get(type));
+        } else {
+            event.setDone();
+        }
         return event;
     }
 

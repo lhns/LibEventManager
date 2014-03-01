@@ -42,7 +42,7 @@ public class Event {
                 }
             }
         }
-        done = true;
+        setDone();
     }
 
     private final boolean isFiltered(Object eventListener, Object[][] eventFilters) {
@@ -58,6 +58,10 @@ public class Event {
             }
         }
         return false;
+    }
+
+    protected void setDone() {
+        done = true;
     }
 
     /**
