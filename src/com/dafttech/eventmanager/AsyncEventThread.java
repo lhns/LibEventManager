@@ -9,7 +9,8 @@ public class AsyncEventThread extends Thread {
 
     protected AsyncEventThread(Event event, List<EventListenerContainer> eventListenerContainers) {
         this.event = event;
-        this.eventListenerContainers = new ArrayList<EventListenerContainer>(eventListenerContainers);
+        this.eventListenerContainers = eventListenerContainers;// new
+                                                               // ArrayList<EventListenerContainer>(eventListenerContainers);
         start();
     }
 
