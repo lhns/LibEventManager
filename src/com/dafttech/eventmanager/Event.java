@@ -23,7 +23,7 @@ public class Event {
     protected void schedule(List<EventListenerContainer> eventListenerContainerList) {
         type.onEvent(this);
         if (cancelled) return;
-        if (eventListenerContainerList != null && eventListenerContainerList.size() > 0) {
+        if (eventListenerContainerList.size() > 0) {
             EventListenerContainer eventListenerContainer = null;
             for (Iterator<EventListenerContainer> i = eventListenerContainerList.iterator(); i.hasNext();) {
                 eventListenerContainer = i.next();
@@ -42,7 +42,7 @@ public class Event {
                 }
             }
         }
-        setDone();
+        done = true;
     }
 
     private final boolean isFiltered(Object eventListener, Object[][] eventFilters) {
@@ -58,10 +58,6 @@ public class Event {
             }
         }
         return false;
-    }
-
-    protected void setDone() {
-        done = true;
     }
 
     /**
