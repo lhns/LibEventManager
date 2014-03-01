@@ -95,7 +95,7 @@ public class EventManager {
         EventListenerContainer currEventListenerContainer;
         for (int i = 0; i < eventListenerContainerList.size(); i++) {
             currEventListenerContainer = eventListenerContainerList.get(i);
-            if (currEventListenerContainer.equals(eventListenerContainer)) return;
+            if (currEventListenerContainer == eventListenerContainer) return;
             if (currEventListenerContainer.priority < eventListenerContainer.priority) {
                 eventListenerContainerList.add(i, eventListenerContainer);
                 return;
