@@ -146,6 +146,35 @@ public class EventManager {
 
     // STATIC METHODS
 
+    /**
+     * REQUIRES THE CLASS TO HAVE EITHER A FIELD OR A METHOD WITH THE INSTANCE
+     * ANNOTATED WITH THE @INSTANCE ANNOTATION
+     * 
+     * @param targetClass
+     *            Class<T> - The class, you want the instance from
+     * @return T - The instance already casted to the targetClass
+     */
+    @SuppressWarnings("unchecked")
+    public static final <T> T getInstance(Class<T> targetClass) {
+        for (Field field : getAnnotatedFields(targetClass, Instance.class, false, null)) {
+            if (Modifier.isStatic(field.getModifiers())) {
+                try {
+                    return (T) field.get(null);
+                } catch (Exception e) {
+                }
+            }
+        }
+        for (Method method : getAnnotatedMethods(targetClass, Instance.class, false, null)) {
+            if (Modifier.isStatic(method.getModifiers())) {
+                try {
+                    return (T) method.invoke(null);
+                } catch (Exception e) {
+                }
+            }
+        }
+        return null;
+    }
+
     public static final List<Method> getAnnotatedMethods(Class<?> targetClass, Class<? extends Annotation> annotation,
             boolean throwException, Class<?> reqType, Class<?>... reqArgs) {
         List<Method> methods = new ArrayList<Method>();
