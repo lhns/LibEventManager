@@ -155,7 +155,7 @@ public class EventManager {
      * @return T - The instance already casted to the targetClass
      */
     @SuppressWarnings("unchecked")
-    public static final <T> T getInstance(Class<T> targetClass) {
+    public static final <T> T getInstance(Class<T> targetClass, Object... methodArgs) {
         for (Field field : getAnnotatedFields(targetClass, Instance.class, false, null)) {
             if (Modifier.isStatic(field.getModifiers())) {
                 try {
@@ -167,7 +167,7 @@ public class EventManager {
         for (Method method : getAnnotatedMethods(targetClass, Instance.class, false, null)) {
             if (Modifier.isStatic(method.getModifiers())) {
                 try {
-                    return (T) method.invoke(null);
+                    return (T) method.invoke(null, methodArgs);
                 } catch (Exception e) {
                 }
             }
