@@ -1,7 +1,6 @@
 package com.dafttech.classloader;
 
 import java.io.File;
-import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -12,9 +11,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 public class ClassLoader {
-    private static final String jarPre = "file:";
-    private static final String jarPost = ".jar!";
-    private static final String fakeSpaces = "%20";
+    private static final String jar = "jar";
     private static final String classExt = ".class";
 
     private File sourceDir = null;
@@ -23,14 +20,12 @@ public class ClassLoader {
     private List<Class<?>> loaded = new ArrayList<Class<?>>();
     private boolean canLoadItself = false;
 
-    public ClassLoader(File dir, String packageFilter) {
+    public ClassLoader(ContainedFile dir, String packageFilter) {
         String path = dir.toString().replace("\\", "/");
         sourcePackage = packageFilter.replace("\\", "/").replace("/", ".");
-        if (path.contains(jarPre) && path.toLowerCase().contains(jarPost)) {
+        if (dir.isContained("jar")) {
             isJarfile = true;
-            int jarPreIndex = path.indexOf(jarPre);
-            int jarPostIndex = path.toLowerCase().indexOf(jarPost);
-            sourceDir = new File(path.substring(jarPreIndex + jarPre.length(), jarPostIndex + 4).replace(fakeSpaces, " "));
+            sourceDir = dir.getContainerFile(jar);
         } else {
             sourceDir = new File(path);
         }
@@ -106,56 +101,25 @@ public class ClassLoader {
         return dir.getAbsolutePath().substring(sourceDir.getAbsolutePath().length() + 1).replace("\\", "/").replace("/", ".");
     }
 
-    public static File getClassPath(Class<?> context) {
+    public static ContainedFile getClassPath(Class<?> context) {
         URL url = context.getResource("/" + context.getName().replace(".", "/") + classExt);
-        if (url == null) return null;
-        String path = url.toString();
-        if (path.startsWith("rsrc:")) {
-            path = "jar:file:/" + new File(System.getProperty("java.class.path")).getAbsolutePath().replace("\\", "/") + "!/"
-                    + path.substring(5);
-        }
-        if (!path.startsWith("jar:")) {
-            try {
-                return new File(new URL(path).getPath());
-            } catch (MalformedURLException e) {
+        if (url != null) {
+            String path = url.toString();
+            if (path.startsWith("rsrc:")) {
+                path = "jar:file:/" + new File(System.getProperty("java.class.path")).getAbsolutePath().replace("\\", "/") + "!/"
+                        + path.substring(5);
             }
-        }
-        return new File(path);
-    }
-
-    public static File getPackagePath(Class<?> context, String packageName) {
-        File path = getClassPath(context);
-        if (path != null) {
-            String packagePath = path.toString();
-            packagePath = packagePath.substring(0, packagePath.length() - (context.getName() + classExt).length());
-            return new File(packagePath, packageName.replace(".", "/"));
+            return new ContainedFile(path);
         }
         return null;
     }
 
-    public static String exractJarPathPackage(File jarPath) {
-        String path = jarPath.toString().replace("\\", "/");
-        int jarPostIndex = path.toLowerCase().indexOf(jarPost);
-        return path.substring(jarPostIndex + jarPost.length() + 1).replace("/", ".");
-    }
-
-    @Deprecated
-    public static File getCurrentPath() {
-        try {
-            Enumeration<URL> resources;
-            String parentPackage = "";
-            for (Package pck : Package.getPackages()) {
-                parentPackage = pck.getName().contains(".") ? pck.getName().substring(0, pck.getName().indexOf(".")) : pck
-                        .getName();
-                resources = java.lang.ClassLoader.getSystemResources(parentPackage);
-                if (resources.hasMoreElements()) {
-                    String currPath = resources.nextElement().getFile();
-                    if (currPath.endsWith(parentPackage))
-                        return new File(currPath.substring(0, currPath.length() - parentPackage.length()));
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
+    public static ContainedFile getPackagePath(Class<?> context, String packageName) {
+        File path = getClassPath(context);
+        if (path != null) {
+            String packagePath = path.toString();
+            packagePath = packagePath.substring(0, packagePath.length() - (context.getName() + classExt).length());
+            return new ContainedFile(packagePath, packageName.replace(".", "/"));
         }
         return null;
     }

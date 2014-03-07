@@ -9,28 +9,24 @@ public class ContainedFile extends File {
      */
     private static final long serialVersionUID = 1L;
 
-    protected static final String seperator = "!";
-    protected static final String jar = "jar:file:";
-    protected static final String rsrc = "rsrc:";
-
-    protected static final String fakeSpaces = "%20";
-    protected static final String classExt = ".class";
-    protected static final String jarExt = ".jar";
-
     public ContainedFile(File file, String string) {
         super(file, string);
     }
 
     public ContainedFile(String string) {
-        super(string);
+        super(getWithoutProtocol(string));
     }
 
     public ContainedFile(String string1, String string2) {
-        super(string1, string2);
+        super(getWithoutProtocol(string1), getWithoutProtocol(string2));
     }
 
     public ContainedFile(URI uri) {
-        super(uri);
+        super(getWithoutProtocol(uri.toString()));
+    }
+
+    public ContainedFile(File file) {
+        super(getWithoutProtocol(file.toString()));
     }
 
     public String getContainerPath(String typeExt) {
@@ -54,21 +50,15 @@ public class ContainedFile extends File {
         if (containerPath != null) {
             return getAbsolutePath().replace("\\", "/").substring(containerPath.length() + 1);
         }
-        return null;
+        return getAbsolutePath();
     }
 
     public File getContainedFile(String typeExt) {
-        String path = getContainedPath(typeExt);
-        if (path != null) return new File(path);
-        return null;
+        return new File(getContainedPath(typeExt));
     }
 
     public boolean isContained(String typeExt) {
         return getContainerPath(typeExt) != null;
-    }
-
-    public boolean isRsrc() {
-        return toString().startsWith(rsrc);
     }
 
     public String getExtension() {
@@ -81,7 +71,21 @@ public class ContainedFile extends File {
         return null;
     }
 
-    public String asPackage() {
+    public String toPackage() {
         return toString().replace("\\", "/").replace("/", ".");
+    }
+
+    public static String getWithoutProtocol(String path) {
+        if (path.indexOf(":") > (path.replace("\\", "/").startsWith("/") ? 2 : 1)) {
+            path = path.substring(path.indexOf(":") + 1);
+            path = path.replace("!", "");
+            path = path.replace("%20", " ");
+            return getWithoutProtocol(path);
+        }
+        return path;
+    }
+
+    public static String getProtocol(String path) {
+        return path.substring(0, path.length() - getWithoutProtocol(path).length());
     }
 }
