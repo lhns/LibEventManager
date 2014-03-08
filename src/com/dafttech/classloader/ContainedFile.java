@@ -96,11 +96,24 @@ public class ContainedFile extends File {
     public String getPackage() {
         String path = getPath();
         if (path.contains("|")) {
-            path = path.substring(path.indexOf("|") + 1);
+            path = path.substring(path.lastIndexOf("|") + 1);
             path = path.replace("\\", "/").replace("/", ".");
             return path;
         }
         return null;
+    }
+
+    public String getPackagePath() {
+        String packageName = getPackage();
+        String path = getPath();
+        if (packageName != null) {
+            path = path.substring(0, path.length() - packageName.length() - 1);
+        }
+        return path;
+    }
+
+    public ContainedFile getPackageFile() {
+        return new ContainedFile(getPackagePath());
     }
 
     public static String getWithoutProtocol(String path) {
