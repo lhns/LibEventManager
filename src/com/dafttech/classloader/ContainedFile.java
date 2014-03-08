@@ -29,36 +29,58 @@ public class ContainedFile extends File {
         super(getWithoutProtocol(file.toString()));
     }
 
-    public String getContainerPath(String typeExt) {
-        if (!typeExt.startsWith(".")) typeExt = "." + typeExt;
-        String path = getAbsolutePath().replace("\\", "/");
-        do {
-            if (path.endsWith(typeExt)) return path;
-            path = path.substring(0, path.lastIndexOf("/") - 1);
-        } while (path.contains("/"));
-        return null;
+    @Override
+    public ContainedFile[] listFiles() {
+        String filenames[] = list();
+        if (filenames == null) return null;
+        ContainedFile files[] = new ContainedFile[filenames.length];
+        for (int i = 0; i < filenames.length; i++)
+            files[i] = new ContainedFile(getPath(), filenames[i]);
+        return files;
     }
 
-    public File getContainerFile(String typeExt) {
-        String path = getContainerPath(typeExt);
-        if (path != null) return new File(path);
-        return null;
-    }
-
-    public String getContainedPath(String typeExt) {
-        String containerPath = getContainerPath(typeExt);
-        if (containerPath != null) {
-            return getAbsolutePath().replace("\\", "/").substring(containerPath.length() + 1);
+    public String getContainerPath(String... typeExts) {
+        String path, typeExt, ret = null;
+        for (int i = 0; i < typeExts.length; i++) {
+            typeExt = typeExts[i];
+            path = getAbsolutePath().replace("\\", "/");
+            typeExt = typeExt.toLowerCase();
+            if (!typeExt.startsWith(".")) typeExt = "." + typeExt;
+            do {
+                if (path.toLowerCase().endsWith(typeExt) && (ret == null || path.length() < ret.length())) {
+                    ret = path;
+                    break;
+                }
+                path = path.substring(0, path.lastIndexOf("/"));
+            } while (path.contains("/"));
         }
-        return getAbsolutePath();
+        return ret;
     }
 
-    public File getContainedFile(String typeExt) {
-        return new File(getContainedPath(typeExt));
+    public ContainedFile getContainerFile(String... typeExts) {
+        String path = getContainerPath(typeExts);
+        if (path != null) return new ContainedFile(path);
+        return null;
     }
 
-    public boolean isContained(String typeExt) {
-        return getContainerPath(typeExt) != null;
+    public String getContainedPath(String... typeExts) {
+        String containerPath = getContainerPath(typeExts);
+        String path = getAbsolutePath();
+        if (containerPath != null) {
+            path = path.replace("\\", "/");
+            path = path.substring(containerPath.length());
+            if (path.startsWith("/")) path = path.substring(1);
+            return path;
+        }
+        return path;
+    }
+
+    public ContainedFile getContainedFile(String... typeExts) {
+        return new ContainedFile(getContainedPath(typeExts));
+    }
+
+    public boolean isContained(String... typeExts) {
+        return getContainerPath(typeExts) != null;
     }
 
     public String getExtension() {
@@ -71,8 +93,14 @@ public class ContainedFile extends File {
         return null;
     }
 
-    public String toPackage() {
-        return toString().replace("\\", "/").replace("/", ".");
+    public String getPackage() {
+        String path = getPath();
+        if (path.contains("|")) {
+            path = path.substring(path.indexOf("|") + 1);
+            path = path.replace("\\", "/").replace("/", ".");
+            return path;
+        }
+        return null;
     }
 
     public static String getWithoutProtocol(String path) {
@@ -87,5 +115,17 @@ public class ContainedFile extends File {
 
     public static String getProtocol(String path) {
         return path.substring(0, path.length() - getWithoutProtocol(path).length());
+    }
+
+    public static ContainedFile fromPackage(String packageName) {
+        return fromPackage("", packageName);
+    }
+
+    public static ContainedFile fromPackage(File file, String packageName) {
+        return fromPackage(file.getPath(), packageName);
+    }
+
+    public static ContainedFile fromPackage(String path, String packageName) {
+        return new ContainedFile(path + "|" + packageName.replace(".", "/"));
     }
 }
