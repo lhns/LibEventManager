@@ -1,16 +1,30 @@
 package com.dafttech.classloader;
 
 import java.io.File;
+import java.lang.reflect.Field;
 import java.net.URI;
 
 public class ContainedFile extends File {
+
+    private static Field pathField;
+    static {
+        try {
+            pathField = File.class.getDeclaredField("path");
+            pathField.setAccessible(true);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * 
      */
     private static final long serialVersionUID = 1L;
 
     public ContainedFile(File file, String string) {
-        super(file, string);
+        super(getWithoutProtocol(file.toString()), getWithoutProtocol(string));
     }
 
     public ContainedFile(String string) {
@@ -31,11 +45,21 @@ public class ContainedFile extends File {
 
     @Override
     public ContainedFile[] listFiles() {
-        String filenames[] = list();
-        if (filenames == null) return null;
-        ContainedFile files[] = new ContainedFile[filenames.length];
-        for (int i = 0; i < filenames.length; i++)
-            files[i] = new ContainedFile(getPath(), filenames[i]);
+        ContainedFile[] files = new ContainedFile[0];
+        try {
+            String path = toString();
+            pathField.set(this, getPath());
+            String[] filenames = list();
+            if (filenames == null) return null;
+            files = new ContainedFile[filenames.length];
+            for (int i = 0; i < filenames.length; i++)
+                files[i] = new ContainedFile(path, filenames[i]);
+            pathField.set(this, path);
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
         return files;
     }
 
@@ -94,7 +118,7 @@ public class ContainedFile extends File {
     }
 
     public String getPackage() {
-        String path = getPath();
+        String path = toString();
         if (path.contains("|")) {
             path = path.substring(path.lastIndexOf("|") + 1);
             path = path.replace("\\", "/").replace("/", ".");
@@ -103,17 +127,54 @@ public class ContainedFile extends File {
         return null;
     }
 
-    public String getPackagePath() {
+    public String getPackageAsPath() {
         String packageName = getPackage();
-        String path = getPath();
+        if (packageName != null) return packageName.replace(".", "/");
+        return null;
+    }
+
+    public String getWithoutPackage() {
+        String path = super.getPath();
+        String packageName = getPackage();
         if (packageName != null) {
             path = path.substring(0, path.length() - packageName.length() - 1);
         }
         return path;
     }
 
-    public ContainedFile getPackageFile() {
-        return new ContainedFile(getPackagePath());
+    @Override
+    public boolean isDirectory() {
+        try {
+            String path = toString();
+            pathField.set(this, getPath());
+            boolean ret = super.isDirectory();
+            pathField.set(this, path);
+            return ret;
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean containsPackage() {
+        return getPackage() != null;
+    }
+
+    @Override
+    public String getPath() {
+        String path = super.getPath();
+        /*
+         * String packageName = getPackage(); if (packageName != null) { path =
+         * path.substring(0, path.length() - packageName.length() - 1); }
+         */
+        return path.replace("|", "");
+    }
+
+    @Override
+    public String toString() {
+        return super.getPath();
     }
 
     public static String getWithoutProtocol(String path) {

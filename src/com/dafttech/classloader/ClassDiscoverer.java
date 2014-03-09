@@ -18,15 +18,13 @@ public class ClassDiscoverer {
     public static String classExt = ".class";
 
     private ContainedFile sourceDir = null;
-    private ContainedFile sourcePackage = null;
 
-    public ClassDiscoverer(ContainedFile dir, String packageFilter) {
+    public ClassDiscoverer(ContainedFile dir) {
         sourceDir = dir;
-        sourcePackage = ContainedFile.fromPackage(packageFilter);
     }
 
-    public ClassDiscoverer(Class<?> sourceClass, String packageFilter) {
-        this(getPackagePath(sourceClass, ""), packageFilter);
+    public ClassDiscoverer(Class<?> sourceClass, String packageName) {
+        this(getPackagePath(sourceClass, packageName));
     }
 
     public List<ContainedFile> discover() {
@@ -36,7 +34,8 @@ public class ClassDiscoverer {
     }
 
     private void discover(ContainedFile dir, List<ContainedFile> classes) {
-        if (isClass(dir.toString())) {
+        if (isClass(dir.getPath())) {
+            System.out.println(dir.toString());
             classes.add(dir);
         } else if (dir.isDirectory()) {
             discoverDir(dir, classes);
@@ -121,18 +120,15 @@ public class ClassDiscoverer {
                 path = "jar:file:/" + new File(System.getProperty("java.class.path")).getAbsolutePath().replace("\\", "/") + "!/"
                         + path.substring(5);
             }
-            return new ContainedFile(path);
+            int packageIndex = path.length() - (context.getName() + classExt).length();
+            return ContainedFile.fromPackage(path.substring(0, packageIndex), path.substring(packageIndex));
         }
         return null;
     }
 
     public static ContainedFile getPackagePath(Class<?> context, String packageName) {
-        File path = getClassPath(context);
-        if (path != null) {
-            String packagePath = path.toString();
-            packagePath = packagePath.substring(0, packagePath.length() - (context.getName() + classExt).length());
-            return new ContainedFile(packagePath, packageName.replace(".", "/"));
-        }
+        ContainedFile path = getClassPath(context);
+        if (path != null) return ContainedFile.fromPackage(path.getWithoutPackage(), packageName);
         return null;
     }
 }
