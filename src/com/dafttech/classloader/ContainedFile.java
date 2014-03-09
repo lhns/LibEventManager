@@ -23,6 +23,8 @@ public class ContainedFile extends File {
      */
     private static final long serialVersionUID = 1L;
 
+    private boolean withPackage = false;
+
     public ContainedFile(File file, String string) {
         super(getWithoutProtocol(file.toString()), getWithoutProtocol(string));
     }
@@ -44,23 +46,32 @@ public class ContainedFile extends File {
     }
 
     @Override
-    public ContainedFile[] listFiles() {
-        ContainedFile[] files = new ContainedFile[0];
+    public String[] list() {
+        String[] list = new String[0];
         try {
             String path = toString();
             pathField.set(this, getPath());
-            String[] filenames = list();
-            if (filenames == null) return null;
-            files = new ContainedFile[filenames.length];
-            for (int i = 0; i < filenames.length; i++)
-                files[i] = new ContainedFile(path, filenames[i]);
+            list = super.list();
             pathField.set(this, path);
         } catch (IllegalArgumentException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         }
-        return files;
+        return list;
+    }
+
+    @Override
+    public ContainedFile[] listFiles() {
+        String[] filenames = list();
+        if (filenames != null) {
+            ContainedFile[] files = new ContainedFile[filenames.length];
+            String path = toString();
+            for (int i = 0; i < filenames.length; i++)
+                files[i] = new ContainedFile(path, filenames[i]);
+            return files;
+        }
+        return new ContainedFile[] {};
     }
 
     public String getContainerPath(String... typeExts) {
@@ -89,7 +100,7 @@ public class ContainedFile extends File {
 
     public String getContainedPath(String... typeExts) {
         String containerPath = getContainerPath(typeExts);
-        String path = getAbsolutePath();
+        String path = toAbsolutePathString();
         if (containerPath != null) {
             path = path.replace("\\", "/");
             path = path.substring(containerPath.length());
@@ -165,16 +176,22 @@ public class ContainedFile extends File {
     @Override
     public String getPath() {
         String path = super.getPath();
-        /*
-         * String packageName = getPackage(); if (packageName != null) { path =
-         * path.substring(0, path.length() - packageName.length() - 1); }
-         */
+        if (withPackage) {
+            return path;
+        }
         return path.replace("|", "");
     }
 
     @Override
     public String toString() {
         return super.getPath();
+    }
+
+    public String toAbsolutePathString() {
+        withPackage = true;
+        String path = getAbsolutePath();
+        withPackage = false;
+        return path;
     }
 
     public static String getWithoutProtocol(String path) {
