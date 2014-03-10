@@ -1,6 +1,5 @@
 package com.dafttech.classloader;
 
-import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -24,7 +23,7 @@ public class ClassDiscoverer {
     }
 
     public ClassDiscoverer(Class<?> sourceClass, String packageName) {
-        this(getPackagePath(sourceClass, packageName));
+        this(new ClassPathFinder(sourceClass).getPackagePath(packageName));
     }
 
     public List<ContainedFile> discover() {
@@ -110,25 +109,5 @@ public class ClassDiscoverer {
             }
         }
         return classes;
-    }
-
-    public static ContainedFile getClassPath(Class<?> context) {
-        URL url = context.getResource("/" + context.getName().replace(".", "/") + classExt);
-        if (url != null) {
-            String path = url.toString();
-            if (path.startsWith("rsrc:")) {
-                path = "jar:file:/" + new File(System.getProperty("java.class.path")).getAbsolutePath().replace("\\", "/") + "!/"
-                        + path.substring(5);
-            }
-            int packageIndex = path.length() - (context.getName() + classExt).length();
-            return ContainedFile.fromPackage(path.substring(0, packageIndex), path.substring(packageIndex));
-        }
-        return null;
-    }
-
-    public static ContainedFile getPackagePath(Class<?> context, String packageName) {
-        ContainedFile path = getClassPath(context);
-        if (path != null) return ContainedFile.fromPackage(path.getWithoutPackage(), packageName);
-        return null;
     }
 }
