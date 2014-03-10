@@ -1,14 +1,8 @@
 package com.dafttech.classloader;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -34,7 +28,6 @@ public class ClassDiscoverer {
 
     private void discover(ContainedFile dir, List<ContainedFile> classes) {
         if (isClass(dir.getPath())) {
-            System.out.println(dir.toString());
             classes.add(dir);
         } else if (dir.isDirectory()) {
             discoverDir(dir, classes);
@@ -68,46 +61,5 @@ public class ClassDiscoverer {
 
     private boolean isClass(String name) {
         return name.endsWith(classExt);
-    }
-
-    public static List<Class<?>> loadClasses(List<ContainedFile> classFiles, ClassLoader parentLoader) {
-        List<Class<?>> classes = new ArrayList<Class<?>>();
-        if (parentLoader == null) parentLoader = ClassDiscoverer.class.getClassLoader();
-        String path, file;
-        Map<String, List<String>> sortedFiles = new HashMap<String, List<String>>();
-        for (ContainedFile classFile : classFiles) {
-            if (classFile.isContained(containers)) {
-                path = classFile.getContainerPath(containers);
-                file = classFile.getContainedPath(containers);
-            } else {
-                path = classFile.getParent();
-                file = classFile.getName();
-            }
-            if (file != null) {
-                if (!sortedFiles.containsKey(path)) sortedFiles.put(path, new ArrayList<String>());
-                sortedFiles.get(path).add(file);
-            }
-        }
-        Class<?> loadedClass;
-        for (String sortedPath : sortedFiles.keySet()) {
-            try {
-                URL[] urls = { new ContainedFile(sortedPath).toURI().toURL() };
-                URLClassLoader classLoader = URLClassLoader.newInstance(urls, parentLoader);
-                for (String sortedFile : sortedFiles.get(sortedPath)) {
-                    loadedClass = null;
-                    try {
-                        loadedClass = classLoader.loadClass(sortedFile);
-                    } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                    if (loadedClass != null && loadedClass != ClassDiscoverer.class) {
-                        classes.add(loadedClass);
-                    }
-                }
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            }
-        }
-        return classes;
     }
 }

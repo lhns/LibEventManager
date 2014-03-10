@@ -132,7 +132,10 @@ public class ContainedFile extends File {
         String path = toString();
         if (path.contains("|")) {
             path = path.substring(path.lastIndexOf("|") + 1);
-            path = path.replace("\\", "/").replace("/", ".");
+            path = path.replace("\\", "/");
+            while (path.startsWith("/"))
+                path = path.substring(1);
+            path = path.replace("/", ".");
             return path;
         }
         return null;
