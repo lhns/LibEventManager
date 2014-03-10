@@ -36,13 +36,8 @@ public class ClassFileLoader {
         String path, packageName;
         Map<String, List<String>> sortedFiles = new HashMap<String, List<String>>();
         for (ContainedFile classFile : classFiles) {
-            if (classFile.isContained(ClassDiscoverer.containers)) {
-                path = classFile.getContainerPath(ClassDiscoverer.containers);
-                packageName = classFile.getContainedPath(ClassDiscoverer.containers);
-            } else {
-                path = classFile.getWithoutPackage();
-                packageName = classFile.getPackage();
-            }
+            path = classFile.getWithoutPackage();
+            packageName = classFile.getPackage();
             if (packageName != null) {
                 if (!sortedFiles.containsKey(path)) sortedFiles.put(path, new ArrayList<String>());
                 sortedFiles.get(path).add(packageName);

@@ -44,14 +44,18 @@ public class ClassDiscoverer {
 
     private void discoverJar(ContainedFile dir, List<ContainedFile> classes) {
         try {
+            dir.withPackage();
             ContainedFile container = dir.getContainerFile(containers);
-            String containedPath = dir.getContainedFile(containers).getPath().replace("\\", "/");
+            String containedPath = dir.getContainedPath(containers).replace("\\", "/");
+            dir.withoutPackage();
             JarFile jarfile = new JarFile(container);
+            String name;
             Enumeration<JarEntry> entries = jarfile.entries();
             while (entries.hasMoreElements()) {
                 JarEntry entry = entries.nextElement();
-                if (entry.getName().startsWith(containedPath) && !entry.isDirectory() && isClass(entry.getName()))
-                    classes.add(new ContainedFile(container, entry.getName()));
+                name = ContainedFile.transferPackageSeperator(containedPath, entry.getName());
+                if (name.startsWith(containedPath) && !entry.isDirectory() && isClass(name))
+                    classes.add(new ContainedFile(container, name));
             }
             jarfile.close();
         } catch (Exception e) {

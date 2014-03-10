@@ -100,7 +100,7 @@ public class ContainedFile extends File {
 
     public String getContainedPath(String... typeExts) {
         String containerPath = getContainerPath(typeExts);
-        String path = toAbsolutePathString();
+        String path = getAbsolutePath();
         if (containerPath != null) {
             path = path.replace("\\", "/");
             path = path.substring(containerPath.length());
@@ -190,11 +190,14 @@ public class ContainedFile extends File {
         return super.getPath();
     }
 
-    public String toAbsolutePathString() {
+    public ContainedFile withPackage() {
         withPackage = true;
-        String path = getAbsolutePath();
+        return this;
+    }
+
+    public ContainedFile withoutPackage() {
         withPackage = false;
-        return path;
+        return this;
     }
 
     public static String getWithoutProtocol(String path) {
@@ -221,5 +224,11 @@ public class ContainedFile extends File {
 
     public static ContainedFile fromPackage(String path, String packageName) {
         return new ContainedFile(path + "|" + packageName.replace(".", "/"));
+    }
+
+    public static String transferPackageSeperator(String source, String target) {
+        if (source.contains("|"))
+            target = target.substring(0, source.indexOf("|")) + "|" + target.substring(source.indexOf("|"));
+        return target;
     }
 }
