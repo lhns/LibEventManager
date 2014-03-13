@@ -68,7 +68,9 @@ public class EventListenerContainer {
             if (filter != null) {
                 try {
                     if (filter instanceof Field) filterObj = ((Field) filter).get(isStatic ? null : eventListener);
-                    if (filter instanceof Method) filterObj = ((Method) filter).invoke(isStatic ? null : eventListener);
+                    if (filter instanceof Method)
+                        filterObj = ((Method) filter).invoke(isStatic ? null : eventListener,
+                                new Object[((Method) filter).getParameterTypes().length]);
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 } catch (IllegalArgumentException e) {
@@ -124,7 +126,8 @@ public class EventListenerContainer {
                     if ((!isStatic || Modifier.isStatic(field.getModifiers()))
                             && field.getAnnotation(EventFilter.class).value().equals(filterName)) filterList.add(field);
                 }
-                for (Method method : EventManager.getAnnotatedMethods(filterClass, EventFilter.class, true, null)) {
+                for (Method method : EventManager
+                        .getAnnotatedMethods(filterClass, EventFilter.class, true, null, (Class<?>) null)) {
                     if ((!isStatic || Modifier.isStatic(method.getModifiers()))
                             && method.getAnnotation(EventFilter.class).value().equals(filterName)) filterList.add(method);
                 }
