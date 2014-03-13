@@ -25,10 +25,8 @@ public class Event {
             EventListenerContainer eventListenerContainer = null;
             for (Iterator<EventListenerContainer> i = eventListenerContainerList.iterator(); i.hasNext();) {
                 eventListenerContainer = i.next();
-                if (eventListenerContainer.isFiltered(this)) {
-                    eventListenerContainer.invoke(this);
-                    if (cancelled) return;
-                }
+                eventListenerContainer.invoke(this);
+                if (cancelled) return;
             }
         }
         done = true;

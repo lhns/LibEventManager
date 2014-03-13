@@ -25,14 +25,16 @@ public class EventListenerContainer {
     }
 
     protected final void invoke(Event event) {
-        try {
-            method.invoke(isStatic ? null : eventListener, event);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
+        if (isFiltered(event)) {
+            try {
+                method.invoke(isStatic ? null : eventListener, event);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
         }
     }
 
