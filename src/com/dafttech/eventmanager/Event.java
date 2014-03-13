@@ -2,7 +2,6 @@ package com.dafttech.eventmanager;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -139,21 +138,21 @@ public class Event {
     /**
      * Retrieve a specific object given, when the event was called
      * 
-     * @param num
+     * @param index
      *            int - number of the object to request
      * @return Object - the requested object, or null if the number was out of
      *         range
      */
-    public final Object getInput(int num) {
-        if (num < 0 || num >= in.length) return null;
-        return in[num];
+    public final Object getInput(int index) {
+        if (index >= 0 && index < in.length) return in[index];
+        return null;
     }
 
     /**
      * Retrieve a specific object given, when the event was called and cast it
      * to the given class
      * 
-     * @param num
+     * @param index
      *            int - number of the object to request
      * @param cast
      *            Class<T> the class to cast to
@@ -161,9 +160,9 @@ public class Event {
      *         out of range
      */
     @SuppressWarnings("unchecked")
-    public final <T> T getInput(int num, Class<T> cast) {
-        if (num < 0 || num >= in.length || !cast.isInstance(in[num])) return null;
-        return (T) in[num];
+    public final <T> T getInput(int index, Class<T> cast) {
+        if (index >= 0 && index < in.length && cast.isInstance(in[index])) return (T) in[index];
+        return null;
     }
 
     /**
@@ -180,16 +179,26 @@ public class Event {
      * Use this to get all the objects out of the output list, but sort out all
      * null values.
      * 
+     * @param cast
+     *            Class<T> With this argument you can filter outputs of specific
+     *            types and get a casted list
      * @return List<Object> - output list without null values, or null if the
      *         event is not done.
      */
-    public final List<Object> getCleanOutput() {
+    @SuppressWarnings("unchecked")
+    public final <T> List<T> getOutput(Class<T> cast) {
         if (isDone()) {
-            List<Object> cleanOut = new ArrayList<Object>(out);
-            cleanOut.removeAll(Collections.singleton(null));
-            return cleanOut;
+            List<T> newOut = new ArrayList<T>();
+            for (Object obj : out)
+                if (cast.isInstance(obj)) newOut.add((T) obj);
+            return newOut;
         }
         return null;
+    }
+
+    @Deprecated
+    public final List<Object> getCleanOutput() {
+        return getOutput(Object.class);
     }
 
     @Deprecated
