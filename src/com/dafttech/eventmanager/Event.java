@@ -1,6 +1,5 @@
 package com.dafttech.eventmanager;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -26,37 +25,13 @@ public class Event {
             EventListenerContainer eventListenerContainer = null;
             for (Iterator<EventListenerContainer> i = eventListenerContainerList.iterator(); i.hasNext();) {
                 eventListenerContainer = i.next();
-                if (isFiltered(eventListenerContainer.eventListener, eventListenerContainer.getFilters())) {
-                    try {
-                        eventListenerContainer.method.invoke(eventListenerContainer.isStatic ? null
-                                : eventListenerContainer.eventListener, this);
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    } catch (IllegalArgumentException e) {
-                        e.printStackTrace();
-                    } catch (InvocationTargetException e) {
-                        e.printStackTrace();
-                    }
+                if (eventListenerContainer.isFiltered(this)) {
+                    eventListenerContainer.invoke(this);
                     if (cancelled) return;
                 }
             }
         }
         done = true;
-    }
-
-    private final boolean isFiltered(Object eventListener, Object[][] eventFilters) {
-        if (eventFilters.length == 0) return true;
-        for (int i = 0; i < eventFilters.length; i++) {
-            if (eventFilters[i].length > 0) {
-                try {
-                    if (type.applyFilter(this, eventFilters[i], eventListener)) return true;
-                } catch (ArrayIndexOutOfBoundsException e) {
-                } catch (ClassCastException e) {
-                } catch (NullPointerException e) {
-                }
-            }
-        }
-        return false;
     }
 
     /**

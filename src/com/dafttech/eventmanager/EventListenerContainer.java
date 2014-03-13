@@ -24,6 +24,34 @@ public class EventListenerContainer {
                 annotation.filter());
     }
 
+    protected final void invoke(Event event) {
+        try {
+            method.invoke(isStatic ? null : eventListener, event);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected final boolean isFiltered(Event event) {
+        Object[][] eventFilters = getFilters();
+        if (eventFilters.length == 0) return true;
+        for (int i = 0; i < eventFilters.length; i++) {
+            if (eventFilters[i].length > 0) {
+                try {
+                    if (event.getEventType().applyFilter(event, eventFilters[i], eventListener)) return true;
+                } catch (ArrayIndexOutOfBoundsException e) {
+                } catch (ClassCastException e) {
+                } catch (NullPointerException e) {
+                }
+            }
+        }
+        return false;
+    }
+
     protected final Object[][] getFilters() {
         Object[][] filterArray = new Object[filters.length][];
         Object filter, filterObj;
