@@ -14,6 +14,7 @@ public class EventListenerContainer {
     volatile protected int priority;
 
     volatile private Object[] filters;
+    volatile private boolean[] eventArgs;
 
     protected EventListenerContainer(boolean isStatic, Object eventListener, Method method, EventListener annotation) {
         this.isStatic = isStatic;
@@ -22,12 +23,16 @@ public class EventListenerContainer {
         priority = annotation.priority();
         filters = getFilterContainer(isStatic, isStatic ? (Class<?>) this.eventListener : this.eventListener.getClass(),
                 annotation.filter());
+        eventArgs = collectArgs();
     }
 
     protected final void invoke(Event event) {
         if (isFiltered(event)) {
+            Object[] args = new Object[eventArgs.length];
+            for (int i = 0; i < args.length; i++)
+                if (eventArgs[i]) args[i] = event;
             try {
-                method.invoke(isStatic ? null : eventListener, event);
+                method.invoke(isStatic ? null : eventListener, args);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             } catch (IllegalArgumentException e) {
@@ -54,7 +59,7 @@ public class EventListenerContainer {
         return false;
     }
 
-    protected final Object[][] getFilters() {
+    private final Object[][] getFilters() {
         Object[][] filterArray = new Object[filters.length][];
         Object filter, filterObj;
         for (int i = 0; i < filters.length; i++) {
@@ -81,16 +86,6 @@ public class EventListenerContainer {
             }
         }
         return filterArray;
-    }
-
-    @Override
-    public boolean equals(Object paramObject) {
-        if (paramObject instanceof EventListenerContainer) {
-            return ((EventListenerContainer) paramObject).method.equals(method)
-                    && ((EventListenerContainer) paramObject).isStatic == isStatic;
-        } else {
-            return paramObject == eventListener;
-        }
     }
 
     private static final Object[] getFilterContainer(boolean isStatic, Class<?> filterClass, String[] filterNames) {
@@ -136,5 +131,23 @@ public class EventListenerContainer {
             }
         }
         return filterList.toArray();
+    }
+
+    private final boolean[] collectArgs() {
+        Class<?>[] argTypes = method.getParameterTypes();
+        boolean[] eventArgs = new boolean[argTypes.length];
+        for (int i = 0; i < eventArgs.length; i++)
+            if (Event.class.isAssignableFrom(argTypes[i])) eventArgs[i] = true;
+        return eventArgs;
+    }
+
+    @Override
+    public boolean equals(Object paramObject) {
+        if (paramObject instanceof EventListenerContainer) {
+            return ((EventListenerContainer) paramObject).method.equals(method)
+                    && ((EventListenerContainer) paramObject).isStatic == isStatic;
+        } else {
+            return paramObject == eventListener;
+        }
     }
 }

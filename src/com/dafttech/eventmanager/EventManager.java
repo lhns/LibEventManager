@@ -38,7 +38,7 @@ public class EventManager {
         EventListener annotation = null;
         boolean isStatic = false;
         EventType typeFound = null;
-        for (Method method : getAnnotatedMethods(eventListenerClass, EventListener.class, true, void.class, Event.class)) {
+        for (Method method : getAnnotatedMethods(eventListenerClass, EventListener.class, true, null, (Class<?>) null)) {
             annotation = method.getAnnotation(EventListener.class);
             isStatic = Modifier.isStatic(method.getModifiers());
             if (!eventListenerStatic || isStatic) {
@@ -181,7 +181,8 @@ public class EventManager {
         for (Method method : getAllDeclaredMethods(targetClass)) {
             if (method.isAnnotationPresent(annotation)) {
                 if ((reqType == null || method.getReturnType() == reqType)
-                        && (reqArgs.length == 1 && reqArgs[0] == null || Arrays.equals(method.getParameterTypes(), reqArgs))) {
+                        && (reqArgs == null || reqArgs.length == 1 && reqArgs[0] == null || Arrays.equals(
+                                method.getParameterTypes(), reqArgs))) {
                     methods.add(method);
                 } else if (throwException) {
                     String errorMessage = "\nat " + targetClass.getName() + " at Annotation " + annotation.getName() + ":";
