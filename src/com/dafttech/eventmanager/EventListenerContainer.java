@@ -14,7 +14,7 @@ public class EventListenerContainer {
     volatile protected int priority;
 
     volatile private Object[] filters;
-    volatile private Class<?>[] eventArgs;
+    volatile private Class<?>[] argTypes;
 
     protected EventListenerContainer(boolean isStatic, Object eventListener, Method method, EventListener annotation) {
         this.isStatic = isStatic;
@@ -23,28 +23,13 @@ public class EventListenerContainer {
         priority = annotation.priority();
         filters = getFilterContainer(isStatic, isStatic ? (Class<?>) this.eventListener : this.eventListener.getClass(),
                 annotation.filter());
-        eventArgs = method.getParameterTypes();
+        argTypes = method.getParameterTypes();
     }
 
     protected final void invoke(Event event) {
         if (isFiltered(event)) {
-            Object[] args = new Object[eventArgs.length];
-            for (int i = 0; i < args.length; i++)
-                if (eventArgs[i] == Event.class) {
-                    args[i] = event;
-                } else if (eventArgs[i].isPrimitive()) {
-                    if (eventArgs[i] == boolean.class) {
-                        args[i] = false;
-                    } else if (eventArgs[i] == char.class) {
-                        args[i] = '\u0000';
-                    } else {
-                        args[i] = 0;
-                    }
-                } else {
-                    args[i] = null;
-                }
             try {
-                method.invoke(isStatic ? null : eventListener, args);
+                method.invoke(isStatic ? null : eventListener, EventManager.argTypesToArgArray(argTypes, Event.class, event));
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             } catch (IllegalArgumentException e) {
@@ -82,7 +67,7 @@ public class EventListenerContainer {
                     if (filter instanceof Field) filterObj = ((Field) filter).get(isStatic ? null : eventListener);
                     if (filter instanceof Method)
                         filterObj = ((Method) filter).invoke(isStatic ? null : eventListener,
-                                new Object[((Method) filter).getParameterTypes().length]);
+                                EventManager.argTypesToArgArray(((Method) filter).getParameterTypes()));
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 } catch (IllegalArgumentException e) {

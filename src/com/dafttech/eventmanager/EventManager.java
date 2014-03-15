@@ -146,22 +146,22 @@ public class EventManager {
 
     // STATIC METHODS
 
-    public static final Object[] argTypesToArgArray(Class<?>[] argTypes, Object... usedArgs) {
+    public static final Object[] argTypesToArgArray(Class<?>[] argTypes, Object... appliedArgs) {
         Object[] args = new Object[argTypes.length];
-        for (int i = 0; i < args.length; i++) {
-            for (int i2 = 0; i2 < usedArgs.length; i2 += 2) {
-                if (argTypes[i] == (Class<?>) usedArgs[i]) {
-                    args[i] = usedArgs[i + 1];
+        for (int i1 = 0; i1 < args.length; i1++) {
+            for (int i2 = 0; i2 + 1 < appliedArgs.length; i2 += 2) {
+                if (argTypes[i1] == (Class<?>) appliedArgs[i2]) {
+                    args[i1] = appliedArgs[i2 + 1];
                     break;
                 }
             }
-            if (argTypes[i] == null && argTypes[i].isPrimitive()) {
-                if (argTypes[i] == boolean.class) {
-                    args[i] = false;
-                } else if (argTypes[i] == char.class) {
-                    args[i] = '\u0000';
+            if (args[i1] == null && argTypes[i1].isPrimitive()) {
+                if (argTypes[i1] == boolean.class) {
+                    args[i1] = false;
+                } else if (argTypes[i1] == char.class) {
+                    args[i1] = '\u0000';
                 } else {
-                    args[i] = 0;
+                    args[i1] = 0;
                 }
             }
         }
