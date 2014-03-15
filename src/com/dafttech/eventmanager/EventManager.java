@@ -146,6 +146,28 @@ public class EventManager {
 
     // STATIC METHODS
 
+    public static final Object[] argTypesToArgArray(Class<?>[] argTypes, Object... usedArgs) {
+        Object[] args = new Object[argTypes.length];
+        for (int i = 0; i < args.length; i++) {
+            for (int i2 = 0; i2 < usedArgs.length; i2 += 2) {
+                if (argTypes[i] == (Class<?>) usedArgs[i]) {
+                    args[i] = usedArgs[i + 1];
+                    break;
+                }
+            }
+            if (argTypes[i] == null && argTypes[i].isPrimitive()) {
+                if (argTypes[i] == boolean.class) {
+                    args[i] = false;
+                } else if (argTypes[i] == char.class) {
+                    args[i] = '\u0000';
+                } else {
+                    args[i] = 0;
+                }
+            }
+        }
+        return args;
+    }
+
     /**
      * REQUIRES THE CLASS TO HAVE EITHER A FIELD OR A METHOD WITH THE INSTANCE
      * ANNOTATED WITH THE @INSTANCE ANNOTATION

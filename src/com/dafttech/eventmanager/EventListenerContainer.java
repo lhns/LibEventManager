@@ -14,7 +14,7 @@ public class EventListenerContainer {
     volatile protected int priority;
 
     volatile private Object[] filters;
-    volatile private boolean[] eventArgs;
+    volatile private Class<?>[] eventArgs;
 
     protected EventListenerContainer(boolean isStatic, Object eventListener, Method method, EventListener annotation) {
         this.isStatic = isStatic;
@@ -23,14 +23,26 @@ public class EventListenerContainer {
         priority = annotation.priority();
         filters = getFilterContainer(isStatic, isStatic ? (Class<?>) this.eventListener : this.eventListener.getClass(),
                 annotation.filter());
-        eventArgs = collectArgs();
+        eventArgs = method.getParameterTypes();
     }
 
     protected final void invoke(Event event) {
         if (isFiltered(event)) {
             Object[] args = new Object[eventArgs.length];
             for (int i = 0; i < args.length; i++)
-                if (eventArgs[i]) args[i] = event;
+                if (eventArgs[i] == Event.class) {
+                    args[i] = event;
+                } else if (eventArgs[i].isPrimitive()) {
+                    if (eventArgs[i] == boolean.class) {
+                        args[i] = false;
+                    } else if (eventArgs[i] == char.class) {
+                        args[i] = '\u0000';
+                    } else {
+                        args[i] = 0;
+                    }
+                } else {
+                    args[i] = null;
+                }
             try {
                 method.invoke(isStatic ? null : eventListener, args);
             } catch (IllegalAccessException e) {
@@ -134,14 +146,6 @@ public class EventListenerContainer {
             }
         }
         return filterList.toArray();
-    }
-
-    private final boolean[] collectArgs() {
-        Class<?>[] argTypes = method.getParameterTypes();
-        boolean[] eventArgs = new boolean[argTypes.length];
-        for (int i = 0; i < eventArgs.length; i++)
-            if (Event.class.isAssignableFrom(argTypes[i])) eventArgs[i] = true;
-        return eventArgs;
     }
 
     @Override
