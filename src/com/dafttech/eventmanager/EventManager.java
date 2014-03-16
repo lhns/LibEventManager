@@ -118,8 +118,9 @@ public class EventManager {
      */
     public final Event callSync(EventType type, Object... objects) {
         Event event = new Event(this, type, objects);
-        event.schedule(registeredListeners.get(type) != null ? registeredListeners.get(type)
-                : new ArrayList<EventListenerContainer>());
+        List<EventListenerContainer> eventListenerContainerList = registeredListeners.get(type);
+        if (eventListenerContainerList == null) eventListenerContainerList = new ArrayList<EventListenerContainer>();
+        event.schedule(eventListenerContainerList);
         return event;
     }
 
@@ -139,8 +140,9 @@ public class EventManager {
      */
     public final Event callAsync(EventType type, Object... objects) {
         Event event = new Event(this, type, objects);
-        new AsyncEventThread(event, registeredListeners.get(type) != null ? registeredListeners.get(type)
-                : new ArrayList<EventListenerContainer>());
+        List<EventListenerContainer> eventListenerContainerList = registeredListeners.get(type);
+        if (eventListenerContainerList == null) eventListenerContainerList = new ArrayList<EventListenerContainer>();
+        new AsyncEventThread(event, eventListenerContainerList);
         return event;
     }
 
