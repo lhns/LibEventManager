@@ -60,9 +60,9 @@ public class EventManager {
         }
     }
 
-    public final void tryRegisterEventListener(String staticEventListener) {
+    public final void tryRegisterEventListener(String staticEventListener, EventType... blacklist) {
         try {
-            registerEventListener(Class.forName(staticEventListener));
+            registerEventListener(Class.forName(staticEventListener), blacklist);
         } catch (ClassNotFoundException e) {
         }
     }
