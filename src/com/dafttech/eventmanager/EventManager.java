@@ -146,6 +146,18 @@ public class EventManager {
 
     // STATIC METHODS
 
+    /**
+     * Used to get an array of null objects (or false for boolean, 0 for
+     * numbers, etc.) for dynamic instantiation. You can also insert objects for
+     * specific types instead of null.
+     * 
+     * @param argTypes
+     *            Class<?>[] - the argument Types
+     * @param appliedArgs
+     *            Object... - The arg types that are replaced with objects
+     *            Example: ([Class<?>[] argTypes], String.class, "test")
+     * @return Object[] - Array with null or objects (look above)
+     */
     public static final Object[] argTypesToArgArray(Class<?>[] argTypes, Object... appliedArgs) {
         Object[] args = new Object[argTypes.length];
         for (int i1 = 0; i1 < args.length; i1++) {
