@@ -164,7 +164,7 @@ public class EventManager {
         Object[] args = new Object[argTypes.length];
         for (int i1 = 0; i1 < args.length; i1++) {
             for (int i2 = 0; i2 + 1 < appliedArgs.length; i2 += 2) {
-                if (argTypes[i1] == (Class<?>) appliedArgs[i2]) {
+                if (argTypes[i1] == appliedArgs[i2]) {
                     args[i1] = appliedArgs[i2 + 1];
                     break;
                 }
