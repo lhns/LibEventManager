@@ -21,7 +21,7 @@ public class EventListenerContainer {
         this.eventListener = eventListener;
         this.method = method;
         priority = annotation.priority();
-        filters = getFilterContainer(isStatic, isStatic ? (Class<?>) this.eventListener : this.eventListener.getClass(),
+        filters = getFilterContainers(isStatic, isStatic ? (Class<?>) this.eventListener : this.eventListener.getClass(),
                 annotation.filter());
         argTypes = method.getParameterTypes();
     }
@@ -43,10 +43,10 @@ public class EventListenerContainer {
     protected final boolean isFiltered(Event event) {
         Object[][] eventFilters = getFilters();
         if (eventFilters.length == 0) return true;
-        for (int i = 0; i < eventFilters.length; i++) {
-            if (eventFilters[i].length > 0) {
+        for (Object[] eventFilter : eventFilters) {
+            if (eventFilter.length > 0) {
                 try {
-                    if (event.getEventType().applyFilter(event, eventFilters[i], eventListener)) return true;
+                    if (event.getEventType().applyFilter(event, eventFilter, eventListener)) return true;
                 } catch (ArrayIndexOutOfBoundsException e) {
                 } catch (ClassCastException e) {
                 } catch (NullPointerException e) {
@@ -87,35 +87,32 @@ public class EventListenerContainer {
         return filterArray;
     }
 
-    private static final Object[] getFilterContainer(boolean isStatic, Class<?> filterClass, String[] filterNames) {
+    private static final Object[] getFilterContainers(boolean isListenerStatic, Class<?> listenerClass, String[] filterNames) {
         List<Object> filterList = new ArrayList<Object>();
-        String filterName;
-        for (int i = 0; i < filterNames.length; i++) {
-            filterName = filterNames[i];
+        boolean isStatic;
+        Class<?> filterClass;
+        for (String filterName : filterNames) {
             if (!filterName.equals("")) {
+                isStatic = isListenerStatic;
+                filterClass = listenerClass;
                 if (filterName.contains(".")) {
-                    Class<?> remoteFilterClass = null;
-                    try {
-                        remoteFilterClass = Class.forName(filterName.substring(0, filterName.lastIndexOf('.')));
-                    } catch (ClassNotFoundException e1) {
-                        String packageName = filterClass.getPackage().getName();
-                        while (filterName.contains("..") && packageName.contains(".")) {
-                            filterName = filterName.replaceFirst("..", "");
-                            packageName = packageName.substring(0, packageName.lastIndexOf('.'));
-                        }
-                        filterName = packageName + '.' + filterName;
-                        try {
-                            remoteFilterClass = Class.forName(filterName.substring(0, filterName.lastIndexOf('.')));
-                        } catch (ClassNotFoundException e2) {
-                            e1.printStackTrace();
-                            e2.printStackTrace();
+                    if (filterName.startsWith(".")) filterName = listenerClass.getName() + filterName;
+                    if (filterName.contains("..")) {
+                        int backIndex;
+                        while (filterName.contains("..")) {
+                            backIndex = filterName.indexOf("..");
+                            while (filterName.length() > backIndex + 2 && filterName.charAt(backIndex + 2) == '.')
+                                backIndex++;
+                            filterName = filterName.substring(0, filterName.substring(0, backIndex).lastIndexOf(".") + 1)
+                                    + filterName.substring(backIndex + 2);
                         }
                     }
-                    filterName = filterName.substring(filterName.lastIndexOf('.') + 1);
-
-                    if (remoteFilterClass != null) {
-                        filterClass = remoteFilterClass;
+                    try {
+                        filterClass = Class.forName(filterName.substring(0, filterName.lastIndexOf('.')));
+                        filterName = filterName.substring(filterName.lastIndexOf('.') + 1);
                         isStatic = true;
+                    } catch (ClassNotFoundException e) {
+                        e.printStackTrace();
                     }
 
                 }
