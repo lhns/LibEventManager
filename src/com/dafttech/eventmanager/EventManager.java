@@ -37,20 +37,19 @@ public class EventManager {
         Class<?> eventListenerClass = eventListenerStatic ? (Class<?>) eventListener : eventListener.getClass();
         EventListener annotation = null;
         boolean isStatic = false;
-        EventType typeFound = null;
+        EventType type = null;
         for (Method method : getAnnotatedMethods(eventListenerClass, EventListener.class, true, null, (Class<?>) null)) {
             annotation = method.getAnnotation(EventListener.class);
             isStatic = Modifier.isStatic(method.getModifiers());
             if (!eventListenerStatic || isStatic) {
                 for (String requestedEvent : annotation.value()) {
-                    typeFound = EventType.types.get(requestedEvent);
-                    if (typeFound != null) {
-                        if (typeFound.isValidEventManager(this)
-                                && (blacklist.length == 0 || blacklist[0] == WHITELIST
-                                        && Arrays.asList(blacklist).contains(typeFound) || blacklist[0] != WHITELIST
-                                        && !Arrays.asList(blacklist).contains(typeFound))) {
-                            addEventListenerContainer(typeFound, new EventListenerContainer(isStatic,
-                                    isStatic ? eventListenerClass : eventListener, method, annotation));
+                    type = EventType.types.get(requestedEvent);
+                    if (type != null) {
+                        if (type.isValidEventManager(this)
+                                && (blacklist.length == 0 || blacklist[0] == WHITELIST && Arrays.asList(blacklist).contains(type) || blacklist[0] != WHITELIST
+                                        && !Arrays.asList(blacklist).contains(type))) {
+                            addEventListenerContainer(type, new EventListenerContainer(isStatic, isStatic ? eventListenerClass
+                                    : eventListener, method, annotation));
                         }
                     } else {
                         throw new NoSuchElementException(requestedEvent);
@@ -77,31 +76,30 @@ public class EventManager {
      */
     public final void unregisterEventListener(EventType type, Object eventListener) {
         if (registeredListeners.containsKey(type)) {
-            List<EventListenerContainer> eventListenerContainerList = registeredListeners.get(type);
-            List<EventListenerContainer> eventListenerContainerListRead = new ArrayList<EventListenerContainer>(
-                    eventListenerContainerList);
-            for (EventListenerContainer eventListenerContainer : eventListenerContainerListRead) {
-                if (eventListenerContainer.eventListener == eventListener)
-                    eventListenerContainerList.remove(eventListenerContainer);
+            List<EventListenerContainer> listeners = registeredListeners.get(type);
+            if (listeners != null) {
+                List<EventListenerContainer> listenersRead = new ArrayList<EventListenerContainer>(listeners);
+                for (EventListenerContainer eventListenerContainer : listenersRead)
+                    if (eventListenerContainer.eventListener == eventListener) listeners.remove(eventListenerContainer);
+                if (listeners.size() == 0) registeredListeners.remove(type);
             }
-            if (eventListenerContainerList.size() == 0) registeredListeners.remove(type);
         }
     }
 
     private final void addEventListenerContainer(EventType type, EventListenerContainer eventListenerContainer) {
         if (!registeredListeners.containsKey(type) || registeredListeners.get(type) == null)
             registeredListeners.put(type, new ArrayList<EventListenerContainer>());
-        List<EventListenerContainer> eventListenerContainerList = registeredListeners.get(type);
-        EventListenerContainer currEventListenerContainer;
-        for (int i = 0; i < eventListenerContainerList.size(); i++) {
-            currEventListenerContainer = eventListenerContainerList.get(i);
-            if (currEventListenerContainer == eventListenerContainer) return;
-            if (currEventListenerContainer.priority < eventListenerContainer.priority) {
-                eventListenerContainerList.add(i, eventListenerContainer);
+        List<EventListenerContainer> listeners = registeredListeners.get(type);
+        EventListenerContainer container;
+        for (int i = 0; i < listeners.size(); i++) {
+            container = listeners.get(i);
+            if (container == eventListenerContainer) return;
+            if (container.priority < eventListenerContainer.priority) {
+                listeners.add(i, eventListenerContainer);
                 return;
             }
         }
-        eventListenerContainerList.add(eventListenerContainer);
+        listeners.add(eventListenerContainer);
     }
 
     /**
@@ -118,9 +116,13 @@ public class EventManager {
      */
     public final Event callSync(EventType type, Object... objects) {
         Event event = new Event(this, type, objects);
-        List<EventListenerContainer> eventListenerContainerList = registeredListeners.get(type);
-        if (eventListenerContainerList == null) eventListenerContainerList = new ArrayList<EventListenerContainer>();
-        event.schedule(eventListenerContainerList);
+        List<EventListenerContainer> listeners = registeredListeners.get(type);
+        if (listeners != null) {
+            listeners = new ArrayList<EventListenerContainer>(listeners);
+        } else {
+            listeners = new ArrayList<EventListenerContainer>();
+        }
+        event.schedule(listeners);
         return event;
     }
 
@@ -140,9 +142,13 @@ public class EventManager {
      */
     public final Event callAsync(EventType type, Object... objects) {
         Event event = new Event(this, type, objects);
-        List<EventListenerContainer> eventListenerContainerList = registeredListeners.get(type);
-        if (eventListenerContainerList == null) eventListenerContainerList = new ArrayList<EventListenerContainer>();
-        new AsyncEventThread(event, eventListenerContainerList);
+        List<EventListenerContainer> listeners = registeredListeners.get(type);
+        if (listeners != null) {
+            listeners = new ArrayList<EventListenerContainer>(listeners);
+        } else {
+            listeners = new ArrayList<EventListenerContainer>();
+        }
+        new AsyncEventThread(event, listeners);
         return event;
     }
 
