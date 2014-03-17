@@ -131,12 +131,11 @@ public class EventListenerContainer {
     }
 
     @Override
-    public boolean equals(Object paramObject) {
-        if (paramObject instanceof EventListenerContainer) {
-            return ((EventListenerContainer) paramObject).method.equals(method)
-                    && ((EventListenerContainer) paramObject).isStatic == isStatic;
+    public final boolean equals(Object obj) {
+        if (obj instanceof EventListenerContainer) {
+            return ((EventListenerContainer) obj).method.equals(method) && ((EventListenerContainer) obj).isStatic == isStatic;
         } else {
-            return paramObject == eventListener;
+            return obj == eventListener;
         }
     }
 }

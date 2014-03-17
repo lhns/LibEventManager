@@ -56,7 +56,7 @@ public class EventType {
     }
 
     @Override
-    public boolean equals(Object object) {
+    public final boolean equals(Object object) {
         if (object instanceof EventType) {
             if (object == this) return true;
         } else if (object instanceof String) {

@@ -1,7 +1,6 @@
 package com.dafttech.eventmanager;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class Event {
@@ -18,16 +17,12 @@ public class Event {
         this.in = in;
     }
 
-    protected void schedule(List<EventListenerContainer> eventListenerContainerList) {
+    protected final void schedule(List<EventListenerContainer> eventListenerContainerList) {
         type.onEvent(this);
         if (cancelled) return;
-        if (eventListenerContainerList.size() > 0) {
-            EventListenerContainer eventListenerContainer = null;
-            for (Iterator<EventListenerContainer> i = eventListenerContainerList.iterator(); i.hasNext();) {
-                eventListenerContainer = i.next();
-                eventListenerContainer.invoke(this);
-                if (cancelled) return;
-            }
+        for (EventListenerContainer eventListenerContainer : eventListenerContainerList) {
+            eventListenerContainer.invoke(this);
+            if (cancelled) return;
         }
         done = true;
     }

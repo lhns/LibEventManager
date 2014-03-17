@@ -14,7 +14,7 @@ public class AsyncEventThread extends Thread {
     }
 
     @Override
-    public void run() {
+    public final void run() {
         event.schedule(eventListenerContainers);
     }
 }
