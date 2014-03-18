@@ -135,8 +135,7 @@ public class EventListenerContainer {
         if (obj instanceof EventListenerContainer) {
             return ((EventListenerContainer) obj).method.equals(method) && ((EventListenerContainer) obj).isStatic == isStatic;
         } else {
-            if (obj.getClass() != Class.class) obj = obj.getClass();
-            return isStatic ? obj == eventListener : obj == eventListener.getClass();
+            return obj == eventListener || obj.equals(eventListener);
         }
     }
 }
