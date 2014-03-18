@@ -33,23 +33,23 @@ public class EventManager {
      */
     public final void registerEventListener(Object eventListener, EventType... blacklist) {
         if (blacklist.length == 1 && blacklist[0] == WHITELIST) return;
-        boolean eventListenerStatic = eventListener.getClass() == Class.class;
-        Class<?> eventListenerClass = eventListenerStatic ? (Class<?>) eventListener : eventListener.getClass();
+        boolean isStatic = eventListener.getClass() == Class.class;
+        Class<?> eventListenerClass = isStatic ? (Class<?>) eventListener : eventListener.getClass();
         EventListener annotation = null;
-        boolean isStatic = false;
+        boolean isListenerStatic = false;
         EventType type = null;
         for (Method method : getAnnotatedMethods(eventListenerClass, EventListener.class, true, null, (Class<?>) null)) {
             annotation = method.getAnnotation(EventListener.class);
-            isStatic = Modifier.isStatic(method.getModifiers());
-            if (!eventListenerStatic || isStatic) {
+            isListenerStatic = Modifier.isStatic(method.getModifiers());
+            if (!isStatic || isListenerStatic) {
                 for (String requestedEvent : annotation.value()) {
                     type = EventType.types.get(requestedEvent);
                     if (type != null) {
                         if (type.isValidEventManager(this)
                                 && (blacklist.length == 0 || blacklist[0] == WHITELIST && Arrays.asList(blacklist).contains(type) || blacklist[0] != WHITELIST
                                         && !Arrays.asList(blacklist).contains(type))) {
-                            addEventListenerContainer(type, new EventListenerContainer(isStatic, isStatic ? eventListenerClass
-                                    : eventListener, method, annotation));
+                            addEventListenerContainer(type, new EventListenerContainer(isListenerStatic,
+                                    isListenerStatic ? eventListenerClass : eventListener, method, annotation));
                         }
                     } else {
                         throw new NoSuchElementException(requestedEvent);
@@ -66,6 +66,22 @@ public class EventManager {
         }
     }
 
+    public final void unregisterEventListener(Object eventListener, EventType... blacklist) {
+        if (blacklist.length == 1 && blacklist[0] == WHITELIST) return;
+        List<EventListenerContainer> listeners, listenersRead;
+        for (EventType type : registeredListeners.keySet()) {
+            if (blacklist.length == 0 || blacklist[0] == WHITELIST && Arrays.asList(blacklist).contains(type)
+                    || blacklist[0] != WHITELIST && !Arrays.asList(blacklist).contains(type)) {
+                listeners = registeredListeners.get(type);
+                if (listeners != null && listeners.size() > 0) {
+                    listenersRead = new ArrayList<EventListenerContainer>(listeners);
+                    for (EventListenerContainer container : listenersRead)
+                        if (container.equals(eventListener)) listeners.remove(container);
+                }
+            }
+        }
+    }
+
     /**
      * Used to unregister an EventListener in all events.
      * 
@@ -74,6 +90,7 @@ public class EventManager {
      * @param eventListener
      *            Object - The eventListener.
      */
+    @Deprecated
     public final void unregisterEventListener(EventType type, Object eventListener) {
         if (registeredListeners.containsKey(type)) {
             List<EventListenerContainer> listeners = registeredListeners.get(type);
