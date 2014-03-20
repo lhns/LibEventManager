@@ -7,6 +7,7 @@ public class Event {
     volatile private EventManager eventManager = null;
     volatile private EventType type = null;
     volatile private Object[] in = null;
+    volatile private List<EventListenerContainer> eventListenerContainers = new ArrayList<EventListenerContainer>();
     volatile private List<Object> out = new ArrayList<Object>();
     volatile private boolean done = false;
     volatile private boolean cancelled = false;
@@ -17,14 +18,20 @@ public class Event {
         this.in = in;
     }
 
-    protected final void schedule(List<EventListenerContainer> eventListenerContainerList) {
-        type.onEvent(this);
-        if (cancelled) return;
-        for (EventListenerContainer eventListenerContainer : eventListenerContainerList) {
-            eventListenerContainer.invoke(this);
+    protected final void schedule(List<EventListenerContainer> listeners) {
+        if (!done) {
+            eventListenerContainers.clear();
+            for (EventListenerContainer listener : listeners)
+                if (listener.isFiltered(this)) eventListenerContainers.add(listener);
+            type.onEvent(this);
             if (cancelled) return;
+            for (EventListenerContainer listener : eventListenerContainers) {
+                listener.invoke(this);
+                if (cancelled) return;
+            }
+
+            done = true;
         }
-        done = true;
     }
 
     /**
@@ -63,6 +70,10 @@ public class Event {
     public final void cancel() {
         if (done) return;
         cancelled = true;
+    }
+
+    public List<EventListenerContainer> getEventListenerContainers() {
+        return eventListenerContainers;
     }
 
     /**

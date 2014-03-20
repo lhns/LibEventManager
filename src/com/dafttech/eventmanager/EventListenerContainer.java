@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EventListenerContainer {
-    volatile protected boolean isStatic;
-    volatile protected Object eventListener;
-    volatile protected Method method;
-    volatile protected int priority;
+    volatile private boolean isStatic;
+    volatile private Object eventListener;
+    volatile private Method method;
+    volatile private int priority;
 
     volatile private Object[] filters;
     volatile private Class<?>[] argTypes;
@@ -27,16 +27,14 @@ public class EventListenerContainer {
     }
 
     protected final void invoke(Event event) {
-        if (isFiltered(event)) {
-            try {
-                method.invoke(isStatic ? null : eventListener, EventManager.argTypesToArgArray(argTypes, Event.class, event));
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            }
+        try {
+            method.invoke(isStatic ? null : eventListener, EventManager.argTypesToArgArray(argTypes, Event.class, event));
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
         }
     }
 
@@ -137,5 +135,21 @@ public class EventListenerContainer {
         } else {
             return obj == eventListener || obj.equals(eventListener);
         }
+    }
+
+    public boolean isStatic() {
+        return isStatic;
+    }
+
+    public Object getEventListener() {
+        return eventListener;
+    }
+
+    public Method getMethod() {
+        return method;
+    }
+
+    public int getPriority() {
+        return priority;
     }
 }

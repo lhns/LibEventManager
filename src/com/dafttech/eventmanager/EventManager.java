@@ -97,7 +97,7 @@ public class EventManager {
             if (listeners != null) {
                 List<EventListenerContainer> listenersRead = new ArrayList<EventListenerContainer>(listeners);
                 for (EventListenerContainer eventListenerContainer : listenersRead)
-                    if (eventListenerContainer.eventListener == eventListener) listeners.remove(eventListenerContainer);
+                    if (eventListenerContainer.getEventListener() == eventListener) listeners.remove(eventListenerContainer);
                 if (listeners.size() == 0) registeredListeners.remove(type);
             }
         }
@@ -111,7 +111,7 @@ public class EventManager {
         for (int i = 0; i < listeners.size(); i++) {
             container = listeners.get(i);
             if (container == eventListenerContainer) return;
-            if (container.priority < eventListenerContainer.priority) {
+            if (container.getPriority() < eventListenerContainer.getPriority()) {
                 listeners.add(i, eventListenerContainer);
                 return;
             }
