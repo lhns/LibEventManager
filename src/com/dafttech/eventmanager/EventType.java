@@ -51,7 +51,7 @@ public class EventType {
     protected void onEvent(Event event) {
     }
 
-    protected final boolean isValidEventManager(EventManager eventManager) {
+    protected final boolean isEventManagerValid(EventManager eventManager) {
         return validEventManagers.length == 0 || Arrays.asList(validEventManagers).contains(eventManager);
     }
 

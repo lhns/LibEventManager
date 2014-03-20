@@ -21,7 +21,7 @@ public class Event {
     protected final void schedule(List<EventListenerContainer> listeners) {
         if (!done) {
             eventListenerContainers.clear();
-            for (EventListenerContainer listener : listeners)
+            if (listeners != null) for (EventListenerContainer listener : listeners)
                 if (listener.isFiltered(this)) eventListenerContainers.add(listener);
             type.onEvent(this);
             if (cancelled) return;
@@ -29,7 +29,6 @@ public class Event {
                 listener.invoke(this);
                 if (cancelled) return;
             }
-
             done = true;
         }
     }
@@ -101,8 +100,7 @@ public class Event {
      * @return boolean - true, if the event is done.
      */
     public final boolean isDone() {
-        if (cancelled) return true;
-        return done;
+        return done || cancelled;
     }
 
     /**
