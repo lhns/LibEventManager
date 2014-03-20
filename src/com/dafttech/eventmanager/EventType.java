@@ -37,6 +37,11 @@ public class EventType {
      * 
      * @return boolean: true, if the EventListener should be called.
      */
+    protected boolean applyFilter(Event event, Object[] filter, ListenerContainer listenerContainer) {
+        return applyFilter(event, filter, listenerContainer.getEventListener());
+    }
+
+    @Deprecated
     protected boolean applyFilter(Event event, Object[] filter, Object eventListener) {
         return true;
     }

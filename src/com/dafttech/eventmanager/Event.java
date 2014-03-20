@@ -1,32 +1,34 @@
 package com.dafttech.eventmanager;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class Event {
     volatile private EventManager eventManager = null;
     volatile private EventType type = null;
     volatile private Object[] in = null;
-    volatile private List<ListenerContainer> eventListenerContainers = new ArrayList<ListenerContainer>();
+    volatile private List<ListenerContainer> listenerContainers = new LinkedList<ListenerContainer>();
     volatile private List<Object> out = new ArrayList<Object>();
     volatile private boolean done = false;
     volatile private boolean cancelled = false;
 
-    protected Event(EventManager eventManager, EventType type, Object[] in) {
+    protected Event(EventManager eventManager, EventType type, Object[] in, List<ListenerContainer> listenerContainers) {
         this.eventManager = eventManager;
         this.type = type;
         this.in = in;
+        this.listenerContainers = listenerContainers == null ? new LinkedList<ListenerContainer>()
+                : new LinkedList<ListenerContainer>(listenerContainers);
     }
 
-    protected final void schedule(List<ListenerContainer> listeners) {
-        if (!done) {
-            eventListenerContainers.clear();
-            if (listeners != null) for (ListenerContainer listener : listeners)
-                if (listener.isFiltered(this)) eventListenerContainers.add(listener);
+    protected final void schedule() {
+        if (!isDone()) {
+            for (int i = listenerContainers.size() - 1; i >= 0; i--)
+                if (!listenerContainers.get(i).isFiltered(this)) listenerContainers.remove(i);
             type.onEvent(this);
             if (cancelled) return;
-            for (ListenerContainer listener : eventListenerContainers) {
-                listener.invoke(this);
+            for (ListenerContainer listenerContainer : listenerContainers) {
+                listenerContainer.invoke(this);
                 if (cancelled) return;
             }
             done = true;
@@ -71,8 +73,8 @@ public class Event {
         cancelled = true;
     }
 
-    public List<ListenerContainer> getEventListenerContainers() {
-        return eventListenerContainers;
+    public List<ListenerContainer> getListenerContainers() {
+        return listenerContainers;
     }
 
     /**

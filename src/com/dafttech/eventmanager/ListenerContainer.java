@@ -44,7 +44,7 @@ public class ListenerContainer {
         for (Object[] eventFilter : eventFilters) {
             if (eventFilter.length > 0) {
                 try {
-                    if (event.getEventType().applyFilter(event, eventFilter, eventListener)) return true;
+                    if (event.getEventType().applyFilter(event, eventFilter, this)) return true;
                 } catch (ArrayIndexOutOfBoundsException e) {
                 } catch (ClassCastException e) {
                 } catch (NullPointerException e) {

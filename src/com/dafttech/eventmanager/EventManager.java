@@ -68,15 +68,14 @@ public class EventManager {
 
     public final void unregisterEventListener(Object eventListener, EventType... blacklist) {
         if (blacklist.length == 1 && blacklist[0] == WHITELIST) return;
-        List<ListenerContainer> listeners, listenersRead;
+        List<ListenerContainer> listeners;
         for (EventType type : registeredListeners.keySet()) {
             if (blacklist.length == 0 || blacklist[0] == WHITELIST && Arrays.asList(blacklist).contains(type)
                     || blacklist[0] != WHITELIST && !Arrays.asList(blacklist).contains(type)) {
                 listeners = registeredListeners.get(type);
                 if (listeners != null && listeners.size() > 0) {
-                    listenersRead = new ArrayList<ListenerContainer>(listeners);
-                    for (ListenerContainer container : listenersRead)
-                        if (container.equals(eventListener)) listeners.remove(container);
+                    for (int i = listeners.size() - 1; i >= 0; i--)
+                        if (listeners.get(i).equals(eventListener)) listeners.remove(i);
                 }
             }
         }
@@ -103,20 +102,20 @@ public class EventManager {
         }
     }
 
-    private final void addEventListenerContainer(EventType type, ListenerContainer eventListenerContainer) {
+    private final void addEventListenerContainer(EventType type, ListenerContainer listenerContainer) {
         if (!registeredListeners.containsKey(type) || registeredListeners.get(type) == null)
             registeredListeners.put(type, new ArrayList<ListenerContainer>());
         List<ListenerContainer> listeners = registeredListeners.get(type);
         ListenerContainer container;
         for (int i = 0; i < listeners.size(); i++) {
             container = listeners.get(i);
-            if (container == eventListenerContainer) return;
-            if (container.getPriority() < eventListenerContainer.getPriority()) {
-                listeners.add(i, eventListenerContainer);
+            if (container == listenerContainer) return;
+            if (container.getPriority() < listenerContainer.getPriority()) {
+                listeners.add(i, listenerContainer);
                 return;
             }
         }
-        listeners.add(eventListenerContainer);
+        listeners.add(listenerContainer);
     }
 
     /**
@@ -132,14 +131,8 @@ public class EventManager {
      *         checking if the event was cancelled
      */
     public final Event callSync(EventType type, Object... objects) {
-        Event event = new Event(this, type, objects);
-        List<ListenerContainer> listeners = registeredListeners.get(type);
-        if (listeners != null) {
-            listeners = new ArrayList<ListenerContainer>(listeners);
-        } else {
-            listeners = new ArrayList<ListenerContainer>();
-        }
-        event.schedule(listeners);
+        Event event = new Event(this, type, objects, registeredListeners.get(type));
+        event.schedule();
         return event;
     }
 
@@ -158,14 +151,8 @@ public class EventManager {
      *         cancelled
      */
     public final Event callAsync(EventType type, Object... objects) {
-        Event event = new Event(this, type, objects);
-        List<ListenerContainer> listeners = registeredListeners.get(type);
-        if (listeners != null) {
-            listeners = new ArrayList<ListenerContainer>(listeners);
-        } else {
-            listeners = new ArrayList<ListenerContainer>();
-        }
-        new AsyncEventThread(event, listeners);
+        Event event = new Event(this, type, objects, registeredListeners.get(type));
+        new AsyncEventThread(event);
         return event;
     }
 
