@@ -7,7 +7,7 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EventListenerContainer {
+public class ListenerContainer {
     volatile private boolean isStatic;
     volatile private Object eventListener;
     volatile private Method method;
@@ -16,7 +16,7 @@ public class EventListenerContainer {
     volatile private Object[] filters;
     volatile private Class<?>[] argTypes;
 
-    protected EventListenerContainer(boolean isStatic, Object eventListener, Method method, EventListener annotation) {
+    protected ListenerContainer(boolean isStatic, Object eventListener, Method method, EventListener annotation) {
         this.isStatic = isStatic;
         this.eventListener = eventListener;
         this.method = method;
@@ -130,8 +130,8 @@ public class EventListenerContainer {
 
     @Override
     public final boolean equals(Object obj) {
-        if (obj instanceof EventListenerContainer) {
-            return ((EventListenerContainer) obj).method.equals(method) && ((EventListenerContainer) obj).isStatic == isStatic;
+        if (obj instanceof ListenerContainer) {
+            return ((ListenerContainer) obj).method.equals(method) && ((ListenerContainer) obj).isStatic == isStatic;
         } else {
             return obj == eventListener || obj.equals(eventListener);
         }
