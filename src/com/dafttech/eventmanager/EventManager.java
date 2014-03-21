@@ -33,10 +33,9 @@ public class EventManager {
      */
     public final void registerEventListener(Object eventListener, EventType... blacklist) {
         if (blacklist.length == 1 && blacklist[0] == WHITELIST) return;
-        boolean isStatic = eventListener.getClass() == Class.class;
+        boolean isStatic = eventListener.getClass() == Class.class, isListenerStatic;
         Class<?> eventListenerClass = isStatic ? (Class<?>) eventListener : eventListener.getClass();
         EventListener annotation = null;
-        boolean isListenerStatic = false;
         EventType type = null;
         for (Method method : getAnnotatedMethods(eventListenerClass, EventListener.class, true, null, (Class<?>) null)) {
             annotation = method.getAnnotation(EventListener.class);
@@ -68,14 +67,14 @@ public class EventManager {
 
     public final void unregisterEventListener(Object eventListener, EventType... blacklist) {
         if (blacklist.length == 1 && blacklist[0] == WHITELIST) return;
-        List<ListenerContainer> listeners;
+        List<ListenerContainer> listenerContainers;
         for (EventType type : registeredListeners.keySet()) {
             if (blacklist.length == 0 || blacklist[0] == WHITELIST && Arrays.asList(blacklist).contains(type)
                     || blacklist[0] != WHITELIST && !Arrays.asList(blacklist).contains(type)) {
-                listeners = registeredListeners.get(type);
-                if (listeners != null && listeners.size() > 0) {
-                    for (int i = listeners.size() - 1; i >= 0; i--)
-                        if (listeners.get(i).equals(eventListener)) listeners.remove(i);
+                listenerContainers = registeredListeners.get(type);
+                if (listenerContainers != null && listenerContainers.size() > 0) {
+                    for (int i = listenerContainers.size() - 1; i >= 0; i--)
+                        if (listenerContainers.get(i).equals(eventListener)) listenerContainers.remove(i);
                 }
             }
         }
@@ -91,31 +90,23 @@ public class EventManager {
      */
     @Deprecated
     public final void unregisterEventListener(EventType type, Object eventListener) {
-        if (registeredListeners.containsKey(type)) {
-            List<ListenerContainer> listeners = registeredListeners.get(type);
-            if (listeners != null) {
-                List<ListenerContainer> listenersRead = new ArrayList<ListenerContainer>(listeners);
-                for (ListenerContainer eventListenerContainer : listenersRead)
-                    if (eventListenerContainer.getEventListener() == eventListener) listeners.remove(eventListenerContainer);
-                if (listeners.size() == 0) registeredListeners.remove(type);
-            }
-        }
+        unregisterEventListener(eventListener, EventManager.WHITELIST, type);
     }
 
-    private final void addEventListenerContainer(EventType type, ListenerContainer listenerContainer) {
+    private final void addEventListenerContainer(EventType type, ListenerContainer newListenerContainer) {
         if (!registeredListeners.containsKey(type) || registeredListeners.get(type) == null)
             registeredListeners.put(type, new ArrayList<ListenerContainer>());
-        List<ListenerContainer> listeners = registeredListeners.get(type);
-        ListenerContainer container;
-        for (int i = 0; i < listeners.size(); i++) {
-            container = listeners.get(i);
-            if (container == listenerContainer) return;
-            if (container.getPriority() < listenerContainer.getPriority()) {
-                listeners.add(i, listenerContainer);
+        List<ListenerContainer> listenerContainers = registeredListeners.get(type);
+        ListenerContainer listenerContainer;
+        for (int i = 0; i < listenerContainers.size(); i++) {
+            listenerContainer = listenerContainers.get(i);
+            if (listenerContainer == newListenerContainer) return;
+            if (listenerContainer.getPriority() < newListenerContainer.getPriority()) {
+                listenerContainers.add(i, newListenerContainer);
                 return;
             }
         }
-        listeners.add(listenerContainer);
+        listenerContainers.add(newListenerContainer);
     }
 
     /**
