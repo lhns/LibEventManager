@@ -151,6 +151,14 @@ public class Event {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
+    public final <T> List<T> getInput(Class<T> cast) {
+        List<T> newOut = new ArrayList<T>();
+        for (Object obj : in)
+            if (cast.isInstance(obj)) newOut.add((T) obj);
+        return newOut;
+    }
+
     /**
      * Use this to get all the objects out of the output list.
      * 
@@ -158,6 +166,17 @@ public class Event {
      */
     public final List<Object> getOutput() {
         if (isDone()) return out;
+        return null;
+    }
+
+    public final Object getOutput(int index) {
+        if (index >= 0 && index < out.size()) return out.get(index);
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    public final <T> T getOutput(int index, Class<T> cast) {
+        if (index >= 0 && index < out.size() && cast.isInstance(out.get(index))) return (T) out.get(index);
         return null;
     }
 

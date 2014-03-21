@@ -35,6 +35,8 @@ public class ListenerContainer {
             e.printStackTrace();
         } catch (InvocationTargetException e) {
             e.printStackTrace();
+            System.out.println("at " + (isStatic ? ((Class<?>) eventListener).getName() : eventListener.getClass().getName())
+                    + " at method " + method.getName());
         }
     }
 
