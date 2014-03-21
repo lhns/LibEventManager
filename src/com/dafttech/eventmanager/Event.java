@@ -1,13 +1,14 @@
 package com.dafttech.eventmanager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 public class Event {
     volatile private EventManager eventManager = null;
     volatile private EventType type = null;
-    volatile private Object[] in = null;
+    volatile private List<Object> in = new ArrayList<Object>();
     volatile private List<ListenerContainer> listenerContainers = new LinkedList<ListenerContainer>();
     volatile private List<Object> out = new ArrayList<Object>();
     volatile private boolean done = false;
@@ -16,7 +17,7 @@ public class Event {
     protected Event(EventManager eventManager, EventType type, Object[] in, List<ListenerContainer> listenerContainers) {
         this.eventManager = eventManager;
         this.type = type;
-        this.in = in;
+        this.in = Arrays.asList(in);
         this.listenerContainers = listenerContainers == null ? new LinkedList<ListenerContainer>()
                 : new LinkedList<ListenerContainer>(listenerContainers);
     }
@@ -111,7 +112,7 @@ public class Event {
      * @return Object[] - the objects
      */
     public final Object[] getInput() {
-        return in;
+        return in.toArray();
     }
 
     /**
@@ -123,8 +124,12 @@ public class Event {
      *         range
      */
     public final Object getInput(int index) {
-        if (index >= 0 && index < in.length) return in[index];
+        if (index >= 0 && index < in.size()) return in.get(index);
         return null;
+    }
+
+    public final Object modifyInput() {
+        return in;
     }
 
     /**
@@ -140,7 +145,7 @@ public class Event {
      */
     @SuppressWarnings("unchecked")
     public final <T> T getInput(int index, Class<T> cast) {
-        if (index >= 0 && index < in.length && cast.isInstance(in[index])) return (T) in[index];
+        if (index >= 0 && index < in.size() && cast.isInstance(in.get(index))) return (T) in.get(index);
         return null;
     }
 
