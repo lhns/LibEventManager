@@ -32,6 +32,8 @@ public class Event {
                 listenerContainer.invoke(this);
                 if (cancelled) return;
             }
+            type.onEventPost(this);
+            if (cancelled) return;
             done = true;
         }
     }
