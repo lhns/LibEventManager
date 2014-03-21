@@ -128,7 +128,7 @@ public class Event {
         return null;
     }
 
-    public final Object modifyInput() {
+    public final List<Object> modifyInput() {
         return in;
     }
 
