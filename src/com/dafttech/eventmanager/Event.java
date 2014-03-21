@@ -1,7 +1,6 @@
 package com.dafttech.eventmanager;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -11,21 +10,26 @@ public class Event {
     volatile private List<Object> in = new ArrayList<Object>();
     volatile private List<ListenerContainer> listenerContainers = new LinkedList<ListenerContainer>();
     volatile private List<Object> out = new ArrayList<Object>();
+    volatile private boolean filtered = false;
     volatile private boolean done = false;
     volatile private boolean cancelled = false;
 
     protected Event(EventManager eventManager, EventType type, Object[] in, List<ListenerContainer> listenerContainers) {
         this.eventManager = eventManager;
         this.type = type;
-        this.in = Arrays.asList(in);
+        for (Object obj : in)
+            this.in.add(obj);
         this.listenerContainers = listenerContainers == null ? new LinkedList<ListenerContainer>()
                 : new LinkedList<ListenerContainer>(listenerContainers);
     }
 
     protected final void schedule() {
         if (!isDone()) {
-            for (int i = listenerContainers.size() - 1; i >= 0; i--)
-                if (!listenerContainers.get(i).isFiltered(this)) listenerContainers.remove(i);
+            if (!filtered) {
+                for (int i = listenerContainers.size() - 1; i >= 0; i--)
+                    if (!listenerContainers.get(i).isFiltered(this)) listenerContainers.remove(i);
+                filtered = true;
+            }
             type.onEvent(this);
             if (cancelled) return;
             for (ListenerContainer listenerContainer : listenerContainers) {
@@ -77,7 +81,7 @@ public class Event {
     }
 
     public List<ListenerContainer> getListenerContainers() {
-        return listenerContainers;
+        return filtered ? listenerContainers : null;
     }
 
     /**
