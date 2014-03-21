@@ -159,6 +159,12 @@ public class Event {
         return newOut;
     }
 
+    public final boolean containsInput(Class<?> cast) {
+        for (Object obj : in)
+            if (cast.isInstance(obj)) return true;
+        return false;
+    }
+
     /**
      * Use this to get all the objects out of the output list.
      * 
@@ -199,6 +205,12 @@ public class Event {
             return newOut;
         }
         return null;
+    }
+
+    public final boolean containsOutput(Class<?> cast) {
+        for (Object obj : out)
+            if (cast.isInstance(obj)) return true;
+        return false;
     }
 
     @Deprecated
