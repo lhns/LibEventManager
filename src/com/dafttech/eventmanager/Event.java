@@ -111,10 +111,10 @@ public class Event {
     /**
      * Retrieve all objects given, when the event was called
      * 
-     * @return Object[] - the objects
+     * @return List<Object> - the objects
      */
-    public final Object[] getInput() {
-        return in.toArray();
+    public final List<Object> getInput() {
+        return in;
     }
 
     /**
@@ -128,10 +128,6 @@ public class Event {
     public final Object getInput(int index) {
         if (index >= 0 && index < in.size()) return in.get(index);
         return null;
-    }
-
-    public final List<Object> modifyInput() {
-        return in;
     }
 
     /**
