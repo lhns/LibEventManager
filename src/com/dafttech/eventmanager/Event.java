@@ -80,6 +80,11 @@ public class Event {
         cancelled = true;
     }
 
+    public final void setCancelled(boolean cancelled) {
+        if (done) return;
+        this.cancelled = cancelled;
+    }
+
     public List<ListenerContainer> getListenerContainers() {
         return filtered ? listenerContainers : null;
     }
