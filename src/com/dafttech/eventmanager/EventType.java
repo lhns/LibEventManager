@@ -67,4 +67,8 @@ public class EventType {
         }
         return false;
     }
+
+    public static final EventType getByName(String name) {
+        return types.get(name);
+    }
 }

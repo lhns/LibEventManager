@@ -151,10 +151,6 @@ public class EventManager {
 
     // STATIC METHODS
 
-    public static final EventType getEventTypeByName(String name) {
-        return EventType.types.get(name);
-    }
-
     /**
      * Used to get an array of null objects (or false for boolean, 0 for
      * numbers, etc.) for dynamic instantiation. You can also insert objects for
