@@ -122,6 +122,7 @@ public class EventManager {
      *         checking if the event was cancelled
      */
     public final Event callSync(EventType type, Object... objects) {
+        if (type == null) return null;
         Event event = new Event(this, type, objects, registeredListeners.get(type));
         event.schedule();
         return event;
@@ -142,12 +143,17 @@ public class EventManager {
      *         cancelled
      */
     public final Event callAsync(EventType type, Object... objects) {
+        if (type == null) return null;
         Event event = new Event(this, type, objects, registeredListeners.get(type));
         new AsyncEventThread(event);
         return event;
     }
 
     // STATIC METHODS
+
+    public static final EventType getEventTypeByName(String name) {
+        return EventType.types.get(name);
+    }
 
     /**
      * Used to get an array of null objects (or false for boolean, 0 for
