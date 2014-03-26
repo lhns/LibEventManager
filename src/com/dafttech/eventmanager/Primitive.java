@@ -7,14 +7,15 @@ public class Primitive {
     private static final Map<Class<?>, Primitive> primitives = new HashMap<Class<?>, Primitive>();
 
     static {
-        primitives.put(byte.class, new Primitive(Byte.class));
-        primitives.put(short.class, new Primitive(Short.class));
-        primitives.put(int.class, new Primitive(Integer.class));
-        primitives.put(long.class, new Primitive(Long.class));
-        primitives.put(float.class, new Primitive(Float.class));
-        primitives.put(double.class, new Primitive(Double.class));
-        primitives.put(boolean.class, new Primitive(Boolean.class, false));
-        primitives.put(char.class, new Primitive(Character.class, '\u0000'));
+        new Primitive(byte.class, Byte.class, 0);
+        new Primitive(short.class, Short.class, 0);
+        new Primitive(int.class, Integer.class, 0);
+        new Primitive(long.class, Long.class, 0);
+        new Primitive(float.class, Float.class, 0);
+        new Primitive(double.class, Double.class, 0);
+        new Primitive(boolean.class, Boolean.class, false);
+        new Primitive(char.class, Character.class, '\u0000');
+        new Primitive(void.class, Void.class, null);
     }
 
     public static final Primitive get(Class<?> primitiveClass) {
@@ -24,13 +25,10 @@ public class Primitive {
     private final Class<?> objectClass;
     private final Object nullValue;
 
-    private Primitive(Class<?> objectClass, Object nullValue) {
+    private Primitive(Class<?> primitiveClass, Class<?> objectClass, Object nullValue) {
         this.objectClass = objectClass;
         this.nullValue = nullValue;
-    }
-
-    private Primitive(Class<?> objectClass) {
-        this(objectClass, 0);
+        primitives.put(primitiveClass, this);
     }
 
     public final Class<?> getObjectClass() {
