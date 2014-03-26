@@ -168,6 +168,13 @@ public class Event {
         return newOut;
     }
 
+    public final <T> T getInput(Class<T> cast, int index) {
+        List<T> newOut = getInput(cast);
+        if (newOut.size() == 0) return null;
+        if (index >= newOut.size()) return newOut.get(newOut.size() - 1);
+        return newOut.get(index);
+    }
+
     public final boolean containsInput(Class<?> cast) {
         for (Object obj : in)
             if (cast.isPrimitive() && Primitive.get(cast).getObjectClass().isInstance(obj) || cast.isInstance(obj)) return true;
@@ -218,6 +225,13 @@ public class Event {
             return newOut;
         }
         return null;
+    }
+
+    public final <T> T getOutput(Class<T> cast, int index) {
+        List<T> newOut = getOutput(cast);
+        if (newOut.size() == 0) return null;
+        if (index >= newOut.size()) return newOut.get(newOut.size() - 1);
+        return newOut.get(index);
     }
 
     public final boolean containsOutput(Class<?> cast) {
