@@ -152,7 +152,10 @@ public class Event {
      */
     @SuppressWarnings("unchecked")
     public final <T> T getInput(int index, Class<T> cast) {
-        if (index >= 0 && index < in.size() && cast.isInstance(in.get(index))) return (T) in.get(index);
+        if (index >= 0
+                && index < in.size()
+                && (cast.isPrimitive() && Primitive.get(cast).getObjectClass().isInstance(in.get(index)) || cast.isInstance(in
+                        .get(index)))) return (T) in.get(index);
         return null;
     }
 
@@ -160,13 +163,14 @@ public class Event {
     public final <T> List<T> getInput(Class<T> cast) {
         List<T> newOut = new ArrayList<T>();
         for (Object obj : in)
-            if (cast.isInstance(obj)) newOut.add((T) obj);
+            if (cast.isPrimitive() && Primitive.get(cast).getObjectClass().isInstance(obj) || cast.isInstance(obj))
+                newOut.add((T) obj);
         return newOut;
     }
 
     public final boolean containsInput(Class<?> cast) {
         for (Object obj : in)
-            if (cast.isInstance(obj)) return true;
+            if (cast.isPrimitive() && Primitive.get(cast).getObjectClass().isInstance(obj) || cast.isInstance(obj)) return true;
         return false;
     }
 
@@ -187,7 +191,10 @@ public class Event {
 
     @SuppressWarnings("unchecked")
     public final <T> T getOutput(int index, Class<T> cast) {
-        if (index >= 0 && index < out.size() && cast.isInstance(out.get(index))) return (T) out.get(index);
+        if (index >= 0
+                && index < out.size()
+                && (cast.isPrimitive() && Primitive.get(cast).getObjectClass().isInstance(out.get(index)) || cast.isInstance(out
+                        .get(index)))) return (T) out.get(index);
         return null;
     }
 
@@ -206,7 +213,8 @@ public class Event {
         if (isDone()) {
             List<T> newOut = new ArrayList<T>();
             for (Object obj : out)
-                if (cast.isInstance(obj)) newOut.add((T) obj);
+                if (cast.isPrimitive() && Primitive.get(cast).getObjectClass().isInstance(obj) || cast.isInstance(obj))
+                    newOut.add((T) obj);
             return newOut;
         }
         return null;
@@ -214,7 +222,7 @@ public class Event {
 
     public final boolean containsOutput(Class<?> cast) {
         for (Object obj : out)
-            if (cast.isInstance(obj)) return true;
+            if (cast.isPrimitive() && Primitive.get(cast).getObjectClass().isInstance(obj) || cast.isInstance(obj)) return true;
         return false;
     }
 

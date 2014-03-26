@@ -172,15 +172,7 @@ public class EventManager {
                     break;
                 }
             }
-            if (args[i1] == null && argTypes[i1].isPrimitive()) {
-                if (argTypes[i1] == boolean.class) {
-                    args[i1] = false;
-                } else if (argTypes[i1] == char.class) {
-                    args[i1] = '\u0000';
-                } else {
-                    args[i1] = 0;
-                }
-            }
+            if (args[i1] == null && argTypes[i1].isPrimitive()) args[i1] = Primitive.get(argTypes[i1]).getNullValue();
         }
         return args;
     }
