@@ -32,8 +32,8 @@ public class EventType {
      *            Event - the called event
      * @param filter
      *            Object[] - Is the given filter on registering an EventListener
-     * @param eventListener
-     *            Object - Is the instance of the EventListener class
+     * @param listenerContainer
+     *            ListenerContainer - Is the container of the EventListener
      * 
      * @return boolean: true, if the EventListener should be called.
      */
