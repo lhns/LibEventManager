@@ -41,6 +41,7 @@ public class ListenerContainer {
     }
 
     protected final boolean isFiltered(Event event) {
+        if (filters.length == 0) return true;
         Object[][] eventFilters = getFilters();
         if (eventFilters.length == 0) return true;
         for (Object[] eventFilter : eventFilters) {
