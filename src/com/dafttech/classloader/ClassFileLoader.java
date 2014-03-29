@@ -59,7 +59,11 @@ public class ClassFileLoader {
                                 loadedClass = classLoader.loadClass(sortedPackageName);
                             } catch (ClassNotFoundException e1) {
                                 e1.printStackTrace();
+                            } catch (NoClassDefFoundError e1) {
+                                e1.printStackTrace();
                             }
+                        } catch (NoClassDefFoundError e) {
+                            e.printStackTrace();
                         }
                         if (loadedClass != null && loadedClass != ClassDiscoverer.class) classes.add(loadedClass);
                     }
