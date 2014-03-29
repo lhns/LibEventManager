@@ -6,15 +6,15 @@ import java.util.Map;
 
 public class EventType {
     volatile protected String name = "";
-    volatile protected EventManager[] validEventManagers;
+    volatile protected EventManager[] managerWhitelist;
 
     protected static Map<String, EventType> types = new HashMap<String, EventType>();
     public static final int PRIORITY_STANDARD = 0;
 
-    public EventType(String name, EventManager... eventManagers) {
+    public EventType(String name, EventManager... managerWhitelist) {
         this.name = name;
         types.put(name, this);
-        validEventManagers = eventManagers;
+        this.managerWhitelist = managerWhitelist;
     }
 
     protected EventType() {
@@ -54,8 +54,8 @@ public class EventType {
     protected void onEventPost(Event event) {
     }
 
-    protected final boolean isEventManagerValid(EventManager eventManager) {
-        return validEventManagers.length == 0 || Arrays.asList(validEventManagers).contains(eventManager);
+    protected final boolean isWhitelisted(EventManager eventManager) {
+        return managerWhitelist.length == 0 || Arrays.asList(managerWhitelist).contains(eventManager);
     }
 
     @Override

@@ -44,7 +44,7 @@ public class EventManager {
                 for (String requestedEvent : annotation.value()) {
                     type = EventType.types.get(requestedEvent);
                     if (type != null) {
-                        if (type.isEventManagerValid(this)
+                        if (type.isWhitelisted(this)
                                 && (blacklist.length == 0 || blacklist[0] == WHITELIST && Arrays.asList(blacklist).contains(type) || blacklist[0] != WHITELIST
                                         && !Arrays.asList(blacklist).contains(type))) {
                             addEventListenerContainer(type, new ListenerContainer(isListenerStatic,
