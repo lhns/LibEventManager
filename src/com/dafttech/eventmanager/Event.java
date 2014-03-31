@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.dafttech.primitives.Primitive;
+
 public class Event {
     volatile private EventManager eventManager = null;
     volatile private EventType type = null;

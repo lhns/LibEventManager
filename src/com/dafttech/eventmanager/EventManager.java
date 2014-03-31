@@ -11,6 +11,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import com.dafttech.primitives.Primitive;
+
 public class EventManager {
     public static final EventType WHITELIST = new EventType();
 

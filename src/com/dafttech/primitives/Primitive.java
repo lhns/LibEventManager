@@ -1,4 +1,4 @@
-package com.dafttech.eventmanager;
+package com.dafttech.primitives;
 
 import java.util.HashMap;
 import java.util.Map;
