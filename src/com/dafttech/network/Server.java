@@ -5,11 +5,10 @@ import java.net.ServerSocket;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Server extends Thread {
-    private ServerSocket serverSocket;
-    private List<Client> clients = new LinkedList<Client>();
-    private Thread creator;
-    private boolean closed;
+public class Server {
+    private volatile ServerSocket serverSocket;
+    private volatile List<Client> clients = new LinkedList<Client>();
+    private ServerThread thread;
 
     public Server(int port) throws IOException {
         this(new ServerSocket(port));
@@ -17,26 +16,30 @@ public class Server extends Thread {
 
     public Server(ServerSocket serverSocket) {
         this.serverSocket = serverSocket;
-        creator = Thread.currentThread();
-        closed = false;
+        thread = new ServerThread();
+        thread.start();
     }
 
-    @Override
-    public void run() {
-        while (!closed && creator.isAlive()) {
-            try {
-                clients.add(new Client(serverSocket.accept()));
-            } catch (IOException e) {
-                e.printStackTrace();
+    public final void close() {
+        thread.closed = true;
+    }
+
+    public final List<Client> getClients() {
+        return clients;
+    }
+
+    private class ServerThread extends Thread {
+        private volatile boolean closed = false;
+
+        @Override
+        public void run() {
+            while (!closed) {
+                try {
+                    clients.add(new Client(serverSocket.accept()));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
-    }
-
-    public void close() {
-        closed = true;
-    }
-
-    public List<Client> getClients() {
-        return clients;
     }
 }
