@@ -11,7 +11,12 @@ public class Server extends Thread {
     private Thread creator;
     private boolean closed;
 
-    public Server() {
+    public Server(int port) throws IOException {
+        this(new ServerSocket(port));
+    }
+
+    public Server(ServerSocket serverSocket) {
+        this.serverSocket = serverSocket;
         creator = Thread.currentThread();
         closed = false;
     }
@@ -29,5 +34,9 @@ public class Server extends Thread {
 
     public void close() {
         closed = true;
+    }
+
+    public List<Client> getClients() {
+        return clients;
     }
 }
