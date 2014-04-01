@@ -1,7 +1,7 @@
 apply plugin: 'java'
 
 archivesBaseName = "EventManager"
-version = "10.7"
+version = "10.8"
 group = "com.dafttech"
 
 sourceSets {
