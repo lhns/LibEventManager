@@ -50,6 +50,9 @@ public class Server {
     public void receive(Client client, int channel, byte[] data) {
     }
 
+    public void disconnect(Client client) {
+    }
+
     private class ServerThread extends Thread {
         private volatile boolean closed = false;
 
@@ -63,6 +66,11 @@ public class Server {
                         @Override
                         public void receive(int channel, byte[] data) {
                             Server.this.receive(this, channel, data);
+                        }
+
+                        @Override
+                        public void disconnect() {
+                            Server.this.disconnect(this);
                         }
                     });
                 } catch (IOException e) {

@@ -72,6 +72,9 @@ public class Client {
     public void receive(int channel, byte[] data) {
     }
 
+    public void disconnect() {
+    }
+
     private class ClientThread extends Thread {
         private volatile boolean closed;
 
@@ -90,6 +93,7 @@ public class Client {
                 } catch (IOException e) {
                     if (e instanceof SocketException) {
                         closed = true;
+                        disconnect();
                         return;
                     }
                     e.printStackTrace();
