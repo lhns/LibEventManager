@@ -30,9 +30,10 @@ public class Client {
         thread.closed = true;
     }
 
-    public final void send(byte[] data) {
+    public final void send(int channel, byte... data) {
         try {
             OutputStream outputStream = socket.getOutputStream();
+            outputStream.write(BigInteger.valueOf(channel).toByteArray(), 0, 4);
             outputStream.write(BigInteger.valueOf(data.length).toByteArray(), 0, 4);
             outputStream.write(data);
         } catch (IOException e) {
@@ -40,7 +41,7 @@ public class Client {
         }
     }
 
-    public void receive(byte[] data) {
+    public void receive(int channel, byte[] data) {
 
     }
 
@@ -70,11 +71,13 @@ public class Client {
             while (!closed) {
                 try {
                     InputStream inputStream = socket.getInputStream();
-                    byte[] size = new byte[4];
-                    inputStream.read(size);
-                    byte[] data = new byte[new BigInteger(size).intValue()];
+                    byte[] integer = new byte[4];
+                    inputStream.read(integer);
+                    int channel = new BigInteger(integer).intValue();
+                    inputStream.read(integer);
+                    byte[] data = new byte[new BigInteger(integer).intValue()];
                     inputStream.read(data);
-                    receive(data);
+                    receive(channel, data);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
