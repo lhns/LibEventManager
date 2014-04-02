@@ -3,12 +3,10 @@ package com.dafttech.network;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.Arrays;
 
 public class Client {
     private volatile Socket socket;
@@ -59,13 +57,15 @@ public class Client {
     }
 
     public final void send(int channel, byte... data) {
-        try {
-            OutputStream outputStream = socket.getOutputStream();
-            outputStream.write(Arrays.copyOf(BigInteger.valueOf(channel).toByteArray(), 4));
-            outputStream.write(Arrays.copyOf(BigInteger.valueOf(data.length).toByteArray(), 4));
-            outputStream.write(data);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (isAlive()) {
+            try {
+                OutputStream outputStream = socket.getOutputStream();
+                outputStream.write(toByteArray(channel));
+                outputStream.write(toByteArray(data.length));
+                outputStream.write(data);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -82,9 +82,9 @@ public class Client {
                     InputStream inputStream = socket.getInputStream();
                     byte[] integer = new byte[4];
                     inputStream.read(integer);
-                    int channel = new BigInteger(integer).intValue();
+                    int channel = fromByteArray(integer);
                     inputStream.read(integer);
-                    byte[] data = new byte[new BigInteger(integer).intValue()];
+                    byte[] data = new byte[fromByteArray(integer)];
                     inputStream.read(data);
                     receive(channel, data);
                 } catch (IOException e) {
@@ -96,5 +96,13 @@ public class Client {
                 }
             }
         }
+    }
+
+    private static byte[] toByteArray(int value) {
+        return new byte[] { (byte) (value >> 24), (byte) (value >> 16), (byte) (value >> 8), (byte) value };
+    }
+
+    private static int fromByteArray(byte[] bytes) {
+        return bytes[0] << 24 | (bytes[1] & 0xFF) << 16 | (bytes[2] & 0xFF) << 8 | bytes[3] & 0xFF;
     }
 }
