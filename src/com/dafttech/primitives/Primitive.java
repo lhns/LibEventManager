@@ -1,10 +1,10 @@
 package com.dafttech.primitives;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Primitive {
-    private static final Map<Class<?>, Primitive> primitives = new HashMap<Class<?>, Primitive>();
+    private static final List<Primitive> primitives = new LinkedList<Primitive>();
 
     public static final Primitive BYTE = new Primitive(byte.class, Byte.class, 1, 0);
     public static final Primitive SHORT = new Primitive(short.class, Short.class, 2, 0);
@@ -17,29 +17,42 @@ public class Primitive {
     public static final Primitive VOID = new Primitive(void.class, Void.class, 0, null);
 
     public static final Primitive get(Class<?> primitiveClass) {
-        return primitives.get(primitiveClass);
+        int index = primitives.indexOf(primitiveClass);
+        if (index >= 0) return primitives.get(index);
+        return null;
     }
 
+    private final Class<?> primitiveClass;
     private final Class<?> objectClass;
-    private final Object nullValue;
     private final int size;
+    private final Object nullValue;
 
     private Primitive(Class<?> primitiveClass, Class<?> objectClass, int size, Object nullValue) {
+        this.primitiveClass = primitiveClass;
         this.objectClass = objectClass;
-        this.nullValue = nullValue;
         this.size = size;
-        primitives.put(primitiveClass, this);
+        this.nullValue = nullValue;
+        primitives.add(this);
+    }
+
+    public final Class<?> getPrimitiveClass() {
+        return primitiveClass;
     }
 
     public final Class<?> getObjectClass() {
         return objectClass;
     }
 
+    public final int getSize() {
+        return size;
+    }
+
     public final Object getNullValue() {
         return nullValue;
     }
 
-    public final int getSize() {
-        return size;
+    @Override
+    public final boolean equals(Object obj) {
+        return obj == this || obj == primitiveClass || obj == objectClass || primitiveClass.isInstance(obj);
     }
 }
