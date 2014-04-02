@@ -7,6 +7,7 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 
 public class Client {
     private volatile Socket socket;
@@ -55,8 +56,8 @@ public class Client {
     public final void send(int channel, byte... data) {
         try {
             OutputStream outputStream = socket.getOutputStream();
-            outputStream.write(BigInteger.valueOf(channel).toByteArray(), 0, 4);
-            outputStream.write(BigInteger.valueOf(data.length).toByteArray(), 0, 4);
+            outputStream.write(Arrays.copyOf(BigInteger.valueOf(channel).toByteArray(), 4));
+            outputStream.write(Arrays.copyOf(BigInteger.valueOf(data.length).toByteArray(), 4));
             outputStream.write(data);
         } catch (IOException e) {
             e.printStackTrace();
@@ -82,7 +83,7 @@ public class Client {
                     inputStream.read(data);
                     receive(channel, data);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    //e.printStackTrace();
                 }
             }
         }
