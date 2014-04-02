@@ -30,19 +30,8 @@ public class Client {
         thread.closed = true;
     }
 
-    public final void send(int channel, byte... data) {
-        try {
-            OutputStream outputStream = socket.getOutputStream();
-            outputStream.write(BigInteger.valueOf(channel).toByteArray(), 0, 4);
-            outputStream.write(BigInteger.valueOf(data.length).toByteArray(), 0, 4);
-            outputStream.write(data);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void receive(int channel, byte[] data) {
-
+    public final Socket getSocket() {
+        return socket;
     }
 
     public final InputStream getInputStream() {
@@ -61,6 +50,20 @@ public class Client {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public final void send(int channel, byte... data) {
+        try {
+            OutputStream outputStream = socket.getOutputStream();
+            outputStream.write(BigInteger.valueOf(channel).toByteArray(), 0, 4);
+            outputStream.write(BigInteger.valueOf(data.length).toByteArray(), 0, 4);
+            outputStream.write(data);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void receive(int channel, byte[] data) {
     }
 
     private class ClientThread extends Thread {
