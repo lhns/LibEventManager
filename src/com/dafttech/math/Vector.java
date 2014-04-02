@@ -95,11 +95,11 @@ public class Vector {
 
     public Vector rotate(float x, float y, float z, Vector origin) {
         float myX = this.x - origin.x, myY = this.y - origin.y, myZ = this.z - origin.z;
-        set((float) (Math.cos(z) * (Math.cos(y) * myX + Math.sin(y) * (Math.sin(x) * myY + Math.cos(x) * myZ)) - Math.sin(z)
-                * (Math.cos(x) * myY - Math.sin(x) * myZ)),
-                (float) (Math.sin(z) * (Math.cos(y) * myX + Math.sin(y) * (Math.sin(x) * myY + Math.cos(x) * myZ)) + Math.cos(z)
-                        * (Math.cos(x) * myY - Math.sin(x) * myZ)), (float) (-Math.sin(y) * myX + Math.cos(y)
-                        * (Math.sin(x) * myY + Math.cos(x) * myZ)));
+        double sinX = Math.sin(x), sinY = Math.sin(y), sinZ = Math.sin(z);
+        double cosX = Math.cos(x), cosY = Math.cos(y), cosZ = Math.cos(z);
+        set((float) (cosZ * (cosY * myX + sinY * (sinX * myY + cosX * myZ)) - sinZ * (cosX * myY - sinX * myZ)), (float) (sinZ
+                * (cosY * myX + sinY * (sinX * myY + cosX * myZ)) + cosZ * (cosX * myY - sinX * myZ)),
+                (float) (-sinY * myX + cosY * (sinX * myY + cosX * myZ)));
         return add(origin);
     }
 
