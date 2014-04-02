@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Arrays;
 
@@ -83,7 +84,11 @@ public class Client {
                     inputStream.read(data);
                     receive(channel, data);
                 } catch (IOException e) {
-                    //e.printStackTrace();
+                    if (e instanceof SocketException) {
+                        closed = true;
+                        return;
+                    }
+                    e.printStackTrace();
                 }
             }
         }
