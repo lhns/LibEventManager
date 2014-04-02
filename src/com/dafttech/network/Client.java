@@ -32,6 +32,10 @@ public class Client {
         thread.closed = true;
     }
 
+    public final boolean isAlive() {
+        return !thread.closed;
+    }
+
     public final Socket getSocket() {
         return socket;
     }

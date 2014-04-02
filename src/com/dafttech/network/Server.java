@@ -21,7 +21,13 @@ public class Server {
     }
 
     public final void close() {
+        for (Client client : clients)
+            client.close();
         thread.closed = true;
+    }
+
+    public final boolean isAlive() {
+        return !thread.closed;
     }
 
     public final ServerSocket getServerSocket() {
@@ -50,6 +56,8 @@ public class Server {
         @Override
         public void run() {
             while (!closed) {
+                for (int i = clients.size() - 1; i >= 0; i--)
+                    if (!clients.get(i).isAlive()) clients.remove(i);
                 try {
                     clients.add(new Client(serverSocket.accept()) {
                         @Override
