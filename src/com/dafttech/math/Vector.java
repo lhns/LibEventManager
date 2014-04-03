@@ -81,15 +81,15 @@ public class Vector {
         return z;
     }
 
-    public int xInt() {
+    public int xi() {
         return (int) x;
     }
 
-    public int yInt() {
+    public int yi() {
         return (int) y;
     }
 
-    public int zInt() {
+    public int zi() {
         return (int) z;
     }
 
