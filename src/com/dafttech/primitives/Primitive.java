@@ -1,10 +1,10 @@
 package com.dafttech.primitives;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Primitive {
-    private static final List<Primitive> primitives = new LinkedList<Primitive>();
+    private static final List<Primitive> primitives = new ArrayList<Primitive>();
 
     public static final Primitive BYTE = new Primitive(byte.class, Byte.class, 1, 0);
     public static final Primitive SHORT = new Primitive(short.class, Short.class, 2, 0);
