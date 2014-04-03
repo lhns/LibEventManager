@@ -1,6 +1,6 @@
 package com.dafttech.math;
 
-public class Vector {
+public class Vector implements Cloneable {
     public float x, y, z;
 
     public Vector(float x, float y, float z) {
@@ -115,4 +115,8 @@ public class Vector {
         return rotateNormal(rotation.x, rotation.y, rotation.z);
     }
 
+    @Override
+    public Vector clone() {
+        return new Vector(this);
+    }
 }
