@@ -50,6 +50,9 @@ public class Server {
     public void receive(Client client, int channel, byte[] data) {
     }
 
+    public void connect(Client client) {
+    }
+
     public void disconnect(Client client) {
     }
 
@@ -66,6 +69,11 @@ public class Server {
                         @Override
                         public void receive(int channel, byte[] data) {
                             Server.this.receive(this, channel, data);
+                        }
+
+                        @Override
+                        public void connect() {
+                            Server.this.connect(this);
                         }
 
                         @Override

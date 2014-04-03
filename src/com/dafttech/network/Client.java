@@ -72,14 +72,18 @@ public class Client {
     public void receive(int channel, byte[] data) {
     }
 
+    public void connect() {
+    }
+
     public void disconnect() {
     }
 
     private class ClientThread extends Thread {
-        private volatile boolean closed;
+        private volatile boolean closed = false;
 
         @Override
         public void run() {
+            connect();
             while (!closed) {
                 try {
                     InputStream inputStream = socket.getInputStream();
