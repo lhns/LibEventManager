@@ -41,4 +41,6 @@ public interface Tree<E> {
     public void removeBranch(E leaf);
 
     public int getTreeSize();
+
+    public List<E> getTreeLeaves();
 }

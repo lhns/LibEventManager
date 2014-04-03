@@ -1,5 +1,8 @@
 package com.dafttech.tree;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -13,15 +16,11 @@ public class LinkedTree<E> implements Tree<E>, Cloneable, Serializable {
     private Tree<E> root;
     private E leaf;
     private List<Tree<E>> branches = new LinkedList<Tree<E>>();
-    private int size = 0;
 
     public LinkedTree(Tree<E> root, E leaf, Collection<? extends Tree<E>> branches) {
         this.root = root;
         this.leaf = leaf;
-        if (branches != null) {
-            this.branches.addAll(branches);
-            updateSize();
-        }
+        if (branches != null) this.branches.addAll(branches);
     }
 
     public LinkedTree(Tree<E> tree) {
@@ -88,69 +87,65 @@ public class LinkedTree<E> implements Tree<E>, Cloneable, Serializable {
     @Override
     public void addBranch(E leaf) {
         branches.add(new LinkedTree<E>(this, leaf));
-        size++;
     }
 
     @Override
     public void addBranch(Tree<E> branch) {
         branches.add(branch);
-        updateSize();
     }
 
     @Override
     public void addBranch(int index, E leaf) {
         branches.add(index, new LinkedTree<E>(this, leaf));
-        size++;
     }
 
     @Override
     public void addBranch(int index, Tree<E> branch) {
         branches.add(index, branch);
-        updateSize();
     }
 
     @Override
     public void addBranchesByLeaves(Collection<E> leaves) {
         for (E leaf : leaves)
             branches.add(new LinkedTree<E>(leaf));
-        updateSize();
     }
 
     @Override
     public void addBranches(Collection<Tree<E>> branches) {
         for (Tree<E> branch : branches)
             branches.add(branch);
-        updateSize();
     }
 
     @Override
     public void removeBranch(int index) {
         branches.remove(index);
-        updateSize();
     }
 
     @Override
     public void removeBranch(Tree<E> branch) {
         branches.remove(branch);
-        updateSize();
     }
 
     @Override
     public void removeBranch(E leaf) {
         branches.remove(leaf);
-        updateSize();
     }
 
     @Override
     public int getTreeSize() {
+        int size = 1;
+        for (Tree<E> branch : branches)
+            size += branch.getTreeSize();
         return size;
     }
 
-    private void updateSize() {
-        int newSize = 0;
+    @Override
+    public List<E> getTreeLeaves() {
+        List<E> leaves = new LinkedList<E>();
+        leaves.add(leaf);
         for (Tree<E> branch : branches)
-            newSize += branch.getTreeSize();
-        size = newSize;
+            leaves.addAll(branch.getTreeLeaves());
+        return leaves;
     }
 
     @Override
@@ -161,5 +156,13 @@ public class LinkedTree<E> implements Tree<E>, Cloneable, Serializable {
     @Override
     public boolean equals(Object obj) {
         return obj == this || obj == leaf;
+    }
+
+    private void writeObject(ObjectOutputStream objectoutputstream) throws IOException {
+        objectoutputstream.defaultWriteObject();
+    }
+
+    private void readObject(ObjectInputStream objectinputstream) throws IOException, ClassNotFoundException {
+        objectinputstream.defaultReadObject();
     }
 }
