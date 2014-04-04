@@ -17,8 +17,8 @@ public class Primitive {
     public static final Primitive VOID = new Primitive(void.class, Void.class, 0, null);
 
     public static final Primitive get(Class<?> primitiveClass) {
-        int index = primitives.indexOf(primitiveClass);
-        if (index >= 0) return primitives.get(index);
+        for (Primitive primitive : primitives)
+            if (primitive.primitiveClass == primitiveClass) return primitive;
         return null;
     }
 
