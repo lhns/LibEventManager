@@ -249,6 +249,6 @@ public class Event {
 
     @Deprecated
     public final String getType() {
-        return type.name;
+        return type.getName();
     }
 }

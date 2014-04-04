@@ -5,8 +5,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class EventType {
-    volatile protected String name = "";
-    volatile protected EventManager[] eventManagerWhitelist;
+    volatile private String name = "";
+    volatile private EventManager[] eventManagerWhitelist;
 
     protected static Map<String, EventType> types = new HashMap<String, EventType>();
     public static final int PRIORITY_STANDARD = 0;
