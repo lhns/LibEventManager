@@ -12,14 +12,18 @@ public class Server {
     private volatile List<Client> clients = new LinkedList<Client>();
     private ServerThread thread;
 
-    public Server(int port) throws IOException {
-        this(new ServerSocket(port));
-    }
-
     public Server(ServerSocket serverSocket) {
         this.serverSocket = serverSocket;
         thread = new ServerThread();
         thread.start();
+    }
+
+    public Server(int port) throws IOException {
+        this(new ServerSocket(port));
+    }
+
+    public Server(String port) throws IOException {
+        this(Integer.valueOf(port));
     }
 
     public final void close() {

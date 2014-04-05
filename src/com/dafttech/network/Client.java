@@ -17,18 +17,22 @@ public class Client {
     private volatile Socket socket;
     private ClientThread thread;
 
-    public Client(String host, int port) throws UnknownHostException, IOException {
-        this(InetAddress.getByName(host), port);
+    public Client(Socket socket) {
+        this.socket = socket;
+        thread = new ClientThread();
+        thread.start();
     }
 
     public Client(InetAddress address, int port) throws IOException {
         this(new Socket(address, port));
     }
 
-    public Client(Socket socket) {
-        this.socket = socket;
-        thread = new ClientThread();
-        thread.start();
+    public Client(String host, int port) throws UnknownHostException, IOException {
+        this(InetAddress.getByName(host), port);
+    }
+
+    public Client(String host) throws UnknownHostException, IOException {
+        this(host.split(":")[0], Integer.valueOf(host.split(":")[1]));
     }
 
     public final void close() {
