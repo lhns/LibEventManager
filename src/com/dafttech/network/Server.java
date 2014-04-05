@@ -5,6 +5,8 @@ import java.net.ServerSocket;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.dafttech.network.Client.Disconnect;
+
 public class Server {
     private volatile ServerSocket serverSocket;
     private volatile List<Client> clients = new LinkedList<Client>();
@@ -53,7 +55,7 @@ public class Server {
     public void connect(Client client) {
     }
 
-    public void disconnect(Client client) {
+    public void disconnect(Client client, Disconnect reason) {
     }
 
     private class ServerThread extends Thread {
@@ -77,13 +79,18 @@ public class Server {
                         }
 
                         @Override
-                        public void disconnect() {
-                            Server.this.disconnect(this);
+                        public void disconnect(Disconnect reason) {
+                            Server.this.disconnect(this, reason);
                         }
                     });
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            }
+            try {
+                serverSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }

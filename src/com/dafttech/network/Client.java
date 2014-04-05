@@ -6,9 +6,14 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
 public class Client {
+    public static enum Disconnect {
+        QUIT, TIMEOUT, UNKNOWN
+    };
+
     private volatile Socket socket;
     private ClientThread thread;
 
@@ -75,7 +80,7 @@ public class Client {
     public void connect() {
     }
 
-    public void disconnect() {
+    public void disconnect(Disconnect reason) {
     }
 
     private class ClientThread extends Thread {
@@ -95,13 +100,23 @@ public class Client {
                     inputStream.read(data);
                     receive(channel, data);
                 } catch (IOException e) {
-                    if (e instanceof SocketException) {
-                        closed = true;
-                        disconnect();
-                        return;
+                    close();
+                    Disconnect reason;
+                    if (e instanceof SocketException && e.getMessage().equals("Connection reset")) {
+                        reason = Disconnect.QUIT;
+                    } else if (e instanceof SocketTimeoutException) {
+                        reason = Disconnect.TIMEOUT;
+                    } else {
+                        reason = Disconnect.UNKNOWN;
                     }
-                    e.printStackTrace();
+                    disconnect(reason);
+                    if (reason == Disconnect.UNKNOWN) e.printStackTrace();
                 }
+            }
+            try {
+                socket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
