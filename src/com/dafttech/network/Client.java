@@ -19,7 +19,8 @@ public class Client {
 
     public Client(Socket socket) {
         this.socket = socket;
-        reconnect();
+        thread = new ClientThread();
+        thread.start();
     }
 
     public Client(InetAddress address, int port) throws IOException {
@@ -62,12 +63,6 @@ public class Client {
             e.printStackTrace();
         }
         return null;
-    }
-
-    public final void reconnect() {
-        if (thread != null && isAlive()) close();
-        thread = new ClientThread();
-        thread.start();
     }
 
     public final void send(int channel, byte... data) {

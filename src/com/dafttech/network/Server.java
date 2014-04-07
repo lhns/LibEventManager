@@ -44,10 +44,6 @@ public class Server {
         return clients;
     }
 
-    public final void reconnect(Client client) {
-        client.reconnect();
-    }
-
     public final void send(Client client, int channel, byte... data) {
         client.send(channel, data);
     }
