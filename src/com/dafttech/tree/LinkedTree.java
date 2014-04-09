@@ -8,30 +8,30 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-public class LinkedTree<E> implements Tree<E>, Cloneable, Serializable {
+public class LinkedTree<Leaf> implements Tree<Leaf>, Cloneable, Serializable {
     /**
      * 
      */
     private static final long serialVersionUID = 6857447299766592010L;
-    private Tree<E> root;
-    private E leaf;
-    private List<Tree<E>> branches = new LinkedList<Tree<E>>();
+    private Tree<Leaf> root;
+    private Leaf leaf;
+    private List<Tree<Leaf>> branches = new LinkedList<Tree<Leaf>>();
 
-    public LinkedTree(Tree<E> root, E leaf, Collection<? extends Tree<E>> branches) {
+    public LinkedTree(Tree<Leaf> root, Leaf leaf, Collection<? extends Tree<Leaf>> branches) {
         this.root = root;
         this.leaf = leaf;
         if (branches != null) this.branches.addAll(branches);
     }
 
-    public LinkedTree(Tree<E> tree) {
+    public LinkedTree(Tree<Leaf> tree) {
         this(tree.getRoot(), tree.getLeaf(), tree.getBranches());
     }
 
-    public LinkedTree(Tree<E> root, E leaf) {
+    public LinkedTree(Tree<Leaf> root, Leaf leaf) {
         this(root, leaf, null);
     }
 
-    public LinkedTree(E leaf) {
+    public LinkedTree(Leaf leaf) {
         this(null, leaf, null);
     }
 
@@ -45,12 +45,12 @@ public class LinkedTree<E> implements Tree<E>, Cloneable, Serializable {
     }
 
     @Override
-    public E getLeaf() {
+    public Leaf getLeaf() {
         return leaf;
     }
 
     @Override
-    public void setLeaf(E leaf) {
+    public void setLeaf(Leaf leaf) {
         this.leaf = leaf;
     }
 
@@ -60,7 +60,7 @@ public class LinkedTree<E> implements Tree<E>, Cloneable, Serializable {
     }
 
     @Override
-    public Tree<E> getRoot() {
+    public Tree<Leaf> getRoot() {
         return root;
     }
 
@@ -75,44 +75,44 @@ public class LinkedTree<E> implements Tree<E>, Cloneable, Serializable {
     }
 
     @Override
-    public List<Tree<E>> getBranches() {
+    public List<Tree<Leaf>> getBranches() {
         return branches;
     }
 
     @Override
-    public Tree<E> getBranch(int index) {
+    public Tree<Leaf> getBranch(int index) {
         return branches.get(index);
     }
 
     @Override
-    public void addBranch(E leaf) {
-        branches.add(new LinkedTree<E>(this, leaf));
+    public void addBranch(Leaf leaf) {
+        branches.add(new LinkedTree<Leaf>(this, leaf));
     }
 
     @Override
-    public void addBranch(Tree<E> branch) {
+    public void addBranch(Tree<Leaf> branch) {
         branches.add(branch);
     }
 
     @Override
-    public void addBranch(int index, E leaf) {
-        branches.add(index, new LinkedTree<E>(this, leaf));
+    public void addBranch(int index, Leaf leaf) {
+        branches.add(index, new LinkedTree<Leaf>(this, leaf));
     }
 
     @Override
-    public void addBranch(int index, Tree<E> branch) {
+    public void addBranch(int index, Tree<Leaf> branch) {
         branches.add(index, branch);
     }
 
     @Override
-    public void addBranchesByLeaves(Collection<E> leaves) {
-        for (E leaf : leaves)
-            branches.add(new LinkedTree<E>(leaf));
+    public void addBranchesByLeaves(Collection<Leaf> leaves) {
+        for (Leaf leaf : leaves)
+            branches.add(new LinkedTree<Leaf>(leaf));
     }
 
     @Override
-    public void addBranches(Collection<Tree<E>> branches) {
-        for (Tree<E> branch : branches)
+    public void addBranches(Collection<Tree<Leaf>> branches) {
+        for (Tree<Leaf> branch : branches)
             branches.add(branch);
     }
 
@@ -122,35 +122,35 @@ public class LinkedTree<E> implements Tree<E>, Cloneable, Serializable {
     }
 
     @Override
-    public void removeBranch(Tree<E> branch) {
+    public void removeBranch(Tree<Leaf> branch) {
         branches.remove(branch);
     }
 
     @Override
-    public void removeBranch(E leaf) {
+    public void removeBranch(Leaf leaf) {
         branches.remove(leaf);
     }
 
     @Override
     public int getTreeSize() {
         int size = 1;
-        for (Tree<E> branch : branches)
+        for (Tree<Leaf> branch : branches)
             size += branch.getTreeSize();
         return size;
     }
 
     @Override
-    public List<E> getTreeLeaves() {
-        List<E> leaves = new LinkedList<E>();
+    public List<Leaf> getTreeLeaves() {
+        List<Leaf> leaves = new LinkedList<Leaf>();
         leaves.add(leaf);
-        for (Tree<E> branch : branches)
+        for (Tree<Leaf> branch : branches)
             leaves.addAll(branch.getTreeLeaves());
         return leaves;
     }
 
     @Override
     public Object clone() {
-        return new LinkedTree<E>(this);
+        return new LinkedTree<Leaf>(this);
     }
 
     @Override
