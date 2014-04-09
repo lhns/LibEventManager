@@ -72,6 +72,7 @@ public class Client {
                 outputStream.write(toByteArray(channel));
                 outputStream.write(toByteArray(data.length));
                 outputStream.write(data);
+                outputStream.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }
