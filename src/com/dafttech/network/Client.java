@@ -94,14 +94,17 @@ public class Client {
         @Override
         public void run() {
             connect();
+            InputStream inputStream;
+            byte[] integer = new byte[4], data;
+            int channel, size;
             while (!closed) {
                 try {
-                    InputStream inputStream = socket.getInputStream();
-                    byte[] integer = new byte[4];
+                    inputStream = socket.getInputStream();
                     inputStream.read(integer);
-                    int channel = fromByteArray(integer);
+                    channel = fromByteArray(integer);
                     inputStream.read(integer);
-                    byte[] data = new byte[fromByteArray(integer)];
+                    size = fromByteArray(integer);
+                    data = new byte[size];
                     inputStream.read(data);
                     receive(channel, data);
                 } catch (IOException e) {
