@@ -39,9 +39,10 @@ public class LinkedTree<Leaf> implements Tree<Leaf>, Cloneable, Serializable {
         this(null, null, null);
     }
 
+    // Leaf
     @Override
     public boolean hasLeaf() {
-        return leaf != null;
+        return getLeaf() != null;
     }
 
     @Override
@@ -55,8 +56,14 @@ public class LinkedTree<Leaf> implements Tree<Leaf>, Cloneable, Serializable {
     }
 
     @Override
+    public void removeLeaf() {
+        setLeaf(null);
+    }
+
+    // Root
+    @Override
     public boolean hasRoot() {
-        return root != null;
+        return getRoot() != null;
     }
 
     @Override
@@ -65,8 +72,20 @@ public class LinkedTree<Leaf> implements Tree<Leaf>, Cloneable, Serializable {
     }
 
     @Override
+    public void setRoot(Tree<Leaf> root) {
+        if (hasRoot()) getRoot().removeBranch(this);
+        this.root = root;
+    }
+
+    @Override
+    public void removeRoot() {
+        setRoot(null);
+    }
+
+    // Branch
+    @Override
     public boolean hasBranches() {
-        return branches.size() > 0;
+        return !branches.isEmpty();
     }
 
     @Override
@@ -80,13 +99,38 @@ public class LinkedTree<Leaf> implements Tree<Leaf>, Cloneable, Serializable {
     }
 
     @Override
-    public Tree<Leaf> getBranch(int index) {
-        return branches.get(index);
+    public boolean hasBranch(int index) {
+        return getBranch(index) != null;
     }
 
     @Override
-    public void addBranch(Leaf leaf) {
-        branches.add(new LinkedTree<Leaf>(this, leaf));
+    public boolean hasBranch(Tree<Leaf> branch) {
+        return getBranch(branch) != null;
+    }
+
+    @Override
+    public boolean hasBranch(Leaf leaf) {
+        return getBranch(leaf) != null;
+    }
+
+    @Override
+    public Tree<Leaf> getBranch(int index) {
+        return index >= 0 && index < branches.size() ? branches.get(index) : null;
+    }
+
+    @Override
+    public Tree<Leaf> getBranch(Tree<Leaf> branch) {
+        return branches.contains(branch) ? branch : null;
+    }
+
+    @Override
+    public Tree<Leaf> getBranch(Leaf leaf) {
+        Leaf currLeaf;
+        for (Tree<Leaf> branch : branches) {
+            currLeaf = branch.getLeaf();
+            if (leaf == currLeaf || leaf.equals(currLeaf)) return branch;
+        }
+        return null;
     }
 
     @Override
@@ -95,25 +139,13 @@ public class LinkedTree<Leaf> implements Tree<Leaf>, Cloneable, Serializable {
     }
 
     @Override
-    public void addBranch(int index, Leaf leaf) {
-        branches.add(index, new LinkedTree<Leaf>(this, leaf));
-    }
-
-    @Override
     public void addBranch(int index, Tree<Leaf> branch) {
         branches.add(index, branch);
     }
 
     @Override
-    public void addBranchesByLeaves(Collection<Leaf> leaves) {
-        for (Leaf leaf : leaves)
-            branches.add(new LinkedTree<Leaf>(leaf));
-    }
-
-    @Override
     public void addBranches(Collection<Tree<Leaf>> branches) {
-        for (Tree<Leaf> branch : branches)
-            branches.add(branch);
+        this.branches.addAll(branches);
     }
 
     @Override
@@ -128,7 +160,11 @@ public class LinkedTree<Leaf> implements Tree<Leaf>, Cloneable, Serializable {
 
     @Override
     public void removeBranch(Leaf leaf) {
-        branches.remove(leaf);
+        Leaf currLeaf;
+        for (int i = branches.size() - 1; i >= 0; i--) {
+            currLeaf = branches.get(i).getLeaf();
+            if (leaf == currLeaf || leaf.equals(currLeaf)) branches.remove(i);
+        }
     }
 
     @Override
