@@ -82,19 +82,6 @@ public class EventManager {
         }
     }
 
-    /**
-     * Used to unregister an EventListener in all events.
-     * 
-     * @param type
-     *            EventType - The EventType you want to unregister.
-     * @param eventListener
-     *            Object - The eventListener.
-     */
-    @Deprecated
-    public final void unregisterEventListener(EventType type, Object eventListener) {
-        unregisterEventListener(eventListener, EventManager.WHITELIST, type);
-    }
-
     private final void addEventListenerContainer(EventType type, ListenerContainer newListenerContainer) {
         if (!registeredListeners.containsKey(type) || registeredListeners.get(type) == null)
             registeredListeners.put(type, new ArrayList<ListenerContainer>());

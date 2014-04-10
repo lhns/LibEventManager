@@ -241,14 +241,4 @@ public class Event {
             if (cast.isPrimitive() && Primitive.get(cast).getObjectClass().isInstance(obj) || cast.isInstance(obj)) return true;
         return false;
     }
-
-    @Deprecated
-    public final List<Object> getCleanOutput() {
-        return getOutput(Object.class);
-    }
-
-    @Deprecated
-    public final String getType() {
-        return type.getName();
-    }
 }
