@@ -79,6 +79,18 @@ public class Client {
         }
     }
 
+    public void receiveRaw(InputStream inputStream) throws IOException {
+        byte[] integer = new byte[4], data;
+        int channel, size;
+        inputStream.read(integer);
+        channel = fromByteArray(integer);
+        inputStream.read(integer);
+        size = fromByteArray(integer);
+        data = new byte[size];
+        inputStream.read(data);
+        receive(channel, data);
+    }
+
     public void receive(int channel, byte[] data) {
     }
 
@@ -94,19 +106,16 @@ public class Client {
         @Override
         public void run() {
             connect();
-            InputStream inputStream;
-            byte[] integer = new byte[4], data;
-            int channel, size;
+            InputStream inputStream = null;
+            try {
+                inputStream = socket.getInputStream();
+            } catch (IOException e) {
+                e.printStackTrace();
+                close();
+            }
             while (!closed) {
                 try {
-                    inputStream = socket.getInputStream();
-                    inputStream.read(integer);
-                    channel = fromByteArray(integer);
-                    inputStream.read(integer);
-                    size = fromByteArray(integer);
-                    data = new byte[size];
-                    inputStream.read(data);
-                    receive(channel, data);
+                    receiveRaw(inputStream);
                 } catch (IOException e) {
                     close();
                     Disconnect reason;
@@ -129,11 +138,11 @@ public class Client {
         }
     }
 
-    private static byte[] toByteArray(int value) {
+    public static byte[] toByteArray(int value) {
         return new byte[] { (byte) (value >> 24), (byte) (value >> 16), (byte) (value >> 8), (byte) value };
     }
 
-    private static int fromByteArray(byte[] bytes) {
+    public static int fromByteArray(byte[] bytes) {
         return bytes[0] << 24 | (bytes[1] & 0xFF) << 16 | (bytes[2] & 0xFF) << 8 | bytes[3] & 0xFF;
     }
 }
