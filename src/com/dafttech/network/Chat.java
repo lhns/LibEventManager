@@ -11,14 +11,6 @@ public class Chat {
     static Server server = null;
     static Client client = null;
 
-    /*
-     * Steuercodes: Client -> Server 1 String : Nickname registrieren 4 String
-     * String: message
-     * 
-     * Server -> Client 1 0 : Nickname bestätigen 1 1 : Nickname bereits
-     * vorhanden 1 2 String : Neuer Nutzer
-     */
-
     /**
      * @param args
      * @throws IOException
