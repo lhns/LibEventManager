@@ -54,7 +54,6 @@ public class Chat {
                 };
             } catch (Exception e) {
                 System.out.println(e);
-
             }
             System.out.println(server.getServerSocket().getLocalSocketAddress().toString());
             while (true)
