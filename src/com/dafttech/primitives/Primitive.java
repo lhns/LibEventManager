@@ -51,6 +51,14 @@ public class Primitive {
         return nullValue;
     }
 
+    public final Object[] toPrimitiveArray(Object[] objectArray) {
+        return null;
+    }
+
+    public final Object[] toObjectArray(Object[] primitiveArray) {
+        return null;
+    }
+
     @Override
     public final boolean equals(Object obj) {
         return obj == this || obj == primitiveClass || obj == objectClass || primitiveClass.isInstance(obj);
