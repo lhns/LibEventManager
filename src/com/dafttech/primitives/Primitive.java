@@ -52,7 +52,11 @@ public class Primitive {
     }
 
     public final Object[] toPrimitiveArray(Object[] objectArray) {
-        return null;
+        Object[] primitiveArray = new Object[objectArray.length];
+        for (int i = 0; i < objectArray.length; i++) {
+            primitiveArray[i] = primitiveClass.cast(objectArray[i]);
+        }
+        return primitiveArray;
     }
 
     public final Object[] toObjectArray(Object[] primitiveArray) {
