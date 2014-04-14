@@ -60,7 +60,11 @@ public class Primitive {
     }
 
     public final Object[] toObjectArray(Object[] primitiveArray) {
-        return null;
+        Object[] objectArray = new Object[primitiveArray.length];
+        for (int i = 0; i < primitiveArray.length; i++) {
+            objectArray[i] = primitiveClass.cast(primitiveArray[i]);
+        }
+        return objectArray;
     }
 
     @Override
