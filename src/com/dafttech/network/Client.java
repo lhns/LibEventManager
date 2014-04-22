@@ -1,5 +1,6 @@
 package com.dafttech.network;
 
+import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -12,10 +13,12 @@ import java.nio.ByteBuffer;
 
 public class Client {
     public static enum Disconnect {
-        QUIT, TIMEOUT, UNKNOWN
+        NOSTREAM, EOF, RESET, TIMEOUT, UNKNOWN, QUIT
     };
 
     private volatile Socket socket;
+    private volatile InputStream inputStream;
+    private volatile OutputStream outputStream;
     private ClientThread thread;
 
     public Client(Socket socket) {
@@ -37,7 +40,12 @@ public class Client {
     }
 
     public final void close() {
+        close(Disconnect.QUIT);
+    }
+
+    public final void close(Disconnect reason) {
         thread.closed = true;
+        thread.reason = reason;
     }
 
     public final boolean isAlive() {
@@ -49,27 +57,27 @@ public class Client {
     }
 
     public final InputStream getInputStream() {
-        try {
-            return socket.getInputStream();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return inputStream;
     }
 
     public final OutputStream getOutputStream() {
-        try {
-            return socket.getOutputStream();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return outputStream;
+    }
+
+    public final int readRaw() throws IOException {
+        int result = inputStream.read();
+        if (result == -1) throw new EOFException();
+        return result;
+    }
+
+    public final void readRaw(byte[] array) throws IOException {
+        int result = inputStream.read(array);
+        if (result == -1) throw new EOFException();
     }
 
     public final void sendRaw(byte... data) {
         if (isAlive()) {
             try {
-                OutputStream outputStream = socket.getOutputStream();
                 outputStream.write(data);
                 outputStream.flush();
             } catch (IOException e) {
@@ -86,15 +94,15 @@ public class Client {
         sendRaw(packet.array());
     }
 
-    public void receiveRaw(InputStream inputStream) throws IOException {
+    public void receiveRaw() throws IOException {
         byte[] integer = new byte[4], data;
         int channel, size;
-        inputStream.read(integer);
+        readRaw(integer);
         channel = fromByteArray(integer);
-        inputStream.read(integer);
+        readRaw(integer);
         size = fromByteArray(integer);
         data = new byte[size];
-        inputStream.read(data);
+        readRaw(data);
         receive(channel, data);
     }
 
@@ -109,39 +117,42 @@ public class Client {
 
     private class ClientThread extends Thread {
         private volatile boolean closed = false;
+        private volatile Disconnect reason = null;
 
         @Override
         public void run() {
             connect();
-            InputStream inputStream = null;
             try {
                 inputStream = socket.getInputStream();
+                outputStream = socket.getOutputStream();
             } catch (IOException e) {
                 e.printStackTrace();
-                close();
+                close(Disconnect.NOSTREAM);
             }
-            while (!closed) {
+            while (isAlive()) {
                 try {
-                    receiveRaw(inputStream);
+                    receiveRaw();
                 } catch (IOException e) {
-                    close();
-                    Disconnect reason;
-                    if (e instanceof SocketException && e.getMessage().equals("Connection reset")) {
-                        reason = Disconnect.QUIT;
+                    if (e instanceof EOFException) {
+                        close(Disconnect.EOF);
+                    } else if (e instanceof SocketException && e.getMessage().equals("Connection reset")) {
+                        close(Disconnect.RESET);
                     } else if (e instanceof SocketTimeoutException) {
-                        reason = Disconnect.TIMEOUT;
+                        close(Disconnect.TIMEOUT);
                     } else {
-                        reason = Disconnect.UNKNOWN;
+                        close(Disconnect.UNKNOWN);
+                        e.printStackTrace();
                     }
-                    disconnect(reason);
-                    if (reason == Disconnect.UNKNOWN) e.printStackTrace();
                 }
             }
+
             try {
                 socket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            if (reason != null) disconnect(reason);
         }
     }
 

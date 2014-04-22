@@ -1,7 +1,6 @@
 package com.dafttech.network;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.ServerSocket;
 import java.util.LinkedList;
 import java.util.List;
@@ -63,8 +62,8 @@ public class Server {
             client.send(channel, data);
     }
 
-    public void receiveRaw(Client client, InputStream inputStream) throws IOException {
-        client.receiveRaw(inputStream);
+    public void receiveRaw(Client client) throws IOException {
+        client.receiveRaw();
     }
 
     public void receive(Client client, int channel, byte[] data) {
@@ -87,8 +86,8 @@ public class Server {
                 try {
                     clients.add(new Client(serverSocket.accept()) {
                         @Override
-                        public void receiveRaw(InputStream inputStream) throws IOException {
-                            Server.this.receiveRaw(this, inputStream);
+                        public void receiveRaw() throws IOException {
+                            Server.this.receiveRaw(this);
                         }
 
                         @Override

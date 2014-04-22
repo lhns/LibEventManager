@@ -1,10 +1,12 @@
-package com.dafttech.network;
+package com.dafttech.test;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import com.dafttech.network.Client;
 import com.dafttech.network.Client.Disconnect;
+import com.dafttech.network.Server;
 
 public class Chat {
     static boolean isServer = false;
