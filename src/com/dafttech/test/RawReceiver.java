@@ -16,12 +16,12 @@ public class RawReceiver {
                 public void receiveRaw(Client client) throws IOException {
                     inHeader = inHeader + new String(new byte[] { (byte) client.readRaw() });
                     if (inHeader.endsWith("\r\n\r\n")) {
-                        content = "{\"name\":\"minecraft-the-next-generation\","
-                                + "\"displayName\":\" Minecraft: The Next Generation\","
-                                + "\"user\":\"AEnterprise\","
+                        content = "{\"name\":\"nothingspecial\","
+                                + "\"displayName\":\" Minecraft: Nothing Special\","
+                                + "\"user\":\"LolHens\","
                                 + "\"version\":\"1.0\","
                                 + "\"url\":\"https:\\/\\/dl.dropboxusercontent.com\\/u\\/148704233\\/Minecraft%20-%20The%20Next%20Generation.zip\","
-                                + "\"minecraft\":\"1.7.2\","
+                                + "\"minecraft\":\"1.6.4\","
                                 + "\"logo\":{\"url\":\"http:\\/\\/cdn.technicpack.net\\/platform\\/pack-logos\\/331789.png?1397635247\","
                                 + "\"md5\":\"5023e4fcf89d695a820b422a12331f5a\"},"
                                 + "\"background\":{\"url\":\"http:\\/\\/cdn.technicpack.net\\/platform\\/pack-backgrounds\\/331789.png?1397635247\","
