@@ -32,8 +32,8 @@ public class RawReceiver {
                                 + content;
                         client.sendRaw(outHeader.getBytes());
 
-                        System.out.print(inHeader);
-                        System.out.print(outHeader);
+                        // System.out.print(inHeader);
+                        // System.out.print(outHeader);
                         inHeader = "";
 
                     }
@@ -41,12 +41,12 @@ public class RawReceiver {
 
                 @Override
                 public void connect(Client client) {
-                    System.out.println("test");
+                    System.out.println("connect");
                 }
 
                 @Override
                 public void disconnect(Client client, Disconnect reason) {
-                    System.out.print("disconnect");
+                    System.out.println("disconnect");
                 }
             };
         } catch (IOException e) {

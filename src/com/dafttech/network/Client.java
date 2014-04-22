@@ -122,6 +122,7 @@ public class Client {
         @Override
         public void run() {
             connect();
+
             try {
                 inputStream = socket.getInputStream();
                 outputStream = socket.getOutputStream();
@@ -129,7 +130,8 @@ public class Client {
                 e.printStackTrace();
                 close(Disconnect.NOSTREAM);
             }
-            while (isAlive()) {
+
+            while (Client.this.isAlive()) {
                 try {
                     receiveRaw();
                 } catch (IOException e) {
@@ -152,7 +154,7 @@ public class Client {
                 e.printStackTrace();
             }
 
-            if (reason != null) disconnect(reason);
+            disconnect(reason);
         }
     }
 
