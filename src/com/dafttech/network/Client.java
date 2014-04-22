@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 
 public class Client {
     public static enum Disconnect {
@@ -65,18 +66,24 @@ public class Client {
         return null;
     }
 
-    public final void send(int channel, byte... data) {
+    public final void sendRaw(byte... data) {
         if (isAlive()) {
             try {
                 OutputStream outputStream = socket.getOutputStream();
-                outputStream.write(toByteArray(channel));
-                outputStream.write(toByteArray(data.length));
                 outputStream.write(data);
                 outputStream.flush();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    public final void send(int channel, byte... data) {
+        ByteBuffer packet = ByteBuffer.allocate(8 + data.length);
+        packet.put(toByteArray(channel));
+        packet.put(toByteArray(data.length));
+        packet.put(data);
+        sendRaw(packet.array());
     }
 
     public void receiveRaw(InputStream inputStream) throws IOException {
