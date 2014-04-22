@@ -32,8 +32,8 @@ public class RawReceiver {
                                 + content;
                         client.sendRaw(outHeader.getBytes());
 
-                        // System.out.print(inHeader);
-                        // System.out.print(outHeader);
+                        System.out.print(inHeader);
+                        System.out.print(outHeader);
                         inHeader = "";
 
                     }
