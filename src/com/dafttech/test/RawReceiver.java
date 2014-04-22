@@ -20,12 +20,13 @@ public class RawReceiver {
                                 + "\"displayName\":\" Minecraft: Nothing Special\","
                                 + "\"user\":\"LolHens\","
                                 + "\"version\":\"1.0\","
-                                + "\"url\":\"https:\\/\\/dl.dropboxusercontent.com\\/u\\/148704233\\/Minecraft%20-%20The%20Next%20Generation.zip\","
+                                + "\"url\":\"https://dl.dropboxusercontent.com/u/148704233/Minecraft%20-%20The%20Next%20Generation.zip\","
                                 + "\"minecraft\":\"1.6.4\","
-                                + "\"logo\":{\"url\":\"http:\\/\\/cdn.technicpack.net\\/platform\\/pack-logos\\/331789.png?1397635247\","
+                                + "\"logo\":{\"url\":\"http://cdn.technicpack.net/platform/pack-logos/331789.png?1397635247\","
                                 + "\"md5\":\"5023e4fcf89d695a820b422a12331f5a\"},"
-                                + "\"background\":{\"url\":\"http:\\/\\/cdn.technicpack.net\\/platform\\/pack-backgrounds\\/331789.png?1397635247\","
+                                + "\"background\":{\"url\":\"http://cdn.technicpack.net/platform/pack-backgrounds/331789.png?1397635247\","
                                 + "\"md5\":\"dc1a3cc155715b4730bd14f8f2e1ecc5\"}," + "\"solder\":\"\"," + "\"forceDir\":false}";
+                        content = content.replace("/", "\\/");
                         outHeader = "HTTP/1.0 200 OK\r\nServer: LolHens/1.0 (Windows)\r\nContent-Length: "
                                 + content.length()
                                 + "\r\nContent-Language: en\r\nContent-Type: text/plain; charset=utf-8\r\nConnection: close\r\n\r\n"
