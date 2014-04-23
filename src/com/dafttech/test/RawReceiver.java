@@ -1,6 +1,9 @@
 package com.dafttech.test;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import com.dafttech.network.Client;
 import com.dafttech.network.Client.Disconnect;
@@ -11,9 +14,9 @@ public class RawReceiver {
 
     public static void main(String[] args) {
         try {
-            new Server("80") {
+            new Server(new BufferedReader(new InputStreamReader(System.in)).readLine()) {
                 @Override
-                public void receiveRaw(Client client) throws IOException {
+                public void receiveRaw(Client client, InputStream inputStream) throws IOException {
                     inHeader = inHeader + new String(new byte[] { (byte) client.readRaw() });
                     if (inHeader.endsWith("\r\n\r\n")) {
                         content = "{\"name\":\"nothingspecial\","
@@ -33,8 +36,8 @@ public class RawReceiver {
                                 + content;
                         client.sendRaw(outHeader.getBytes());
 
-                        System.out.println(inHeader);
-                        System.out.println(outHeader);
+                        // System.out.println(inHeader);
+                        // System.out.println(outHeader);
                         inHeader = "";
 
                     }

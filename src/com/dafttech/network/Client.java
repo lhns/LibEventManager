@@ -94,7 +94,7 @@ public class Client {
         sendRaw(packet.array());
     }
 
-    public void receiveRaw() throws IOException {
+    public void receiveRaw(InputStream inputStream) throws IOException {
         byte[] integer = new byte[4], data;
         int channel, size;
         readRaw(integer);
@@ -133,7 +133,7 @@ public class Client {
 
             while (Client.this.isAlive()) {
                 try {
-                    receiveRaw();
+                    receiveRaw(inputStream);
                 } catch (IOException e) {
                     if (e instanceof EOFException) {
                         close(Disconnect.EOF);
