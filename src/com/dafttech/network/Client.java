@@ -35,8 +35,12 @@ public class Client {
         this(InetAddress.getByName(host), port);
     }
 
+    public Client(String host, String port) throws UnknownHostException, IOException {
+        this(host, Integer.valueOf(port));
+    }
+
     public Client(String host) throws UnknownHostException, IOException {
-        this(host.split(":")[0], Integer.valueOf(host.split(":")[1]));
+        this(host.split(":")[0], host.split(":")[1]);
     }
 
     public final void close() {
