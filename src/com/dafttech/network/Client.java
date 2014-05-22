@@ -1,5 +1,6 @@
 package com.dafttech.network;
 
+import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -11,6 +12,9 @@ import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
+import com.dafttech.network.protocol.Protocol;
+import com.dafttech.stream.ByteArrayInputStreamOutputStream;
+
 public class Client {
     public static enum Disconnect {
         NOSTREAM, EOF, RESET, TIMEOUT, UNKNOWN, QUIT
@@ -19,7 +23,9 @@ public class Client {
     private volatile Socket socket;
     private volatile InputStream inputStream;
     private volatile OutputStream outputStream;
+    private ByteArrayInputStream recvBuffer;
     private ClientThread thread;
+    private Protocol protocol;
 
     public Client(Socket socket) {
         this.socket = socket;
@@ -127,6 +133,8 @@ public class Client {
         public void run() {
             connect();
 
+            recvBuffer = new ByteArrayInputStream(new byte[] {});
+            ByteArrayInputStreamOutputStream recvBufferOut = new ByteArrayInputStreamOutputStream(recvBuffer);
             try {
                 inputStream = socket.getInputStream();
                 outputStream = socket.getOutputStream();
@@ -137,7 +145,15 @@ public class Client {
 
             while (Client.this.isAlive()) {
                 try {
-                    receiveRaw(inputStream);
+                    if (inputStream.available() > 0) {
+                        byte[] recv = new byte[inputStream.available()];
+                        inputStream.read(recv);
+                        recvBufferOut.write(recv);
+                        if (protocol != null)
+                            protocol.read(recvBuffer);
+                        else
+                            receiveRaw(recvBuffer);
+                    }
                 } catch (IOException e) {
                     if (e instanceof EOFException) {
                         close(Disconnect.EOF);
@@ -153,6 +169,7 @@ public class Client {
             }
 
             try {
+                recvBufferOut.close();
                 socket.close();
             } catch (IOException e) {
                 e.printStackTrace();
