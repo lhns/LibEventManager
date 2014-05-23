@@ -1,6 +1,5 @@
 package com.dafttech.network;
 
-import java.io.ByteArrayInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,10 +9,8 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
 
 import com.dafttech.network.protocol.Protocol;
-import com.dafttech.stream.ByteArrayInputStreamOutputStream;
 
 public class Client {
     public static enum Disconnect {
@@ -23,9 +20,8 @@ public class Client {
     private volatile Socket socket;
     private volatile InputStream inputStream;
     private volatile OutputStream outputStream;
-    private ByteArrayInputStream recvBuffer;
     private ClientThread thread;
-    private Protocol protocol;
+    private Protocol<?> protocol;
 
     public Client(Socket socket) {
         this.socket = socket;
@@ -47,6 +43,10 @@ public class Client {
 
     public Client(String host) throws UnknownHostException, IOException {
         this(host.split(":")[0], host.split(":")[1]);
+    }
+
+    public final void setProtocol(Protocol<?> protocol) {
+        this.protocol = protocol;
     }
 
     public final void close() {
@@ -96,26 +96,6 @@ public class Client {
         }
     }
 
-    public final void send(int channel, byte... data) {
-        ByteBuffer packet = ByteBuffer.allocate(8 + data.length);
-        packet.put(toByteArray(channel));
-        packet.put(toByteArray(data.length));
-        packet.put(data);
-        sendRaw(packet.array());
-    }
-
-    public void receiveRaw(InputStream inputStream) throws IOException {
-        byte[] integer = new byte[4], data;
-        int channel, size;
-        readRaw(integer);
-        channel = fromByteArray(integer);
-        readRaw(integer);
-        size = fromByteArray(integer);
-        data = new byte[size];
-        readRaw(data);
-        receive(channel, data);
-    }
-
     public void receive(int channel, byte[] data) {
     }
 
@@ -132,9 +112,6 @@ public class Client {
         @Override
         public void run() {
             connect();
-
-            recvBuffer = new ByteArrayInputStream(new byte[] {});
-            ByteArrayInputStreamOutputStream recvBufferOut = new ByteArrayInputStreamOutputStream(recvBuffer);
             try {
                 inputStream = socket.getInputStream();
                 outputStream = socket.getOutputStream();
@@ -145,15 +122,7 @@ public class Client {
 
             while (Client.this.isAlive()) {
                 try {
-                    if (inputStream.available() > 0) {
-                        byte[] recv = new byte[inputStream.available()];
-                        inputStream.read(recv);
-                        recvBufferOut.write(recv);
-                        if (protocol != null)
-                            protocol.read(recvBuffer);
-                        else
-                            receiveRaw(recvBuffer);
-                    }
+                    if (protocol != null) protocol.receive__();
                 } catch (IOException e) {
                     if (e instanceof EOFException) {
                         close(Disconnect.EOF);
@@ -169,7 +138,6 @@ public class Client {
             }
 
             try {
-                recvBufferOut.close();
                 socket.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -177,13 +145,5 @@ public class Client {
 
             disconnect(reason);
         }
-    }
-
-    public static byte[] toByteArray(int value) {
-        return new byte[] { (byte) (value >> 24), (byte) (value >> 16), (byte) (value >> 8), (byte) value };
-    }
-
-    public static int fromByteArray(byte[] bytes) {
-        return bytes[0] << 24 | (bytes[1] & 0xFF) << 16 | (bytes[2] & 0xFF) << 8 | bytes[3] & 0xFF;
     }
 }
