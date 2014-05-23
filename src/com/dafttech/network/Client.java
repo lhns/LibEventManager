@@ -111,7 +111,6 @@ public class Client {
 
         @Override
         public void run() {
-            connect();
             try {
                 inputStream = socket.getInputStream();
                 outputStream = socket.getOutputStream();
@@ -119,7 +118,8 @@ public class Client {
                 e.printStackTrace();
                 close(Disconnect.NOSTREAM);
             }
-
+            connect();
+            if (protocol != null) protocol.connect();
             while (Client.this.isAlive()) {
                 try {
                     if (protocol != null) protocol.receive__();
@@ -144,6 +144,7 @@ public class Client {
             }
 
             disconnect(reason);
+            if (protocol != null) protocol.disconnect(reason);
         }
     }
 }
