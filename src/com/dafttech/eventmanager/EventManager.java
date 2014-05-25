@@ -3,17 +3,16 @@ package com.dafttech.eventmanager;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import com.dafttech.filterlist.Blacklist;
+import com.dafttech.filterlist.Filterlist;
 import com.dafttech.reflect.Reflector;
 
 public class EventManager {
-    public static final EventType WHITELIST = new EventType();
-
     volatile protected Map<EventType, List<ListenerContainer>> registeredListeners = new HashMap<EventType, List<ListenerContainer>>();
 
     public EventManager() {
@@ -31,8 +30,8 @@ public class EventManager {
      *            converted to a whitelist if you put EventManager.WHITELIST at
      *            the first place.
      */
-    public final void registerEventListener(Object eventListener, EventType... blacklist) {
-        if (blacklist.length == 1 && blacklist[0] == WHITELIST) return;
+    public final void registerEventListener(Object eventListener, Filterlist<EventType> filterlist) {
+        if (filterlist == null || !filterlist.isValid()) return;
         boolean isStatic = eventListener.getClass() == Class.class, isListenerStatic;
         Class<?> eventListenerClass = isStatic ? (Class<?>) eventListener : eventListener.getClass();
         EventListener annotation = null;
@@ -44,9 +43,7 @@ public class EventManager {
                 for (String requestedEvent : annotation.value()) {
                     type = EventType.types.get(requestedEvent);
                     if (type != null) {
-                        if (type.isWhitelisted(this)
-                                && (blacklist.length == 0 || blacklist[0] == WHITELIST && Arrays.asList(blacklist).contains(type) || blacklist[0] != WHITELIST
-                                        && !Arrays.asList(blacklist).contains(type))) {
+                        if (type.isWhitelisted(this) && filterlist.isFiltered(type)) {
                             addEventListenerContainer(type, new ListenerContainer(isListenerStatic,
                                     isListenerStatic ? eventListenerClass : eventListener, method, annotation));
                         }
@@ -58,19 +55,26 @@ public class EventManager {
         }
     }
 
-    public final void tryRegisterEventListener(String staticEventListener, EventType... blacklist) {
+    public final void registerEventListener(Object eventListener) {
+        registerEventListener(eventListener, new Blacklist<EventType>());
+    }
+
+    public final void tryRegisterEventListener(String staticEventListener, Filterlist<EventType> filterlist) {
         try {
-            registerEventListener(Class.forName(staticEventListener), blacklist);
+            registerEventListener(Class.forName(staticEventListener), filterlist);
         } catch (ClassNotFoundException e) {
         }
     }
 
-    public final void unregisterEventListener(Object eventListener, EventType... blacklist) {
-        if (blacklist.length == 1 && blacklist[0] == WHITELIST) return;
+    public final void tryRegisterEventListener(String staticEventListener) {
+        tryRegisterEventListener(staticEventListener, new Blacklist<EventType>());
+    }
+
+    public final void unregisterEventListener(Object eventListener, Filterlist<EventType> filterlist) {
+        if (filterlist == null || !filterlist.isValid()) return;
         List<ListenerContainer> listenerContainers;
         for (EventType type : registeredListeners.keySet()) {
-            if (blacklist.length == 0 || blacklist[0] == WHITELIST && Arrays.asList(blacklist).contains(type)
-                    || blacklist[0] != WHITELIST && !Arrays.asList(blacklist).contains(type)) {
+            if (filterlist.isFiltered(type)) {
                 listenerContainers = registeredListeners.get(type);
                 if (listenerContainers != null && listenerContainers.size() > 0) {
                     for (int i = listenerContainers.size() - 1; i >= 0; i--)
@@ -78,6 +82,10 @@ public class EventManager {
                 }
             }
         }
+    }
+
+    public final void unregisterEventListener(Object eventListener) {
+        unregisterEventListener(eventListener, new Blacklist<EventType>());
     }
 
     private final void addEventListenerContainer(EventType type, ListenerContainer newListenerContainer) {
