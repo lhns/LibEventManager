@@ -10,13 +10,16 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
+import com.dafttech.network.disconnect.Disconnect;
+import com.dafttech.network.disconnect.EOF;
+import com.dafttech.network.disconnect.NoStream;
+import com.dafttech.network.disconnect.Quit;
+import com.dafttech.network.disconnect.Reset;
+import com.dafttech.network.disconnect.Timeout;
+import com.dafttech.network.disconnect.Unknown;
 import com.dafttech.network.protocol.Protocol;
 
 public class Client {
-    public static enum Disconnect {
-        NOSTREAM, EOF, RESET, TIMEOUT, UNKNOWN, QUIT
-    };
-
     private volatile Socket socket;
     private volatile InputStream inputStream;
     private volatile OutputStream outputStream;
@@ -50,7 +53,7 @@ public class Client {
     }
 
     public final void close() {
-        close(Disconnect.QUIT);
+        close(new Quit());
     }
 
     public final void close(Disconnect reason) {
@@ -116,7 +119,7 @@ public class Client {
                 outputStream = socket.getOutputStream();
             } catch (IOException e) {
                 e.printStackTrace();
-                close(Disconnect.NOSTREAM);
+                close(new NoStream());
             }
             connect();
             if (protocol != null) protocol.connect();
@@ -125,13 +128,13 @@ public class Client {
                     if (protocol != null) protocol.receive__();
                 } catch (IOException e) {
                     if (e instanceof EOFException) {
-                        close(Disconnect.EOF);
+                        close(new EOF());
                     } else if (e instanceof SocketException && e.getMessage().equals("Connection reset")) {
-                        close(Disconnect.RESET);
+                        close(new Reset());
                     } else if (e instanceof SocketTimeoutException) {
-                        close(Disconnect.TIMEOUT);
+                        close(new Timeout());
                     } else {
-                        close(Disconnect.UNKNOWN);
+                        close(new Unknown());
                         e.printStackTrace();
                     }
                 }

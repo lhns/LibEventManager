@@ -4,6 +4,7 @@ import java.io.EOFException;
 import java.io.IOException;
 
 import com.dafttech.network.Client;
+import com.dafttech.network.disconnect.Disconnect;
 import com.dafttech.network.packet.IPacket;
 
 public abstract class Protocol<Packet extends IPacket> {
@@ -38,7 +39,7 @@ public abstract class Protocol<Packet extends IPacket> {
     public void connect() {
     }
 
-    public void disconnect(Client.Disconnect reason) {
+    public void disconnect(Disconnect reason) {
     }
 
     public final int read() throws IOException {

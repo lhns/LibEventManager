@@ -5,7 +5,7 @@ import java.net.ServerSocket;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.dafttech.network.Client.Disconnect;
+import com.dafttech.network.disconnect.Disconnect;
 
 public class Server {
     private volatile ServerSocket serverSocket;
