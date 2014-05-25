@@ -1,4 +1,4 @@
-package com.dafttech.eventmanager;
+package com.dafttech.reflect.instance;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
