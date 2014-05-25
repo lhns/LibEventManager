@@ -7,6 +7,8 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.dafttech.reflect.Reflector;
+
 public class ListenerContainer {
     volatile private boolean isStatic;
     volatile private Object eventListener;
@@ -28,7 +30,7 @@ public class ListenerContainer {
 
     protected final void invoke(Event event) {
         try {
-            method.invoke(isStatic ? null : eventListener, EventManager.argTypesToArgArray(argTypes, Event.class, event));
+            method.invoke(isStatic ? null : eventListener, Reflector.argTypesToArgArray(argTypes, Event.class, event));
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (IllegalArgumentException e) {
@@ -68,7 +70,7 @@ public class ListenerContainer {
                     if (filter instanceof Field) filterObj = ((Field) filter).get(isStatic ? null : eventListener);
                     if (filter instanceof Method)
                         filterObj = ((Method) filter).invoke(isStatic ? null : eventListener,
-                                EventManager.argTypesToArgArray(((Method) filter).getParameterTypes()));
+                                Reflector.argTypesToArgArray(((Method) filter).getParameterTypes()));
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 } catch (IllegalArgumentException e) {
@@ -117,12 +119,11 @@ public class ListenerContainer {
                     }
 
                 }
-                for (Field field : EventManager.getAnnotatedFields(filterClass, EventFilter.class, true, null)) {
+                for (Field field : Reflector.getAnnotatedFields(filterClass, EventFilter.class, true, null)) {
                     if ((!isStatic || Modifier.isStatic(field.getModifiers()))
                             && field.getAnnotation(EventFilter.class).value().equals(filterName)) filterList.add(field);
                 }
-                for (Method method : EventManager
-                        .getAnnotatedMethods(filterClass, EventFilter.class, true, null, (Class<?>) null)) {
+                for (Method method : Reflector.getAnnotatedMethods(filterClass, EventFilter.class, true, null, (Class<?>) null)) {
                     if ((!isStatic || Modifier.isStatic(method.getModifiers()))
                             && method.getAnnotation(EventFilter.class).value().equals(filterName)) filterList.add(method);
                 }

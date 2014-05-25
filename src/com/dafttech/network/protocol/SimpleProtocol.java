@@ -9,15 +9,9 @@ import com.dafttech.primitives.Primitive;
 public class SimpleProtocol extends Protocol<SimplePacket> {
     @Override
     public final SimplePacket receive_() throws IOException {
-        byte[] integer = new byte[4], data;
-        int channel, size;
-        read(integer);
-        channel = Primitive.INT.fromByteArray(integer);
-        read(integer);
-        size = Primitive.INT.fromByteArray(integer);
-        data = new byte[size];
-        read(data);
-        return new SimplePacket(channel, data);
+        byte[] integer = new byte[4];
+        return new SimplePacket(Primitive.INT.fromByteArray(read(integer)),
+                read(new byte[Primitive.INT.fromByteArray(read(integer))]));
     }
 
     @Override

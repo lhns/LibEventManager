@@ -50,11 +50,12 @@ public abstract class Protocol<Packet extends IPacket> {
         return 0;
     }
 
-    public final void read(byte[] array) throws IOException {
+    public final byte[] read(byte[] array) throws IOException {
         if (client.isAlive()) {
             int result = client.getInputStream().read(array);
             if (result == -1) throw new EOFException();
         }
+        return array;
     }
 
     public final void write(byte... data) {
