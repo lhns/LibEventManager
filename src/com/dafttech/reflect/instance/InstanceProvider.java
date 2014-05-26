@@ -6,7 +6,7 @@ import java.lang.reflect.Modifier;
 
 import com.dafttech.reflect.Reflector;
 
-public class InstanceProvider<ClassType> extends Reflector {
+public class InstanceProvider extends Reflector {
     public InstanceProvider(Class<?> target) {
         super(target);
     }
@@ -20,7 +20,7 @@ public class InstanceProvider<ClassType> extends Reflector {
      * @return T - The instance already casted to the targetClass
      */
     @SuppressWarnings("unchecked")
-    public final ClassType getInstance(Object... methodArgs) {
+    public final <ClassType> ClassType getInstance(Object... methodArgs) {
         for (Field field : getAnnotatedFields(Instance.class, null)) {
             if (Modifier.isStatic(field.getModifiers())) {
                 try {

@@ -1,7 +1,9 @@
 package com.dafttech.filterlist;
 
-@SuppressWarnings("unchecked")
 public class Whitelist<FilterType> extends Filterlist<FilterType> {
+    public Whitelist(FilterType... filterObjects) {
+        super(filterObjects);
+    }
 
     @Override
     public boolean isWhitelist() {
