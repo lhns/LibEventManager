@@ -30,6 +30,7 @@ public class StackReader {
         return methodNames;
     }
 
+    // TODO: Make it work!
     public Method[] getMethods() {
         Method[] methods = new Method[stackTrace.length];
         for (int i = 0; i < stackTrace.length; i++) {
