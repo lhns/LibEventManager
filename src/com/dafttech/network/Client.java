@@ -18,21 +18,19 @@ import com.dafttech.network.disconnect.Timeout;
 import com.dafttech.network.disconnect.Unknown;
 import com.dafttech.network.protocol.Protocol;
 
-public class Client {
+public class Client implements INetworkInterface {
     private volatile Socket socket;
-    private volatile Server server;
     private volatile Protocol<?> protocol;
     private ClientThread thread;
 
-    protected Client(Socket socket, Server server) {
+    protected Client(Socket socket, Protocol<?> protocol) {
         this.socket = socket;
-        this.server = server;
         thread = new ClientThread();
         thread.start();
     }
 
     protected Client(Socket socket) {
-        this(socket, null);
+        this(socket, null); // TODO
     }
 
     public Client(InetAddress address, int port) throws IOException {
@@ -75,10 +73,6 @@ public class Client {
 
     public final OutputStream getOutputStream() throws IOException {
         return socket.getOutputStream();
-    }
-
-    public final void setProtocol(Protocol<?> protocol) {
-        this.protocol = protocol;
     }
 
     public final void close() {
@@ -124,6 +118,30 @@ public class Client {
             }
 
             getProtocol().disconnect(reason);
+        }
+    }
+
+    public final int read() throws IOException {
+        if (isAlive()) {
+            int result = getInputStream().read();
+            if (result == -1) throw new EOFException();
+            return result;
+        }
+        return 0;
+    }
+
+    public final byte[] read(byte[] array) throws IOException {
+        if (isAlive()) {
+            int result = getInputStream().read(array);
+            if (result == -1) throw new EOFException();
+        }
+        return array;
+    }
+
+    public final void write(byte... data) throws IOException {
+        if (isAlive()) {
+            getOutputStream().write(data);
+            getOutputStream().flush();
         }
     }
 }

@@ -9,14 +9,15 @@ import com.dafttech.network.disconnect.Disconnect;
 import com.dafttech.network.packet.IPacket;
 import com.dafttech.network.protocol.Protocol;
 
-public class Server extends Protocol {
+public class Server implements INetworkInterface {
     private volatile ServerSocket serverSocket;
     private volatile List<Client> clients = new LinkedList<Client>();
     protected volatile Protocol<?> protocol;
     private ServerThread thread;
 
-    public Server(ServerSocket serverSocket) {
+    public Server(ServerSocket serverSocket, Protocol<?> protocol) {
         this.serverSocket = serverSocket;
+        this.protocol = protocol.clone(this);
         thread = new ServerThread();
         thread.start();
     }
@@ -42,7 +43,7 @@ public class Server extends Protocol {
     }
 
     public final void setProtocol(Protocol<?> protocol) {
-        this.protocol = protocol;
+        this.protocol = protocol.clone(this);
     }
 
     public final void close() {
@@ -78,26 +79,18 @@ public class Server extends Protocol {
     }
 
     @Override
-    public IPacket receive_() throws IOException {
-        // TODO Auto-generated method stub
-        return null;
+    public int read() throws IOException {
+        return 0;
     }
 
     @Override
-    public void send_(IPacket packet) throws IOException {
-        // TODO Auto-generated method stub
-        
+    public byte[] read(byte[] array) throws IOException {
+        return array;
     }
 
     @Override
-    public void connect() {
-        // TODO Auto-generated method stub
-        
-    }
-
-    @Override
-    public void disconnect(Disconnect reason) {
-        // TODO Auto-generated method stub
-        
+    public void write(byte... data) throws IOException {
+        for (Client client : clients)
+            client.write(data);
     }
 }
