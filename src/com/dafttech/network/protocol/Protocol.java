@@ -17,11 +17,13 @@ public abstract class Protocol<Packet extends IPacket> {
         this.client = client;
     }
 
-    public final void receive__() throws IOException {
-        receive(receive_());
-    }
-
     public abstract Packet receive_() throws IOException;
+
+    public abstract void send_(Packet packet) throws IOException;
+
+    public abstract void connect();
+
+    public abstract void disconnect(Disconnect reason);
 
     public void receive(Packet packet) {
     }
@@ -34,12 +36,8 @@ public abstract class Protocol<Packet extends IPacket> {
         }
     }
 
-    public abstract void send_(Packet packet) throws IOException;
-
-    public void connect() {
-    }
-
-    public void disconnect(Disconnect reason) {
+    public final void receive__() throws IOException {
+        receive(receive_());
     }
 
     public final int read() throws IOException {

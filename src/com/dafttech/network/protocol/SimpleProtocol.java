@@ -3,6 +3,7 @@ package com.dafttech.network.protocol;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import com.dafttech.network.disconnect.Disconnect;
 import com.dafttech.network.packet.SimplePacket;
 import com.dafttech.primitives.Primitive;
 
@@ -21,5 +22,13 @@ public class SimpleProtocol extends Protocol<SimplePacket> {
         packetBuffer.put(Primitive.INT.toByteArray(packet.data.length));
         packetBuffer.put(packet.data);
         write(packetBuffer.array());
+    }
+
+    @Override
+    public void connect() {
+    }
+
+    @Override
+    public void disconnect(Disconnect reason) {
     }
 }

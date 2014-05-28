@@ -12,7 +12,6 @@ import java.net.UnknownHostException;
 
 import com.dafttech.network.disconnect.Disconnect;
 import com.dafttech.network.disconnect.EOF;
-import com.dafttech.network.disconnect.NoStream;
 import com.dafttech.network.disconnect.Quit;
 import com.dafttech.network.disconnect.Reset;
 import com.dafttech.network.disconnect.Timeout;
@@ -21,15 +20,19 @@ import com.dafttech.network.protocol.Protocol;
 
 public class Client {
     private volatile Socket socket;
-    private volatile InputStream inputStream;
-    private volatile OutputStream outputStream;
+    private volatile Server server;
+    private volatile Protocol<?> protocol;
     private ClientThread thread;
-    private Protocol<?> protocol;
 
-    public Client(Socket socket) {
+    protected Client(Socket socket, Server server) {
         this.socket = socket;
+        this.server = server;
         thread = new ClientThread();
         thread.start();
+    }
+
+    protected Client(Socket socket) {
+        this(socket, null);
     }
 
     public Client(InetAddress address, int port) throws IOException {
@@ -48,6 +51,32 @@ public class Client {
         this(host.split(":")[0], host.split(":")[1]);
     }
 
+    public final Socket getSocket() {
+        return socket;
+    }
+
+    public final Server getServer() {
+        return server;
+    }
+
+    public final Protocol<?> getProtocol() {
+        if (server != null && server.protocol != null) {
+            return server.protocol;
+        } else if (protocol != null) {
+            return protocol;
+        } else {
+            return null;
+        }
+    }
+
+    public final InputStream getInputStream() throws IOException {
+        return socket.getInputStream();
+    }
+
+    public final OutputStream getOutputStream() throws IOException {
+        return socket.getOutputStream();
+    }
+
     public final void setProtocol(Protocol<?> protocol) {
         this.protocol = protocol;
     }
@@ -57,75 +86,23 @@ public class Client {
     }
 
     public final void close(Disconnect reason) {
-        thread.closed = true;
         thread.reason = reason;
     }
 
     public final boolean isAlive() {
-        return !thread.closed;
-    }
-
-    public final Socket getSocket() {
-        return socket;
-    }
-
-    public final InputStream getInputStream() {
-        return inputStream;
-    }
-
-    public final OutputStream getOutputStream() {
-        return outputStream;
-    }
-
-    public final int readRaw() throws IOException {
-        int result = inputStream.read();
-        if (result == -1) throw new EOFException();
-        return result;
-    }
-
-    public final void readRaw(byte[] array) throws IOException {
-        int result = inputStream.read(array);
-        if (result == -1) throw new EOFException();
-    }
-
-    public final void sendRaw(byte... data) {
-        if (isAlive()) {
-            try {
-                outputStream.write(data);
-                outputStream.flush();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    public void receive(int channel, byte[] data) {
-    }
-
-    public void connect() {
-    }
-
-    public void disconnect(Disconnect reason) {
+        return thread.reason == null;
     }
 
     private class ClientThread extends Thread {
-        private volatile boolean closed = false;
         private volatile Disconnect reason = null;
 
         @Override
         public void run() {
-            try {
-                inputStream = socket.getInputStream();
-                outputStream = socket.getOutputStream();
-            } catch (IOException e) {
-                e.printStackTrace();
-                close(new NoStream());
-            }
-            connect();
-            if (protocol != null) protocol.connect();
+            getProtocol().connect();
+
             while (Client.this.isAlive()) {
                 try {
-                    if (protocol != null) protocol.receive__();
+                    getProtocol().receive__();
                 } catch (IOException e) {
                     if (e instanceof EOFException) {
                         close(new EOF());
@@ -146,8 +123,7 @@ public class Client {
                 e.printStackTrace();
             }
 
-            disconnect(reason);
-            if (protocol != null) protocol.disconnect(reason);
+            getProtocol().disconnect(reason);
         }
     }
 }

@@ -6,10 +6,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.dafttech.network.disconnect.Disconnect;
+import com.dafttech.network.packet.IPacket;
+import com.dafttech.network.protocol.Protocol;
 
-public class Server {
+public class Server extends Protocol {
     private volatile ServerSocket serverSocket;
     private volatile List<Client> clients = new LinkedList<Client>();
+    protected volatile Protocol<?> protocol;
     private ServerThread thread;
 
     public Server(ServerSocket serverSocket) {
@@ -26,16 +29,6 @@ public class Server {
         this(Integer.valueOf(port));
     }
 
-    public final void close() {
-        for (Client client : clients)
-            client.close();
-        thread.closed = true;
-    }
-
-    public final boolean isAlive() {
-        return !thread.closed;
-    }
-
     public final ServerSocket getServerSocket() {
         return serverSocket;
     }
@@ -44,22 +37,22 @@ public class Server {
         return clients;
     }
 
-    public final void sendRaw(Client client, byte... data) {
-        client.sendRaw(data);
+    public final Protocol<?> getProtocol() {
+        return protocol;
     }
 
-    public final void broadcastRaw(byte... data) {
+    public final void setProtocol(Protocol<?> protocol) {
+        this.protocol = protocol;
+    }
+
+    public final void close() {
         for (Client client : clients)
-            client.sendRaw(data);
+            client.close();
+        thread.closed = true;
     }
 
-    public void receive(Client client, int channel, byte[] data) {
-    }
-
-    public void connect(Client client) {
-    }
-
-    public void disconnect(Client client, Disconnect reason) {
+    public final boolean isAlive() {
+        return !thread.closed;
     }
 
     private class ServerThread extends Thread {
@@ -71,22 +64,7 @@ public class Server {
                 for (int i = clients.size() - 1; i >= 0; i--)
                     if (!clients.get(i).isAlive()) clients.remove(i);
                 try {
-                    clients.add(new Client(serverSocket.accept()) {
-                        @Override
-                        public void receive(int channel, byte[] data) {
-                            Server.this.receive(this, channel, data);
-                        }
-
-                        @Override
-                        public void connect() {
-                            Server.this.connect(this);
-                        }
-
-                        @Override
-                        public void disconnect(Disconnect reason) {
-                            Server.this.disconnect(this, reason);
-                        }
-                    });
+                    clients.add(new Client(serverSocket.accept()));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -97,5 +75,29 @@ public class Server {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public IPacket receive_() throws IOException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void send_(IPacket packet) throws IOException {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void connect() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void disconnect(Disconnect reason) {
+        // TODO Auto-generated method stub
+        
     }
 }
