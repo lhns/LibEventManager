@@ -114,7 +114,7 @@ public class Client<Packet extends IPacket> extends NetworkInterface<Packet> {
 
     @Override
     public final byte[] read(byte[] array) throws IOException {
-        if (isAlive()) {
+        if (array.length > 0 && isAlive()) {
             int result = socket.getInputStream().read(array);
             if (result == -1) throw new EOFException();
         }
