@@ -33,7 +33,7 @@ public class Chat {
                     @Override
                     public void receive(Client<SimplePacket> client, SimplePacket packet) {
                         System.out.println(client.getSocket().getRemoteSocketAddress().toString() + ": " + packet.channel + ": "
-                                + new String(packet.data));
+                                + packet.toString());
                     }
 
                     @Override
@@ -55,7 +55,7 @@ public class Chat {
                 @Override
                 public void receive(SimplePacket packet) {
                     System.out.println(client.getSocket().getRemoteSocketAddress().toString() + ": " + packet.channel + ": "
-                            + new String(packet.data));
+                            + packet.toString());
                 }
 
                 @Override
