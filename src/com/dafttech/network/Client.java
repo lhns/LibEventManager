@@ -32,11 +32,13 @@ public class Client<Packet extends IPacket> extends NetworkInterface<Packet> {
         this(protocolClass, new Socket(address, port));
     }
 
-    public Client(Class<? extends Protocol<Packet>> protocolClass, String host, int port) throws UnknownHostException, IOException {
+    public Client(Class<? extends Protocol<Packet>> protocolClass, String host, int port) throws UnknownHostException,
+            IOException {
         this(protocolClass, InetAddress.getByName(host), port);
     }
 
-    public Client(Class<? extends Protocol<Packet>> protocolClass, String host, String port) throws UnknownHostException, IOException {
+    public Client(Class<? extends Protocol<Packet>> protocolClass, String host, String port) throws UnknownHostException,
+            IOException {
         this(protocolClass, host, Integer.valueOf(port));
     }
 
@@ -127,9 +129,11 @@ public class Client<Packet extends IPacket> extends NetworkInterface<Packet> {
         }
     }
 
+    @Override
     public void connect() {
     }
 
+    @Override
     public void disconnect(Disconnect reason) {
     }
 

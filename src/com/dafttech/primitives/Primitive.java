@@ -70,15 +70,15 @@ public class Primitive<PrimitiveClass> {
     public final byte[] toByteArray(PrimitiveClass obj) {
         long value = 0;
         if (primitiveClass == float.class || primitiveClass == double.class) {
-            value = Double.doubleToLongBits((Double) obj);
+            value = Double.doubleToLongBits(Double.parseDouble(obj.toString()));
         } else if (primitiveClass == boolean.class) {
             value = (Boolean) obj ? 1 : 0;
         } else {
-            value = (Long) obj;
+            value = Long.parseLong(obj.toString());
         }
         byte[] array = new byte[size];
         for (int i = 0; i < size; i++)
-            array[i] = (byte) (value >> ((size - 1 - i) * 8));
+            array[i] = (byte) (value >> (size - 1 - i) * 8);
         return array;
     }
 
@@ -86,14 +86,25 @@ public class Primitive<PrimitiveClass> {
     public final PrimitiveClass fromByteArray(byte... array) {
         long value = 0;
         for (int i = 0; i < size; i++)
-            value = value | (array[i] & 0xFF) << ((size - 1 - i) * 8);
+            value = value | (array[i] & 0xFF) << (size - 1 - i) * 8;
         Object obj = null;
         if (primitiveClass == float.class || primitiveClass == double.class) {
             obj = Double.longBitsToDouble(value);
+            if (primitiveClass == float.class) obj = Float.parseFloat(obj.toString());
         } else if (primitiveClass == boolean.class) {
             obj = value != 0;
         } else {
             obj = value;
+            if (primitiveClass == int.class) {
+                obj = Integer.parseInt(obj.toString());
+            } else if (primitiveClass == short.class) {
+                obj = Short.parseShort(obj.toString());
+            } else if (primitiveClass == char.class) {
+                obj = (char) Short.parseShort(obj.toString());
+            } else if (primitiveClass == byte.class) {
+                obj = Byte.parseByte(obj.toString());
+            }
+
         }
         return (PrimitiveClass) obj;
     }

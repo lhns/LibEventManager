@@ -18,7 +18,7 @@ public class Reflector {
     }
 
     public Reflector showExceptions(boolean value) {
-        this.exception = value;
+        exception = value;
         return this;
     }
 

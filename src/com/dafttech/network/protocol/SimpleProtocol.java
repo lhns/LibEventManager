@@ -15,14 +15,14 @@ public class SimpleProtocol extends Protocol<SimplePacket> {
     @Override
     public SimplePacket receive() throws IOException {
         byte[] integer = new byte[4];
-        return new SimplePacket(Primitive.INT.fromByteArray(read(integer)),
+        return new SimplePacket(Primitive.SHORT.fromByteArray(read(integer)),
                 read(new byte[Primitive.INT.fromByteArray(read(integer))]));
     }
 
     @Override
     public void send(SimplePacket packet) throws IOException {
         ByteBuffer packetBuffer = ByteBuffer.allocate(8 + packet.data.length);
-        packetBuffer.put(Primitive.INT.toByteArray(packet.channel));
+        packetBuffer.put(Primitive.SHORT.toByteArray((short) packet.channel));
         packetBuffer.put(Primitive.INT.toByteArray(packet.data.length));
         packetBuffer.put(packet.data);
         write(packetBuffer.array());

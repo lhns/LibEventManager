@@ -21,7 +21,7 @@ public abstract class NetworkInterface<Packet extends IPacket> {
     public abstract void connect();
 
     public abstract void disconnect(Disconnect reason);
-    
+
     public abstract void receive(Packet packet);
 
     public abstract void send(Packet packet) throws IOException;

@@ -15,6 +15,7 @@ public class Whitelist<FilterType> extends Filterlist<FilterType> {
         return isContained(object);
     }
 
+    @Override
     public boolean isValid() {
         return filterObjects.length > 0;
     }

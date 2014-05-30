@@ -16,16 +16,20 @@ public abstract class Protocol<Packet extends IPacket> extends NetworkInterface<
 
     public abstract Packet receive() throws IOException;
 
+    @Override
     public abstract void send(Packet packet) throws IOException;
 
+    @Override
     public void connect() {
         netInterface.connect();
     }
 
+    @Override
     public void disconnect(Disconnect reason) {
         netInterface.disconnect(reason);
     }
 
+    @Override
     public final void receive(Packet packet) {
     }
 
