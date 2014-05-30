@@ -9,51 +9,42 @@ import com.dafttech.network.disconnect.Disconnect;
 import com.dafttech.network.packet.IPacket;
 import com.dafttech.network.protocol.Protocol;
 
-public class Server implements INetworkInterface {
+public class Server<Packet extends IPacket> extends NetworkInterface<Packet> {
     private volatile ServerSocket serverSocket;
-    private volatile List<Client> clients = new LinkedList<Client>();
-    protected volatile Protocol<?> protocol;
+    private volatile List<Client<Packet>> clients = new LinkedList<Client<Packet>>();
     private ServerThread thread;
 
-    public Server(ServerSocket serverSocket, Protocol<?> protocol) {
+    public Server(Class<Protocol<Packet>> protocolClass, ServerSocket serverSocket) {
+        super(protocolClass);
         this.serverSocket = serverSocket;
-        this.protocol = protocol.clone(this);
         thread = new ServerThread();
         thread.start();
     }
 
-    public Server(int port) throws IOException {
-        this(new ServerSocket(port));
+    public Server(Class<Protocol<Packet>> protocolClass, int port) throws IOException {
+        this(protocolClass, new ServerSocket(port));
     }
 
-    public Server(String port) throws IOException {
-        this(Integer.valueOf(port));
+    public Server(Class<Protocol<Packet>> protocolClass, String port) throws IOException {
+        this(protocolClass, Integer.valueOf(port));
     }
 
     public final ServerSocket getServerSocket() {
         return serverSocket;
     }
 
-    public final List<Client> getClients() {
+    public final List<Client<Packet>> getClients() {
         return clients;
-    }
-
-    public final Protocol<?> getProtocol() {
-        return protocol;
-    }
-
-    public final void setProtocol(Protocol<?> protocol) {
-        this.protocol = protocol.clone(this);
-    }
-
-    public final void close() {
-        for (Client client : clients)
-            client.close();
-        thread.closed = true;
     }
 
     public final boolean isAlive() {
         return !thread.closed;
+    }
+
+    public final void close() {
+        for (Client<Packet> client : clients)
+            client.close();
+        thread.closed = true;
     }
 
     private class ServerThread extends Thread {
@@ -65,7 +56,22 @@ public class Server implements INetworkInterface {
                 for (int i = clients.size() - 1; i >= 0; i--)
                     if (!clients.get(i).isAlive()) clients.remove(i);
                 try {
-                    clients.add(new Client(serverSocket.accept()));
+                    clients.add(new Client<Packet>(getProtocolClass(), serverSocket.accept()) {
+                        @Override
+                        public void receive(Packet packet) {
+                            Server.this.receive(this, packet);
+                        }
+
+                        @Override
+                        public void connect() {
+                            Server.this.connect(this);
+                        }
+
+                        @Override
+                        public void disconnect(Disconnect reason) {
+                            Server.this.disconnect(this, reason);
+                        }
+                    });
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -79,18 +85,54 @@ public class Server implements INetworkInterface {
     }
 
     @Override
-    public int read() throws IOException {
+    public final int available() throws IOException {
         return 0;
     }
 
     @Override
-    public byte[] read(byte[] array) throws IOException {
+    public final int read() throws IOException {
+        return 0;
+    }
+
+    @Override
+    public final byte[] read(byte[] array) throws IOException {
         return array;
     }
 
     @Override
-    public void write(byte... data) throws IOException {
-        for (Client client : clients)
+    public final void write(byte... data) throws IOException {
+        for (Client<Packet> client : clients)
             client.write(data);
+    }
+
+    @Override
+    public final void connect() {
+    }
+
+    @Override
+    public final void disconnect(Disconnect reason) {
+    }
+
+    public void connect(Client<Packet> client) {
+    }
+
+    public void disconnect(Client<Packet> client, Disconnect reason) {
+    }
+
+    @Override
+    public final void receive(Packet packet) {
+    }
+
+    public void receive(Client<Packet> client, Packet packet) {
+    }
+
+    @Override
+    public final void send(Packet packet) throws IOException {
+        for (Client<Packet> client : clients)
+            client.send(packet);
+    }
+
+    public final void send(Client<Packet> client, Packet packet) throws IOException {
+        client.send(packet);
     }
 }

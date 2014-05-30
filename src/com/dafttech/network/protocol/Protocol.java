@@ -2,66 +2,49 @@ package com.dafttech.network.protocol;
 
 import java.io.IOException;
 
-import com.dafttech.network.Client;
-import com.dafttech.network.INetworkInterface;
+import com.dafttech.network.NetworkInterface;
 import com.dafttech.network.disconnect.Disconnect;
 import com.dafttech.network.packet.IPacket;
 
-public abstract class Protocol<Packet extends IPacket> implements INetworkInterface {
-    private INetworkInterface netInterface;
+public abstract class Protocol<Packet extends IPacket> extends NetworkInterface<Packet> {
+    private NetworkInterface<Packet> netInterface;
 
-    public Protocol() {
-    }
-
-    public final void setNetworkInterface(INetworkInterface netInterface) {
+    public Protocol(NetworkInterface<Packet> netInterface) {
+        super(null);
         this.netInterface = netInterface;
     }
 
-    public abstract Packet receive_(Client client) throws IOException;
+    public abstract Packet receive() throws IOException;
 
-    public abstract void send_(Packet packet) throws IOException;
+    public abstract void send(Packet packet) throws IOException;
 
-    public abstract void connect();
-
-    public abstract void disconnect(Disconnect reason);
-
-    @SuppressWarnings("unchecked")
-    public Protocol<Packet> clone(INetworkInterface netInterface) {
-        Protocol<Packet> newInstance = null;
-        try {
-            newInstance = (Protocol<Packet>) getClass().newInstance();
-            newInstance.setNetworkInterface(netInterface);
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-        return newInstance;
+    public void connect() {
+        netInterface.connect();
     }
 
-    public void receive(Packet packet) {
+    public void disconnect(Disconnect reason) {
+        netInterface.disconnect(reason);
     }
 
-    public final void send(Packet packet) {
-        try {
-            send_(packet);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public final void receive(Packet packet) {
     }
 
-    public final void receive__(Client client) throws IOException {
-        receive(receive_(client));
+    @Override
+    public final int available() throws IOException {
+        return netInterface.available();
     }
 
+    @Override
     public final int read() throws IOException {
         return netInterface.read();
     }
 
+    @Override
     public final byte[] read(byte[] array) throws IOException {
         return netInterface.read(array);
     }
 
+    @Override
     public final void write(byte... data) throws IOException {
         netInterface.write(data);
     }
