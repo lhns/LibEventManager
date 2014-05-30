@@ -131,8 +131,4 @@ public class Server<Packet extends IPacket> extends NetworkInterface<Packet> {
         for (Client<Packet> client : clients)
             client.send(packet);
     }
-
-    public final void send(Client<Packet> client, Packet packet) throws IOException {
-        client.send(packet);
-    }
 }
