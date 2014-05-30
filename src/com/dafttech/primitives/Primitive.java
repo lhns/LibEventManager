@@ -68,6 +68,21 @@ public class Primitive<PrimitiveClass> {
     }
 
     public final byte[] toByteArray(PrimitiveClass obj) {
+        long value = toLong(obj);
+        byte[] array = new byte[size];
+        for (int i = 0; i < size; i++)
+            array[i] = (byte) (value >> (size - 1 - i) * 8);
+        return array;
+    }
+
+    public final PrimitiveClass fromByteArray(byte... array) {
+        long value = 0;
+        for (int i = 0; i < size; i++)
+            value = value | (array[i] & 0xFF) << (size - 1 - i) * 8;
+        return fromLong(value);
+    }
+
+    public final long toLong(PrimitiveClass obj) {
         long value = 0;
         if (primitiveClass == float.class || primitiveClass == double.class) {
             value = Double.doubleToLongBits(Double.parseDouble(obj.toString()));
@@ -76,35 +91,38 @@ public class Primitive<PrimitiveClass> {
         } else {
             value = Long.parseLong(obj.toString());
         }
-        byte[] array = new byte[size];
-        for (int i = 0; i < size; i++)
-            array[i] = (byte) (value >> (size - 1 - i) * 8);
-        return array;
+        return value;
+    }
+
+    public final PrimitiveClass fromLong(long value) {
+        Object obj;
+        if (primitiveClass == float.class || primitiveClass == double.class) {
+            obj = Double.longBitsToDouble(value);
+        } else {
+            obj = value;
+        }
+        return fromObject(obj);
     }
 
     @SuppressWarnings("unchecked")
-    public final PrimitiveClass fromByteArray(byte... array) {
-        long value = 0;
-        for (int i = 0; i < size; i++)
-            value = value | (array[i] & 0xFF) << (size - 1 - i) * 8;
-        Object obj = null;
-        if (primitiveClass == float.class || primitiveClass == double.class) {
-            obj = Double.longBitsToDouble(value);
-            if (primitiveClass == float.class) obj = Float.parseFloat(obj.toString());
+    public final PrimitiveClass fromObject(Object obj) {
+        String str = obj.toString();
+        if (primitiveClass == int.class) {
+            obj = Integer.parseInt(str);
+        } else if (primitiveClass == long.class) {
+            obj = Long.parseLong(str);
+        } else if (primitiveClass == float.class) {
+            obj = Float.parseFloat(str);
+        } else if (primitiveClass == double.class) {
+            obj = Double.parseDouble(str);
         } else if (primitiveClass == boolean.class) {
-            obj = value != 0;
-        } else {
-            obj = value;
-            if (primitiveClass == int.class) {
-                obj = Integer.parseInt(obj.toString());
-            } else if (primitiveClass == short.class) {
-                obj = Short.parseShort(obj.toString());
-            } else if (primitiveClass == char.class) {
-                obj = (char) Short.parseShort(obj.toString());
-            } else if (primitiveClass == byte.class) {
-                obj = Byte.parseByte(obj.toString());
-            }
-
+            obj = str.toLowerCase().equals("true") || str.equals(1);
+        } else if (primitiveClass == short.class) {
+            obj = Short.parseShort(str);
+        } else if (primitiveClass == char.class) {
+            obj = (char) Short.parseShort(str);
+        } else if (primitiveClass == byte.class) {
+            obj = Byte.parseByte(str);
         }
         return (PrimitiveClass) obj;
     }
