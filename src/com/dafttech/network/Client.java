@@ -21,26 +21,26 @@ public class Client<Packet extends IPacket> extends NetworkInterface<Packet> {
     private volatile Socket socket;
     private ClientThread thread;
 
-    protected Client(Class<Protocol<Packet>> protocolClass, Socket socket) {
+    protected Client(Class<? extends Protocol<Packet>> protocolClass, Socket socket) {
         super(protocolClass);
         this.socket = socket;
         thread = new ClientThread();
         thread.start();
     }
 
-    public Client(Class<Protocol<Packet>> protocolClass, InetAddress address, int port) throws IOException {
+    public Client(Class<? extends Protocol<Packet>> protocolClass, InetAddress address, int port) throws IOException {
         this(protocolClass, new Socket(address, port));
     }
 
-    public Client(Class<Protocol<Packet>> protocolClass, String host, int port) throws UnknownHostException, IOException {
+    public Client(Class<? extends Protocol<Packet>> protocolClass, String host, int port) throws UnknownHostException, IOException {
         this(protocolClass, InetAddress.getByName(host), port);
     }
 
-    public Client(Class<Protocol<Packet>> protocolClass, String host, String port) throws UnknownHostException, IOException {
+    public Client(Class<? extends Protocol<Packet>> protocolClass, String host, String port) throws UnknownHostException, IOException {
         this(protocolClass, host, Integer.valueOf(port));
     }
 
-    public Client(Class<Protocol<Packet>> protocolClass, String host) throws UnknownHostException, IOException {
+    public Client(Class<? extends Protocol<Packet>> protocolClass, String host) throws UnknownHostException, IOException {
         this(protocolClass, host.split(":")[0], host.split(":")[1]);
     }
 

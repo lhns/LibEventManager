@@ -14,18 +14,18 @@ public class Server<Packet extends IPacket> extends NetworkInterface<Packet> {
     private volatile List<Client<Packet>> clients = new LinkedList<Client<Packet>>();
     private ServerThread thread;
 
-    public Server(Class<Protocol<Packet>> protocolClass, ServerSocket serverSocket) {
+    public Server(Class<? extends Protocol<Packet>> protocolClass, ServerSocket serverSocket) {
         super(protocolClass);
         this.serverSocket = serverSocket;
         thread = new ServerThread();
         thread.start();
     }
 
-    public Server(Class<Protocol<Packet>> protocolClass, int port) throws IOException {
+    public Server(Class<? extends Protocol<Packet>> protocolClass, int port) throws IOException {
         this(protocolClass, new ServerSocket(port));
     }
 
-    public Server(Class<Protocol<Packet>> protocolClass, String port) throws IOException {
+    public Server(Class<? extends Protocol<Packet>> protocolClass, String port) throws IOException {
         this(protocolClass, Integer.valueOf(port));
     }
 

@@ -8,10 +8,10 @@ import com.dafttech.network.packet.IPacket;
 import com.dafttech.network.protocol.Protocol;
 
 public abstract class NetworkInterface<Packet extends IPacket> {
-    private Class<Protocol<Packet>> protocolClass;
+    private Class<? extends Protocol<Packet>> protocolClass;
     private Protocol<Packet> protocol;
 
-    public NetworkInterface(Class<Protocol<Packet>> protocolClass) {
+    public NetworkInterface(Class<? extends Protocol<Packet>> protocolClass) {
         if (protocolClass != null) {
             this.protocolClass = protocolClass;
             protocol = newProtocolInstance(protocolClass);
@@ -34,7 +34,7 @@ public abstract class NetworkInterface<Packet extends IPacket> {
 
     public abstract void write(byte... data) throws IOException;
 
-    public Class<Protocol<Packet>> getProtocolClass() {
+    public Class<? extends Protocol<Packet>> getProtocolClass() {
         return protocolClass;
     }
 
@@ -42,7 +42,7 @@ public abstract class NetworkInterface<Packet extends IPacket> {
         return protocol;
     }
 
-    private Protocol<Packet> newProtocolInstance(Class<Protocol<Packet>> protocolClass) {
+    private Protocol<Packet> newProtocolInstance(Class<? extends Protocol<Packet>> protocolClass) {
         try {
             return protocolClass.getConstructor(NetworkInterface.class).newInstance(this);
         } catch (InstantiationException e) {

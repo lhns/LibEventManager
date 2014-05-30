@@ -6,11 +6,13 @@ import java.io.InputStreamReader;
 
 import com.dafttech.network.Client;
 import com.dafttech.network.Server;
+import com.dafttech.network.packet.SimplePacket;
+import com.dafttech.network.protocol.SimpleProtocol;
 
 public class Chat {
     static boolean isServer = false;
-    static Server server = null;
-    static Client client = null;
+    static Server<SimplePacket> server = null;
+    static Client<SimplePacket> client = null;
 
     /**
      * @param args
@@ -26,33 +28,7 @@ public class Chat {
         int port = Integer.valueOf(input.readLine());
         if (isServer) {
             try {
-                server = new Server(port) {
-                    @Override
-                    public void receive(Client client, int channel, byte[] data) {
-                        for (Client client1 : server.getClients())
-                            if (client1 != client) client1.send(channel, data);
-                        System.out.println(client.getSocket().getRemoteSocketAddress().toString() + ": " + new String(data));
-                    };
-
-                    @Override
-                    public void connect(Client client) {
-                        for (Client client1 : server.getClients())
-                            client1.send(1, (client.getSocket().getRemoteSocketAddress().toString() + ": Connection Requested")
-                                    .getBytes());
-                        System.out.println(client.getSocket().getRemoteSocketAddress().toString() + ": Connection Requested");
-                    }
-
-                    @Override
-                    public void disconnect(Client client, Disconnect reason) {
-                        for (Client client1 : server.getClients())
-                            if (client1 != client)
-                                client1.send(1,
-                                        (client.getSocket().getRemoteSocketAddress().toString() + ": Disconnect " + reason
-                                                .toString()).getBytes());
-                        System.out.println(client.getSocket().getRemoteSocketAddress().toString() + ": Disconnect "
-                                + reason.toString());
-                    }
-                };
+                server = new Server<SimplePacket>(SimpleProtocol.class, port);
             } catch (Exception e) {
                 System.out.println(e);
             }
