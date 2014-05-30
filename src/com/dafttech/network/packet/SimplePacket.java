@@ -8,4 +8,9 @@ public class SimplePacket implements IPacket {
         this.channel = channel;
         this.data = data;
     }
+
+    @Override
+    public String toString() {
+        return new String(data);
+    }
 }
