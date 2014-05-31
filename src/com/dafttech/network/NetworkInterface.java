@@ -18,6 +18,10 @@ public abstract class NetworkInterface<Packet extends IPacket> {
         }
     }
 
+    public abstract boolean isAlive();
+
+    public abstract void close();
+
     public abstract void connect();
 
     public abstract void disconnect(Disconnect reason);

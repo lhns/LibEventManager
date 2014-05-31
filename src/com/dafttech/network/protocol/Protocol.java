@@ -52,4 +52,13 @@ public abstract class Protocol<Packet extends IPacket> extends NetworkInterface<
     public final void write(byte... data) throws IOException {
         netInterface.write(data);
     }
+
+    @Override
+    public final boolean isAlive() {
+        return true;
+    }
+
+    @Override
+    public final void close() {
+    }
 }

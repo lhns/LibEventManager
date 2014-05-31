@@ -50,10 +50,12 @@ public class Client<Packet extends IPacket> extends NetworkInterface<Packet> {
         return socket;
     }
 
+    @Override
     public final boolean isAlive() {
         return thread.reason == null;
     }
 
+    @Override
     public final void close() {
         close(new Quit());
     }

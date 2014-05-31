@@ -37,10 +37,12 @@ public class Server<Packet extends IPacket> extends NetworkInterface<Packet> {
         return clients;
     }
 
+    @Override
     public final boolean isAlive() {
         return !thread.closed;
     }
 
+    @Override
     public final void close() {
         for (Client<Packet> client : clients)
             client.close();
