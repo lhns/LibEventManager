@@ -1,2 +1,2 @@
 @echo off
-gradlew build
+gradlew build & pause

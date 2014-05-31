@@ -24,11 +24,9 @@ public class EventManager {
      * 
      * @param eventListener
      *            Object - Instance of the listening class
-     * @param blacklist
-     *            EventType... - Sets a blacklist of EventTypes that are then
-     *            not registered in the given eventListener class. That can be
-     *            converted to a whitelist if you put EventManager.WHITELIST at
-     *            the first place.
+     * @param filterlist
+     *            Filterlist<EventType> - Sets a filterlist of EventTypes that
+     *            are included/excluded
      */
     public final void registerEventListener(Object eventListener, Filterlist<EventType> filterlist) {
         if (filterlist == null || !filterlist.isValid()) return;
