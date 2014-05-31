@@ -15,8 +15,9 @@ public class InstanceProvider extends Reflector {
      * REQUIRES THE CLASS TO HAVE EITHER A FIELD OR A METHOD WITH THE INSTANCE
      * ANNOTATED WITH THE @INSTANCE ANNOTATION
      * 
-     * @param targetClass
-     *            Class<T> - The class, you want the instance from
+     * @param methodArgs
+     *            Object... - The arguments if you get the instance from a
+     *            method
      * @return T - The instance already casted to the targetClass
      */
     @SuppressWarnings("unchecked")
