@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 
 import com.dafttech.network.disconnect.Disconnect;
 import com.dafttech.network.disconnect.EOF;
@@ -117,8 +118,17 @@ public class Client<Packet extends IPacket> extends NetworkInterface<Packet> {
     @Override
     public final byte[] read(byte[] array) throws IOException {
         if (array.length > 0 && isAlive()) {
-            int result = socket.getInputStream().read(array);
-            if (result == -1) throw new EOFException();
+            int bytesLeft = array.length, bytesRead;
+            ByteBuffer inputBuffer = ByteBuffer.allocate(bytesLeft);
+            byte[] readArray;
+            while (bytesLeft > 0) {
+                readArray = new byte[bytesLeft];
+                bytesRead = socket.getInputStream().read(readArray);
+                if (bytesRead == -1) throw new EOFException();
+                inputBuffer.put(readArray, 0, bytesRead);
+                bytesLeft -= bytesRead;
+            }
+            array = inputBuffer.array();
         }
         return array;
     }
