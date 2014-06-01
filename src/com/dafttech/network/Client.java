@@ -76,16 +76,7 @@ public class Client<Packet extends IPacket> extends NetworkInterface<Packet> {
                 try {
                     receive(getProtocol().receive());
                 } catch (IOException e) {
-                    if (e instanceof EOFException) {
-                        close(new EOF());
-                    } else if (e instanceof SocketException && e.getMessage().equals("Connection reset")) {
-                        close(new Reset());
-                    } else if (e instanceof SocketTimeoutException) {
-                        close(new Timeout());
-                    } else {
-                        close(new Unknown());
-                        e.printStackTrace();
-                    }
+                    processException(e);
                 }
             }
 
@@ -155,6 +146,23 @@ public class Client<Packet extends IPacket> extends NetworkInterface<Packet> {
 
     @Override
     public final void send(Packet packet) throws IOException {
-        getProtocol().send(packet);
+        try {
+            getProtocol().send(packet);
+        } catch (IOException e) {
+            processException(e);
+        }
+    }
+
+    private void processException(Exception e) {
+        if (e instanceof EOFException) {
+            close(new EOF());
+        } else if (e instanceof SocketException && e.getMessage().equals("Connection reset")) {
+            close(new Reset());
+        } else if (e instanceof SocketTimeoutException) {
+            close(new Timeout());
+        } else {
+            close(new Unknown());
+            e.printStackTrace();
+        }
     }
 }
