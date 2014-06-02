@@ -157,7 +157,7 @@ public class Client<Packet extends IPacket> extends NetworkInterface<Packet> {
     private void processException(Exception e) {
         if (e instanceof EOFException) {
             close(new EOF());
-        } else if (e instanceof SocketException && e.getMessage().equals("Connection reset")) {
+        } else if (e instanceof SocketException && e.getMessage().startsWith("Connection reset")) {
             close(new Reset());
         } else if (e instanceof SocketTimeoutException) {
             close(new Timeout());
