@@ -74,7 +74,8 @@ public class Client<Packet extends IPacket> extends NetworkInterface<Packet> {
 
             while (Client.this.isAlive()) {
                 try {
-                    receive(getProtocol().receive());
+                    Packet packet = getProtocol().receive();
+                    if (packet != null) receive(packet);
                 } catch (IOException e) {
                     processException(e);
                 }
