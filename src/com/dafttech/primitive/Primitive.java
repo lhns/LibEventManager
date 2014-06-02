@@ -1,4 +1,4 @@
-package com.dafttech.primitives;
+package com.dafttech.primitive;
 
 import java.util.ArrayList;
 import java.util.List;

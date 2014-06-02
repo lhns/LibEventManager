@@ -5,7 +5,7 @@ import java.nio.ByteBuffer;
 
 import com.dafttech.network.NetworkInterface;
 import com.dafttech.network.packet.SimplePacket;
-import com.dafttech.primitives.Primitive;
+import com.dafttech.primitive.Primitive;
 
 public class SimpleProtocol extends Protocol<SimplePacket> {
     public SimpleProtocol(NetworkInterface<SimplePacket> netInterface) {

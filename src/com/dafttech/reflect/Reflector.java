@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.dafttech.primitives.Primitive;
+import com.dafttech.primitive.Primitive;
 
 public class Reflector {
     protected Class<?> target;
