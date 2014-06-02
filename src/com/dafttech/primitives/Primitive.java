@@ -76,9 +76,13 @@ public class Primitive<PrimitiveClass> {
     }
 
     public final PrimitiveClass fromByteArray(byte... array) {
+        return fromByteArray(array, 0);
+    }
+
+    public final PrimitiveClass fromByteArray(byte[] array, int offset) {
         long value = 0;
         for (int i = 0; i < size; i++)
-            value = value | (array[i] & 0xFF) << (size - 1 - i) * 8;
+            value = value | (array[i + offset] & 0xFF) << (size - 1 - i) * 8;
         return fromLong(value);
     }
 
