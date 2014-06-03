@@ -5,6 +5,7 @@ import java.net.ServerSocket;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.dafttech.filterlist.Filterlist;
 import com.dafttech.network.disconnect.Disconnect;
 import com.dafttech.network.packet.IPacket;
 import com.dafttech.network.protocol.Protocol;
@@ -132,5 +133,10 @@ public class Server<Packet extends IPacket> extends NetworkInterface<Packet> {
     public final void send(Packet packet) {
         for (Client<Packet> client : clients)
             client.send(packet);
+    }
+
+    public final void send(Filterlist<Client<Packet>> clientFilter, Packet packet) {
+        for (Client<Packet> client : clients)
+            if (clientFilter.isFiltered(client)) client.send(packet);
     }
 }
