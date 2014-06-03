@@ -1,6 +1,5 @@
 package com.dafttech.network.protocol;
 
-import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import com.dafttech.network.NetworkInterface;
@@ -13,14 +12,14 @@ public class SimpleProtocol extends Protocol<SimplePacket> {
     }
 
     @Override
-    public SimplePacket receive() throws IOException {
+    public SimplePacket receive() {
         byte[] integer = new byte[4];
         return new SimplePacket(Primitive.INT.fromByteArray(read(integer)),
                 read(new byte[Primitive.INT.fromByteArray(read(integer))]));
     }
 
     @Override
-    public void send(SimplePacket packet) throws IOException {
+    public void send(SimplePacket packet) {
         ByteBuffer packetBuffer = ByteBuffer.allocate(8 + packet.data.length);
         packetBuffer.put(Primitive.INT.toByteArray(packet.channel));
         packetBuffer.put(Primitive.INT.toByteArray(packet.data.length));

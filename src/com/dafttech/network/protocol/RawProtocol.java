@@ -13,15 +13,19 @@ public class RawProtocol extends Protocol<RawPacket> {
     }
 
     @Override
-    public RawPacket receive() throws IOException {
+    public RawPacket receive() {
         ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
         byteStream.write(read());
-        byteStream.write(read(new byte[available()]));
+        try {
+            byteStream.write(read(new byte[available()]));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return new RawPacket(byteStream.toByteArray());
     }
 
     @Override
-    public void send(RawPacket packet) throws IOException {
+    public void send(RawPacket packet) {
         write(packet.data);
     }
 

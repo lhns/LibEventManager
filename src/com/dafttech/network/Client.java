@@ -73,12 +73,8 @@ public class Client<Packet extends IPacket> extends NetworkInterface<Packet> {
             getProtocol().connect();
 
             while (Client.this.isAlive()) {
-                try {
-                    Packet packet = getProtocol().receive();
-                    if (packet != null) receive(packet);
-                } catch (IOException e) {
-                    processException(e);
-                }
+                Packet packet = getProtocol().receive();
+                if (packet != null) receive(packet);
             }
 
             try {
@@ -92,44 +88,62 @@ public class Client<Packet extends IPacket> extends NetworkInterface<Packet> {
     }
 
     @Override
-    public final int available() throws IOException {
-        if (isAlive()) return socket.getInputStream().available();
-        return 0;
-    }
-
-    @Override
-    public final int read() throws IOException {
+    public final int available() {
         if (isAlive()) {
-            int result = socket.getInputStream().read();
-            if (result == -1) throw new EOFException();
-            return result;
+            try {
+                return socket.getInputStream().available();
+            } catch (IOException e) {
+                processException(e);
+            }
         }
         return 0;
     }
 
     @Override
-    public final byte[] read(byte[] array) throws IOException {
-        if (array.length > 0 && isAlive()) {
-            int bytesLeft = array.length, bytesRead;
-            ByteBuffer inputBuffer = ByteBuffer.allocate(bytesLeft);
-            byte[] readArray;
-            while (bytesLeft > 0) {
-                readArray = new byte[bytesLeft];
-                bytesRead = socket.getInputStream().read(readArray);
-                if (bytesRead == -1) throw new EOFException();
-                inputBuffer.put(readArray, 0, bytesRead);
-                bytesLeft -= bytesRead;
+    public final int read() {
+        if (isAlive()) {
+            try {
+                int result = socket.getInputStream().read();
+                if (result == -1) throw new EOFException();
+                return result;
+            } catch (IOException e) {
+                processException(e);
             }
-            array = inputBuffer.array();
+        }
+        return 0;
+    }
+
+    @Override
+    public final byte[] read(byte[] array) {
+        if (array.length > 0 && isAlive()) {
+            try {
+                int bytesLeft = array.length, bytesRead;
+                ByteBuffer inputBuffer = ByteBuffer.allocate(bytesLeft);
+                byte[] readArray;
+                while (bytesLeft > 0) {
+                    readArray = new byte[bytesLeft];
+                    bytesRead = socket.getInputStream().read(readArray);
+                    if (bytesRead == -1) throw new EOFException();
+                    inputBuffer.put(readArray, 0, bytesRead);
+                    bytesLeft -= bytesRead;
+                }
+                array = inputBuffer.array();
+            } catch (IOException e) {
+                processException(e);
+            }
         }
         return array;
     }
 
     @Override
-    public final void write(byte... data) throws IOException {
+    public final void write(byte... data) {
         if (isAlive()) {
-            socket.getOutputStream().write(data);
-            socket.getOutputStream().flush();
+            try {
+                socket.getOutputStream().write(data);
+                socket.getOutputStream().flush();
+            } catch (IOException e) {
+                processException(e);
+            }
         }
     }
 
@@ -146,12 +160,8 @@ public class Client<Packet extends IPacket> extends NetworkInterface<Packet> {
     }
 
     @Override
-    public final void send(Packet packet) throws IOException {
-        try {
-            getProtocol().send(packet);
-        } catch (IOException e) {
-            processException(e);
-        }
+    public final void send(Packet packet) {
+        getProtocol().send(packet);
     }
 
     private void processException(Exception e) {

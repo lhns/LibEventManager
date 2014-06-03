@@ -1,6 +1,5 @@
 package com.dafttech.network;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import com.dafttech.network.disconnect.Disconnect;
@@ -28,15 +27,15 @@ public abstract class NetworkInterface<Packet extends IPacket> {
 
     public abstract void receive(Packet packet);
 
-    public abstract void send(Packet packet) throws IOException;
+    public abstract void send(Packet packet);
 
-    public abstract int available() throws IOException;
+    public abstract int available();
 
-    public abstract int read() throws IOException;
+    public abstract int read();
 
-    public abstract byte[] read(byte[] array) throws IOException;
+    public abstract byte[] read(byte[] array);
 
-    public abstract void write(byte... data) throws IOException;
+    public abstract void write(byte... data);
 
     public Class<? extends Protocol<Packet>> getProtocolClass() {
         return protocolClass;

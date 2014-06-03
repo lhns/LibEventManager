@@ -35,7 +35,7 @@ public class Webserver {
                                 + content;
                         try {
                             client.send(new RawPacket(outHeader.getBytes()));
-                        } catch (IOException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         }
                         // System.out.println(inHeader);

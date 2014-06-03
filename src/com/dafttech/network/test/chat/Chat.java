@@ -28,23 +28,19 @@ public class Chat {
         System.out.println("Port: ");
         int port = Integer.valueOf(input.readLine());
         if (isServer) {
-            try {
-                server = new Server<SimplePacket>(SimpleProtocol.class, port) {
-                    @Override
-                    public void receive(Client<SimplePacket> client, SimplePacket packet) {
-                        System.out.println(client.getSocket().getRemoteSocketAddress().toString() + ": " + packet.channel + ": "
-                                + packet.toString());
-                    }
+            server = new Server<SimplePacket>(SimpleProtocol.class, port) {
+                @Override
+                public void receive(Client<SimplePacket> client, SimplePacket packet) {
+                    System.out.println(client.getSocket().getRemoteSocketAddress().toString() + ": " + packet.channel + ": "
+                            + packet.toString());
+                }
 
-                    @Override
-                    public void disconnect(Client<SimplePacket> client, Disconnect reason) {
-                        System.out.println(client.getSocket().getRemoteSocketAddress().toString() + ": Disconnect "
-                                + reason.toString());
-                    }
-                };
-            } catch (Exception e) {
-                System.out.println(e);
-            }
+                @Override
+                public void disconnect(Client<SimplePacket> client, Disconnect reason) {
+                    System.out.println(client.getSocket().getRemoteSocketAddress().toString() + ": Disconnect "
+                            + reason.toString());
+                }
+            };
             System.out.println(server.getServerSocket().getLocalSocketAddress().toString());
             while (true)
                 server.send(new SimplePacket(10, input.readLine().getBytes()));

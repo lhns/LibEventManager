@@ -1,7 +1,5 @@
 package com.dafttech.network.protocol;
 
-import java.io.IOException;
-
 import com.dafttech.network.NetworkInterface;
 import com.dafttech.network.disconnect.Disconnect;
 import com.dafttech.network.packet.IPacket;
@@ -14,10 +12,10 @@ public abstract class Protocol<Packet extends IPacket> extends NetworkInterface<
         this.netInterface = netInterface;
     }
 
-    public abstract Packet receive() throws IOException;
+    public abstract Packet receive();
 
     @Override
-    public abstract void send(Packet packet) throws IOException;
+    public abstract void send(Packet packet);
 
     @Override
     public void connect() {
@@ -34,22 +32,22 @@ public abstract class Protocol<Packet extends IPacket> extends NetworkInterface<
     }
 
     @Override
-    public final int available() throws IOException {
+    public final int available() {
         return netInterface.available();
     }
 
     @Override
-    public final int read() throws IOException {
+    public final int read() {
         return netInterface.read();
     }
 
     @Override
-    public final byte[] read(byte[] array) throws IOException {
+    public final byte[] read(byte[] array) {
         return netInterface.read(array);
     }
 
     @Override
-    public final void write(byte... data) throws IOException {
+    public final void write(byte... data) {
         netInterface.write(data);
     }
 

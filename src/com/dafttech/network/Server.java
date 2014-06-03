@@ -87,22 +87,22 @@ public class Server<Packet extends IPacket> extends NetworkInterface<Packet> {
     }
 
     @Override
-    public final int available() throws IOException {
+    public final int available() {
         return 0;
     }
 
     @Override
-    public final int read() throws IOException {
+    public final int read() {
         return 0;
     }
 
     @Override
-    public final byte[] read(byte[] array) throws IOException {
+    public final byte[] read(byte[] array) {
         return array;
     }
 
     @Override
-    public final void write(byte... data) throws IOException {
+    public final void write(byte... data) {
         for (Client<Packet> client : clients)
             client.write(data);
     }
@@ -129,7 +129,7 @@ public class Server<Packet extends IPacket> extends NetworkInterface<Packet> {
     }
 
     @Override
-    public final void send(Packet packet) throws IOException {
+    public final void send(Packet packet) {
         for (Client<Packet> client : clients)
             client.send(packet);
     }
