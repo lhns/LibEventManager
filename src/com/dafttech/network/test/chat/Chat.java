@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import com.dafttech.filterlist.Blacklist;
 import com.dafttech.network.Client;
 import com.dafttech.network.Server;
 import com.dafttech.network.disconnect.Disconnect;
@@ -31,6 +32,7 @@ public class Chat {
             server = new Server<SimplePacket>(SimpleProtocol.class, port) {
                 @Override
                 public void receive(Client<SimplePacket> client, SimplePacket packet) {
+                    send(new Blacklist<Client<?>>(client), packet);
                     System.out.println(client.getSocket().getRemoteSocketAddress().toString() + ": " + packet.channel + ": "
                             + packet.toString());
                 }

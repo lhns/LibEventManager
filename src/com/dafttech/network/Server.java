@@ -135,7 +135,7 @@ public class Server<Packet extends IPacket> extends NetworkInterface<Packet> {
             client.send(packet);
     }
 
-    public final void send(Filterlist<Client<Packet>> clientFilter, Packet packet) {
+    public final void send(Filterlist<Client<?>> clientFilter, Packet packet) {
         for (Client<Packet> client : clients)
             if (clientFilter.isFiltered(client)) client.send(packet);
     }
