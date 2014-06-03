@@ -4,16 +4,11 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
 import com.dafttech.network.disconnect.Disconnect;
-import com.dafttech.network.disconnect.EOF;
 import com.dafttech.network.disconnect.Quit;
-import com.dafttech.network.disconnect.Reset;
-import com.dafttech.network.disconnect.Timeout;
 import com.dafttech.network.disconnect.Unknown;
 import com.dafttech.network.packet.IPacket;
 import com.dafttech.network.protocol.Protocol;
@@ -61,7 +56,7 @@ public class Client<Packet extends IPacket> extends NetworkInterface<Packet> {
         close(new Quit());
     }
 
-    public final void close(Disconnect reason) {
+    protected final void close(Disconnect reason) {
         thread.reason = reason;
     }
 
@@ -165,15 +160,8 @@ public class Client<Packet extends IPacket> extends NetworkInterface<Packet> {
     }
 
     private void processException(Exception e) {
-        if (e instanceof EOFException) {
-            close(new EOF());
-        } else if (e instanceof SocketException && e.getMessage().startsWith("Connection reset")) {
-            close(new Reset());
-        } else if (e instanceof SocketTimeoutException) {
-            close(new Timeout());
-        } else {
-            close(new Unknown());
-            e.printStackTrace();
-        }
+        Disconnect reason = Disconnect.fromException(e);
+        close(reason);
+        if (reason instanceof Unknown) e.printStackTrace();
     }
 }
