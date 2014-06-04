@@ -1,6 +1,7 @@
 package com.dafttech.reflect;
 
 import java.lang.annotation.Annotation;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -131,5 +132,18 @@ public class Reflector {
             if (args[i1] == null && argTypes[i1].isPrimitive()) args[i1] = Primitive.get(argTypes[i1]).getNullValue();
         }
         return args;
+    }
+
+    public Constructor<?> getConstructor() {
+        try {
+            Constructor<?> constructor = target.getDeclaredConstructor();
+            constructor.setAccessible(true);
+            return constructor;
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
