@@ -1,6 +1,7 @@
 package com.dafttech.network.test.rawChat;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -40,15 +41,7 @@ public class RawChat {
 
                     @Override
                     public void receive(Client<RawPacket> client, RawPacket packet) {
-                        recv = recv + new String(packet.data);
-                        if (!recv.equals("")) {
-                            String outString = "b";
-                            for (byte b : recv.getBytes())
-                                outString = outString + " " + b;
-                            outString = outString + "\ns " + recv;
-                            System.out.println(outString);
-                            recv = "";
-                        }
+                        readByteArray(packet.data);
                     };
 
                     @Override
@@ -67,20 +60,12 @@ public class RawChat {
             }
             System.out.println(net.getServerSocket().getLocalSocketAddress().toString());
             while (true)
-                net.send(new RawPacket(input.readLine().getBytes()));
+                net.send(new RawPacket(sendByteArray(input)));
         } else {
             net = new Client<RawPacket>(RawProtocol.class, address) {
                 @Override
                 public void receive(RawPacket packet) {
-                    recv = recv + new String(packet.data);
-                    if (!recv.equals("")) {
-                        String outString = "b";
-                        for (byte b : recv.getBytes())
-                            outString = outString + " " + b;
-                        outString = outString + "\ns " + recv;
-                        System.out.println(outString);
-                        recv = "";
-                    }
+                    readByteArray(packet.data);
                 };
 
                 @Override
@@ -89,22 +74,51 @@ public class RawChat {
                 }
             };
             System.out.println(net.getSocket().getLocalSocketAddress().toString());
-            while (true) {
-                String in = input.readLine();
-                if (in.startsWith("b ")) {
-                    in = in.substring(2);
-                    String[] bytes = in.split(" ");
-                    byte[] bArray = new byte[bytes.length];
-                    for (int i = 0; i < bytes.length; i++) {
-                        bArray[i] = (byte) (int) Integer.valueOf(bytes[i]);
+            while (true)
+                net.send(new RawPacket(sendByteArray(input)));
+        }
+    }
+
+    public static void readByteArray(byte[] data) {
+        recv = recv + new String(data);
+        if (!recv.equals("")) {
+            String outString = "b";
+            for (byte b : recv.getBytes())
+                outString = outString + " " + b;
+            outString = outString + "\ns " + recv;
+            System.out.println(outString);
+            recv = "";
+        }
+    }
+
+    public static byte[] sendByteArray(BufferedReader input) throws IOException {
+        String in = input.readLine();
+        if (in.startsWith("b ")) {
+            in = in.substring(2);
+            String[] bytes = in.split(" ");
+            ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+            ByteArrayOutputStream repeat = null;
+            for (int i = 0; i < bytes.length; i++) {
+                String currChar = bytes[i];
+                if (currChar.equals("r")) {
+                    if (repeat == null) {
+                        repeat = new ByteArrayOutputStream();
+                    } else if (currChar.equals("r")) {
+                        for (int i1 = 0; i1 < Integer.valueOf(bytes[i + 1]); i1++)
+                            outStream.write(repeat.toByteArray());
                     }
-                    net.send(new RawPacket(bArray));
-                } else if (in.startsWith("s ")) {
-                    in = in.substring(2);
-                    net.send(new RawPacket(in.getBytes()));
+                } else if (repeat != null) {
+                    repeat.write(Integer.valueOf(currChar));
+                } else {
+                    outStream.write(Integer.valueOf(currChar));
                 }
             }
+            return outStream.toByteArray();
+        } else if (in.startsWith("s ")) {
+            in = in.substring(2);
+            return in.getBytes();
         }
+        return null;
     }
 
 }
