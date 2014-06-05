@@ -13,8 +13,7 @@ import com.dafttech.network.packet.SimplePacket;
 import com.dafttech.network.protocol.SimpleProtocol;
 
 public class Chat {
-    static boolean isServer = false;
-    static NetworkInterface<SimplePacket> net = null;
+    public static NetworkInterface<SimplePacket> net = null;
 
     /**
      * @param args
@@ -24,12 +23,12 @@ public class Chat {
     public static void main(String[] args) throws NumberFormatException, IOException {
         BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("Server? ");
-        isServer = Boolean.valueOf(input.readLine());
+        boolean isServer = Boolean.valueOf(input.readLine());
         System.out.println(isServer);
-        System.out.println("Port: ");
-        int port = Integer.valueOf(input.readLine());
+        System.out.println("Address/Port: ");
+        String address = input.readLine();
         if (isServer) {
-            net = new Server<SimplePacket>(SimpleProtocol.class, port) {
+            net = new Server<SimplePacket>(SimpleProtocol.class, address) {
                 @Override
                 public void receive(Client<SimplePacket> client, SimplePacket packet) {
                     send(new Blacklist<Client<?>>(client), packet);
@@ -47,9 +46,7 @@ public class Chat {
             while (true)
                 net.send(new SimplePacket(10, input.readLine().getBytes()));
         } else {
-            System.out.println("IP: ");
-            String ip = input.readLine();
-            net = new Client<SimplePacket>(SimpleProtocol.class, ip, port) {
+            net = new Client<SimplePacket>(SimpleProtocol.class, address) {
                 @Override
                 public void receive(SimplePacket packet) {
                     System.out.println(net.getSocket().getRemoteSocketAddress().toString() + ": " + packet.channel + ": "

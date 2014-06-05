@@ -15,11 +15,7 @@ import com.dafttech.network.packet.RawPacket;
 import com.dafttech.network.protocol.RawProtocol;
 
 public class RawChat {
-
-    static boolean isServer = false;
-    static NetworkInterface<RawPacket> net = null;
-    static int count = 0;
-    static String recv = "";
+    public static NetworkInterface<RawPacket> net = null;
 
     /**
      * 
@@ -33,7 +29,7 @@ public class RawChat {
     public static void main(String[] args) throws NumberFormatException, IOException {
         BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("Server? ");
-        isServer = Boolean.valueOf(input.readLine());
+        boolean isServer = Boolean.valueOf(input.readLine());
         System.out.println(isServer);
         System.out.println("Address/Port: ");
         String address = input.readLine();
@@ -80,6 +76,8 @@ public class RawChat {
                 net.send(new RawPacket(sendByteArray(input)));
         }
     }
+
+    public static String recv = "";
 
     public static void readByteArray(byte[] data) {
         recv = recv + new String(data);
