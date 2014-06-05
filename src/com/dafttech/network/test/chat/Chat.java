@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 
 import com.dafttech.filterlist.Blacklist;
 import com.dafttech.network.Client;
+import com.dafttech.network.NetworkInterface;
 import com.dafttech.network.Server;
 import com.dafttech.network.disconnect.Disconnect;
 import com.dafttech.network.packet.SimplePacket;
@@ -13,8 +14,7 @@ import com.dafttech.network.protocol.SimpleProtocol;
 
 public class Chat {
     static boolean isServer = false;
-    static Server<SimplePacket> server = null;
-    static Client<SimplePacket> client = null;
+    static NetworkInterface<SimplePacket> net = null;
 
     /**
      * @param args
@@ -29,7 +29,7 @@ public class Chat {
         System.out.println("Port: ");
         int port = Integer.valueOf(input.readLine());
         if (isServer) {
-            server = new Server<SimplePacket>(SimpleProtocol.class, port) {
+            net = new Server<SimplePacket>(SimpleProtocol.class, port) {
                 @Override
                 public void receive(Client<SimplePacket> client, SimplePacket packet) {
                     send(new Blacklist<Client<?>>(client), packet);
@@ -43,16 +43,16 @@ public class Chat {
                             + reason.toString());
                 }
             };
-            System.out.println(server.getServerSocket().getLocalSocketAddress().toString());
+            System.out.println(net.getServerSocket().getLocalSocketAddress().toString());
             while (true)
-                server.send(new SimplePacket(10, input.readLine().getBytes()));
+                net.send(new SimplePacket(10, input.readLine().getBytes()));
         } else {
             System.out.println("IP: ");
             String ip = input.readLine();
-            client = new Client<SimplePacket>(SimpleProtocol.class, ip, port) {
+            net = new Client<SimplePacket>(SimpleProtocol.class, ip, port) {
                 @Override
                 public void receive(SimplePacket packet) {
-                    System.out.println(client.getSocket().getRemoteSocketAddress().toString() + ": " + packet.channel + ": "
+                    System.out.println(net.getSocket().getRemoteSocketAddress().toString() + ": " + packet.channel + ": "
                             + packet.toString());
                 }
 
@@ -61,10 +61,10 @@ public class Chat {
                     System.out.println(getSocket().getRemoteSocketAddress().toString() + ": Disconnect " + reason.toString());
                 }
             };
-            System.out.println(client.getSocket().getLocalSocketAddress().toString());
-            client.send(new SimplePacket(1, "Connected!".getBytes()));
+            System.out.println(net.getSocket().getLocalSocketAddress().toString());
+            net.send(new SimplePacket(1, "Connected!".getBytes()));
             while (true)
-                client.send(new SimplePacket(10, input.readLine().getBytes()));
+                net.send(new SimplePacket(10, input.readLine().getBytes()));
         }
     }
 }
