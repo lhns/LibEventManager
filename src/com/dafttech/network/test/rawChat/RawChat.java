@@ -67,6 +67,11 @@ public class RawChat {
                 };
 
                 @Override
+                public void connect() {
+                    System.out.println(getSocket().getRemoteSocketAddress().toString() + ": Connection Requested");
+                }
+
+                @Override
                 public void disconnect(Disconnect reason) {
                     System.out.println(getSocket().getRemoteSocketAddress().toString() + ": Disconnect " + reason.toString());
                 }

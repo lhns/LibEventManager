@@ -28,8 +28,9 @@ public class SoundSend {
 
         net = new Client<RawPacket>(RawProtocol.class, address) {
             @Override
-            public void receive(RawPacket packet) {
-            };
+            public void connect() {
+                System.out.println(getSocket().getRemoteSocketAddress().toString() + ": Connection Requested");
+            }
 
             @Override
             public void disconnect(Disconnect reason) {
