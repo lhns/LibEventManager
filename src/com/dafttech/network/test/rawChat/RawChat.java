@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.dafttech.network.Client;
 import com.dafttech.network.NetworkInterface;
@@ -97,23 +99,31 @@ public class RawChat {
             in = in.substring(2);
             String[] bytes = in.split(" ");
             ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-            ByteArrayOutputStream repeat = null;
+            List<ByteArrayOutputStream> repeat = new ArrayList<ByteArrayOutputStream>();
             for (int i = 0; i < bytes.length; i++) {
                 String currChar = bytes[i];
                 if (currChar.equals("r")) {
-                    if (repeat == null) {
-                        repeat = new ByteArrayOutputStream();
-                    } else if (currChar.equals("r")) {
+                    repeat.add(new ByteArrayOutputStream());
+                } else if (repeat.size() > 0) {
+                    if (currChar.equals("/r")) {
+                        byte[] tmpArray = repeat.get(repeat.size() - 1).toByteArray();
+                        repeat.get(repeat.size() - 1).close();
+                        repeat.remove(repeat.size() - 1);
+                        ByteArrayOutputStream repeatStream = outStream;
+                        if (repeat.size() > 0) repeatStream = repeat.get(repeat.size() - 1);
                         for (int i1 = 0; i1 < Integer.valueOf(bytes[i + 1]); i1++)
-                            outStream.write(repeat.toByteArray());
+                            repeatStream.write(tmpArray);
+                        i++;
+                    } else {
+                        repeat.get(repeat.size() - 1).write(Integer.valueOf(currChar));
                     }
-                } else if (repeat != null) {
-                    repeat.write(Integer.valueOf(currChar));
                 } else {
                     outStream.write(Integer.valueOf(currChar));
                 }
             }
-            return outStream.toByteArray();
+            byte[] outArray = outStream.toByteArray();
+            outStream.close();
+            return outArray;
         } else if (in.startsWith("s ")) {
             in = in.substring(2);
             return in.getBytes();
