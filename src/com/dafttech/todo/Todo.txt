@@ -1,0 +1,3 @@
+- Ability to package object structures into a wrapped form to edit them
+- Serialized form of package structures
+- ability to save them
