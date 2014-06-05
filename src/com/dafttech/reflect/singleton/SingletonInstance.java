@@ -1,4 +1,4 @@
-package com.dafttech.reflect.instance;
+package com.dafttech.reflect.singleton;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
@@ -11,5 +11,5 @@ import java.lang.annotation.Target;
 @Target({ METHOD, FIELD })
 @Retention(RUNTIME)
 @Documented
-public @interface Instance {
+public @interface SingletonInstance {
 }

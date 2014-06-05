@@ -17,11 +17,15 @@ public class Client<Packet extends IPacket> extends NetworkInterface<Packet> {
     private volatile Socket socket;
     private ClientThread thread;
 
-    protected Client(Class<? extends Protocol<Packet>> protocolClass, Socket socket) {
-        super(protocolClass);
+    protected Client(Class<? extends Protocol<Packet>> protocolClass, Socket socket, NetworkInterface<Packet> parent) {
+        super(protocolClass, parent);
         this.socket = socket;
         thread = new ClientThread();
         thread.start();
+    }
+
+    public Client(Class<? extends Protocol<Packet>> protocolClass, Socket socket) {
+        this(protocolClass, socket, null);
     }
 
     public Client(Class<? extends Protocol<Packet>> protocolClass, InetAddress address, int port) throws IOException {
@@ -140,23 +144,6 @@ public class Client<Packet extends IPacket> extends NetworkInterface<Packet> {
                 processException(e);
             }
         }
-    }
-
-    @Override
-    public void connect() {
-    }
-
-    @Override
-    public void disconnect(Disconnect reason) {
-    }
-
-    @Override
-    public void receive(Packet packet) {
-    }
-
-    @Override
-    public final void send(Packet packet) {
-        getProtocol().send(packet);
     }
 
     private void processException(Exception e) {

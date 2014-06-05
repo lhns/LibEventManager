@@ -1,4 +1,4 @@
-package com.dafttech.reflect.instance;
+package com.dafttech.reflect.singleton;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -6,8 +6,8 @@ import java.lang.reflect.Modifier;
 
 import com.dafttech.reflect.Reflector;
 
-public class InstanceProvider extends Reflector {
-    public InstanceProvider(Class<?> target) {
+public class Singleton extends Reflector {
+    public Singleton(Class<?> target) {
         super(target);
     }
 
@@ -22,7 +22,7 @@ public class InstanceProvider extends Reflector {
      */
     @SuppressWarnings("unchecked")
     public final <ClassType> ClassType getInstance(Object... methodArgs) {
-        for (Field field : getAnnotatedFields(Instance.class, null)) {
+        for (Field field : getAnnotatedFields(SingletonInstance.class, null)) {
             if (Modifier.isStatic(field.getModifiers())) {
                 try {
                     return (ClassType) field.get(null);
@@ -30,7 +30,7 @@ public class InstanceProvider extends Reflector {
                 }
             }
         }
-        for (Method method : getAnnotatedMethods(Instance.class, null)) {
+        for (Method method : getAnnotatedMethods(SingletonInstance.class, null)) {
             if (Modifier.isStatic(method.getModifiers())) {
                 try {
                     return (ClassType) method.invoke(null, methodArgs);

@@ -8,12 +8,14 @@ import com.dafttech.network.protocol.Protocol;
 
 public abstract class NetworkInterface<Packet extends IPacket> {
     private Class<? extends Protocol<Packet>> protocolClass;
+    private NetworkInterface<Packet> parent;
     private Protocol<Packet> protocol;
 
-    public NetworkInterface(Class<? extends Protocol<Packet>> protocolClass) {
+    public NetworkInterface(Class<? extends Protocol<Packet>> protocolClass, NetworkInterface<Packet> parent) {
         if (protocolClass != null) {
             this.protocolClass = protocolClass;
             protocol = newProtocolInstance(protocolClass);
+            this.parent = parent;
         }
     }
 
@@ -21,21 +23,40 @@ public abstract class NetworkInterface<Packet extends IPacket> {
 
     public abstract void close();
 
-    public abstract void connect();
+    public void connect() {
+        if (parent != null) parent.connect();
+    }
 
-    public abstract void disconnect(Disconnect reason);
+    public void disconnect(Disconnect reason) {
+        if (parent != null) parent.disconnect(reason);
+    }
 
-    public abstract void receive(Packet packet);
+    public void receive(Packet packet) {
+        if (parent != null && packet != null) parent.receive(packet);
+    }
 
-    public abstract void send(Packet packet);
+    public void send(Packet packet) {
+        if (protocol != null && packet != null) protocol.send(packet);
+    }
 
-    public abstract int available();
+    public int available() {
+        if (parent != null) return parent.available();
+        return 0;
+    }
 
-    public abstract int read();
+    public int read() {
+        if (parent != null) return parent.read();
+        return 0;
+    }
 
-    public abstract byte[] read(byte[] array);
+    public byte[] read(byte[] array) {
+        if (parent != null && array != null) return parent.read(array);
+        return null;
+    }
 
-    public abstract void write(byte... data);
+    public void write(byte... data) {
+        if (parent != null && data != null) parent.write(data);
+    }
 
     public Class<? extends Protocol<Packet>> getProtocolClass() {
         return protocolClass;
@@ -43,6 +64,10 @@ public abstract class NetworkInterface<Packet extends IPacket> {
 
     public Protocol<Packet> getProtocol() {
         return protocol;
+    }
+
+    public NetworkInterface<Packet> getParent() {
+        return parent;
     }
 
     private Protocol<Packet> newProtocolInstance(Class<? extends Protocol<Packet>> protocolClass) {

@@ -16,7 +16,7 @@ public class Server<Packet extends IPacket> extends NetworkInterface<Packet> {
     private ServerThread thread;
 
     public Server(Class<? extends Protocol<Packet>> protocolClass, ServerSocket serverSocket) {
-        super(protocolClass);
+        super(protocolClass, null);
         this.serverSocket = serverSocket;
         thread = new ServerThread();
         thread.start();
@@ -59,22 +59,7 @@ public class Server<Packet extends IPacket> extends NetworkInterface<Packet> {
                 for (int i = clients.size() - 1; i >= 0; i--)
                     if (!clients.get(i).isAlive()) clients.remove(i);
                 try {
-                    clients.add(new Client<Packet>(getProtocolClass(), serverSocket.accept()) {
-                        @Override
-                        public void receive(Packet packet) {
-                            Server.this.receive(this, packet);
-                        }
-
-                        @Override
-                        public void connect() {
-                            Server.this.connect(this);
-                        }
-
-                        @Override
-                        public void disconnect(Disconnect reason) {
-                            Server.this.disconnect(this, reason);
-                        }
-                    });
+                    clients.add(new Client<Packet>(getProtocolClass(), serverSocket.accept(), Server.this));
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
