@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
+import com.dafttech.filterlist.Filterlist;
 import com.dafttech.network.disconnect.Disconnect;
 import com.dafttech.network.disconnect.Quit;
 import com.dafttech.network.disconnect.Unknown;
@@ -46,8 +47,24 @@ public class Client<Packet extends IPacket> extends NetworkInterface<Packet> {
         this(protocolClass, host.split(":")[0], host.split(":")[1]);
     }
 
+    @Override
     public final Socket getSocket() {
         return socket;
+    }
+
+    @Override
+    public boolean isServer() {
+        return false;
+    }
+
+    @Override
+    public boolean isClient() {
+        return true;
+    }
+
+    @Override
+    public boolean isProtocol() {
+        return false;
     }
 
     @Override
@@ -150,5 +167,22 @@ public class Client<Packet extends IPacket> extends NetworkInterface<Packet> {
         Disconnect reason = Disconnect.fromException(e);
         close(reason);
         if (reason instanceof Unknown) e.printStackTrace();
+    }
+
+    @Override
+    public final void connect(Client<Packet> client) {
+    }
+
+    @Override
+    public final void disconnect(Client<Packet> client, Disconnect reason) {
+    }
+
+    @Override
+    public final void receive(Client<Packet> client, Packet packet) {
+    }
+
+    @Override
+    public final void send(Filterlist<Client<?>> clientFilter, Packet packet) {
+        if (clientFilter.isFiltered(this)) send(packet);
     }
 }

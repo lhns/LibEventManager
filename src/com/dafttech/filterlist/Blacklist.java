@@ -11,7 +11,7 @@ public class Blacklist<FilterType> extends Filterlist<FilterType> {
     }
 
     @Override
-    public boolean isFiltered(FilterType object) {
+    public boolean isFiltered(Object object) {
         return !isContained(object);
     }
 

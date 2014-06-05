@@ -19,13 +19,13 @@ public abstract class Filterlist<FilterType> {
         return filterObjects;
     }
 
-    public boolean isContained(FilterType object) {
+    public boolean isContained(Object object) {
         for (FilterType obj : filterObjects)
             if (obj == object || obj.equals(object)) return true;
         return false;
     }
 
-    public abstract boolean isFiltered(FilterType object);
+    public abstract boolean isFiltered(Object object);
 
     public abstract boolean isValid();
 }

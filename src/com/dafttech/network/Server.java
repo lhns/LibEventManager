@@ -30,12 +30,28 @@ public class Server<Packet extends IPacket> extends NetworkInterface<Packet> {
         this(protocolClass, Integer.valueOf(port));
     }
 
+    @Override
     public final ServerSocket getServerSocket() {
         return serverSocket;
     }
 
     public final List<Client<Packet>> getClients() {
         return clients;
+    }
+
+    @Override
+    public boolean isServer() {
+        return true;
+    }
+
+    @Override
+    public boolean isClient() {
+        return false;
+    }
+
+    @Override
+    public boolean isProtocol() {
+        return false;
     }
 
     @Override
@@ -73,6 +89,42 @@ public class Server<Packet extends IPacket> extends NetworkInterface<Packet> {
     }
 
     @Override
+    public void connect(Client<Packet> client) {
+    }
+
+    @Override
+    public void disconnect(Client<Packet> client, Disconnect reason) {
+    }
+
+    @Override
+    public void receive(Client<Packet> client, Packet packet) {
+    }
+
+    @Override
+    public final void send(Packet packet) {
+        for (Client<Packet> client : clients)
+            client.send(packet);
+    }
+
+    @Override
+    public final void send(Filterlist<Client<?>> clientFilter, Packet packet) {
+        for (Client<Packet> client : clients)
+            if (clientFilter.isFiltered(client)) client.send(packet);
+    }
+
+    @Override
+    public final void connect() {
+    }
+
+    @Override
+    public final void disconnect(Disconnect reason) {
+    }
+
+    @Override
+    public final void receive(Packet packet) {
+    }
+
+    @Override
     public final int available() {
         return 0;
     }
@@ -91,37 +143,5 @@ public class Server<Packet extends IPacket> extends NetworkInterface<Packet> {
     public final void write(byte... data) {
         for (Client<Packet> client : clients)
             client.write(data);
-    }
-
-    @Override
-    public final void connect() {
-    }
-
-    @Override
-    public final void disconnect(Disconnect reason) {
-    }
-
-    public void connect(Client<Packet> client) {
-    }
-
-    public void disconnect(Client<Packet> client, Disconnect reason) {
-    }
-
-    @Override
-    public final void receive(Packet packet) {
-    }
-
-    public void receive(Client<Packet> client, Packet packet) {
-    }
-
-    @Override
-    public final void send(Packet packet) {
-        for (Client<Packet> client : clients)
-            client.send(packet);
-    }
-
-    public final void send(Filterlist<Client<?>> clientFilter, Packet packet) {
-        for (Client<Packet> client : clients)
-            if (clientFilter.isFiltered(client)) client.send(packet);
     }
 }

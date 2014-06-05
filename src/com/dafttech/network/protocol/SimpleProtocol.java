@@ -13,6 +13,7 @@ public class SimpleProtocol extends Protocol<SimplePacket> {
 
     @Override
     public SimplePacket receive() {
+        // System.out.println(getParent());
         byte[] integer = new byte[4];
         return new SimplePacket(Primitive.INT.fromByteArray(read(integer)),
                 read(new byte[Primitive.INT.fromByteArray(read(integer))]));
