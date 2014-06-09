@@ -14,9 +14,12 @@ public abstract class Type<ClassType> {
     // public static final TypeArray ARRAY = new TypeArray();
     // public static final TypeVoid VOID = new TypeVoid(); // TODO: add TypeVoid
 
+    @SuppressWarnings("unused")
     private boolean singleton = false;
+    @SuppressWarnings("unused")
     private ClassType value;
 
+    @SuppressWarnings("unused")
     private Type() {
         this(null);
         singleton = true;
