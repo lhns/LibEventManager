@@ -1,12 +1,6 @@
 package com.dafttech.type;
 
 public class TypeBoolean extends TypePrimitive<Boolean> {
-
-    public TypeBoolean(Boolean value) {
-        super(value);
-        // TODO Auto-generated constructor stub
-    }
-
     @Override
     public long toLong(Boolean val) {
         return 0;
@@ -15,5 +9,15 @@ public class TypeBoolean extends TypePrimitive<Boolean> {
     @Override
     public Boolean fromLong(long val) {
         return null;
+    }
+
+    @Override
+    public int getSize() {
+        return 1;
+    }
+
+    @Override
+    public Object getNullObject() {
+        return false;
     }
 }
