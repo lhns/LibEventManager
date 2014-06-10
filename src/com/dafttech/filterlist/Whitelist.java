@@ -1,6 +1,7 @@
 package com.dafttech.filterlist;
 
 public class Whitelist<FilterType> extends Filterlist<FilterType> {
+    @SafeVarargs
     public Whitelist(FilterType... filterObjects) {
         super(filterObjects);
     }

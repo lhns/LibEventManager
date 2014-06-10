@@ -31,6 +31,7 @@ public class StackReader {
     }
 
     // TODO: Make it work!
+    @Deprecated
     public Method[] getMethods() {
         Method[] methods = new Method[stackTrace.length];
         for (int i = 0; i < stackTrace.length; i++) {

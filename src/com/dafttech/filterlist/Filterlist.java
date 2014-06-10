@@ -3,6 +3,7 @@ package com.dafttech.filterlist;
 public abstract class Filterlist<FilterType> {
     protected FilterType[] filterObjects;
 
+    @SafeVarargs
     public Filterlist(FilterType... filterObjects) {
         this.filterObjects = filterObjects;
         fixArray();
