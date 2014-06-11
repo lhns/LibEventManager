@@ -26,23 +26,22 @@ public class Reflector {
     public final List<Method> getAnnotatedMethods(Class<? extends Annotation> annotation, Class<?> reqType, Class<?>... reqArgs) {
         List<Method> methods = new ArrayList<Method>();
         for (Method method : getAllDeclaredMethods()) {
-            if (method.isAnnotationPresent(annotation)) {
-                if ((reqType == null || method.getReturnType() == reqType)
-                        && (reqArgs == null || reqArgs.length == 1 && reqArgs[0] == null || Arrays.equals(
-                                method.getParameterTypes(), reqArgs))) {
-                    methods.add(method);
-                } else if (exception) {
-                    String errorMessage = "\nat " + target.getName() + " at Annotation " + annotation.getName() + ":";
-                    errorMessage += "\nexpected: " + reqType.getName() + " with " + (reqArgs.length == 0 ? "no args" : "args:");
-                    for (Class<?> arg : reqArgs)
-                        errorMessage += ", " + arg.getName();
-                    errorMessage += "\nand got:  " + method.getReturnType() + " with "
-                            + (method.getParameterTypes().length == 0 ? "no args" : "args:");
-                    for (Class<?> arg : method.getParameterTypes())
-                        errorMessage += ", " + arg.getName();
-                    errorMessage += ".";
-                    throw new IllegalArgumentException(errorMessage);
-                }
+            if (!method.isAnnotationPresent(annotation)) continue;
+            if ((reqType == null || method.getReturnType() == reqType)
+                    && (reqArgs == null || reqArgs.length == 1 && reqArgs[0] == null || Arrays.equals(method.getParameterTypes(),
+                            reqArgs))) {
+                methods.add(method);
+            } else if (exception) {
+                String errorMessage = "\nat " + target.getName() + " at Annotation " + annotation.getName() + ":";
+                errorMessage += "\nexpected: " + reqType.getName() + " with " + (reqArgs.length == 0 ? "no args" : "args:");
+                for (Class<?> arg : reqArgs)
+                    errorMessage += ", " + arg.getName();
+                errorMessage += "\nand got:  " + method.getReturnType() + " with "
+                        + (method.getParameterTypes().length == 0 ? "no args" : "args:");
+                for (Class<?> arg : method.getParameterTypes())
+                    errorMessage += ", " + arg.getName();
+                errorMessage += ".";
+                throw new IllegalArgumentException(errorMessage);
             }
         }
         return methods;
@@ -52,16 +51,15 @@ public class Reflector {
         List<Field> fields = new ArrayList<Field>();
         if (reqType == void.class) return fields;
         for (Field field : getAllDeclaredFields()) {
-            if (field.isAnnotationPresent(annotation)) {
-                if (reqType == null || field.getType() == reqType) {
-                    fields.add(field);
-                } else if (exception) {
-                    String errorMessage = "\nat " + target.getName() + " at Annotation " + annotation.getName() + ":";
-                    errorMessage += "\nexpected: " + reqType.getName();
-                    errorMessage += "\nand got:  " + field.getType();
-                    errorMessage += ".";
-                    throw new IllegalArgumentException(errorMessage);
-                }
+            if (!field.isAnnotationPresent(annotation)) continue;
+            if (reqType == null || field.getType() == reqType) {
+                fields.add(field);
+            } else if (exception) {
+                String errorMessage = "\nat " + target.getName() + " at Annotation " + annotation.getName() + ":";
+                errorMessage += "\nexpected: " + reqType.getName();
+                errorMessage += "\nand got:  " + field.getType();
+                errorMessage += ".";
+                throw new IllegalArgumentException(errorMessage);
             }
         }
         return fields;

@@ -105,61 +105,58 @@ public class Client<Packet extends IPacket> extends NetworkInterface<Packet> {
 
     @Override
     public final int available() {
-        if (isAlive()) {
-            try {
-                return socket.getInputStream().available();
-            } catch (IOException e) {
-                processException(e);
-            }
+        if (!isAlive()) return 0;
+        try {
+            return socket.getInputStream().available();
+        } catch (IOException e) {
+            processException(e);
         }
         return 0;
     }
 
     @Override
     public final int read() {
-        if (isAlive()) {
-            try {
-                int result = socket.getInputStream().read();
-                if (result == -1) throw new EOFException();
-                return result;
-            } catch (IOException e) {
-                processException(e);
-            }
+        if (!isAlive()) return 0;
+        try {
+            int result = socket.getInputStream().read();
+            if (result == -1) throw new EOFException();
+            return result;
+        } catch (IOException e) {
+            processException(e);
         }
         return 0;
     }
 
     @Override
     public final byte[] read(byte[] array) {
-        if (array.length > 0 && isAlive()) {
-            try {
-                int bytesLeft = array.length, bytesRead;
-                ByteBuffer inputBuffer = ByteBuffer.allocate(bytesLeft);
-                byte[] readArray;
-                while (bytesLeft > 0) {
-                    readArray = new byte[bytesLeft];
-                    bytesRead = socket.getInputStream().read(readArray);
-                    if (bytesRead == -1) throw new EOFException();
-                    inputBuffer.put(readArray, 0, bytesRead);
-                    bytesLeft -= bytesRead;
-                }
-                array = inputBuffer.array();
-            } catch (IOException e) {
-                processException(e);
+        if (!isAlive()) return array;
+        if (array.length == 0) return array;
+        try {
+            int bytesLeft = array.length, bytesRead;
+            ByteBuffer inputBuffer = ByteBuffer.allocate(bytesLeft);
+            byte[] readArray;
+            while (bytesLeft > 0) {
+                readArray = new byte[bytesLeft];
+                bytesRead = socket.getInputStream().read(readArray);
+                if (bytesRead == -1) throw new EOFException();
+                inputBuffer.put(readArray, 0, bytesRead);
+                bytesLeft -= bytesRead;
             }
+            array = inputBuffer.array();
+        } catch (IOException e) {
+            processException(e);
         }
         return array;
     }
 
     @Override
     public final void write(byte... data) {
-        if (isAlive()) {
-            try {
-                socket.getOutputStream().write(data);
-                socket.getOutputStream().flush();
-            } catch (IOException e) {
-                processException(e);
-            }
+        if (!isAlive()) return;
+        try {
+            socket.getOutputStream().write(data);
+            socket.getOutputStream().flush();
+        } catch (IOException e) {
+            processException(e);
         }
     }
 

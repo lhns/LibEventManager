@@ -115,7 +115,8 @@ public class LinkedTree<Leaf> implements Tree<Leaf>, Cloneable, Serializable {
 
     @Override
     public Tree<Leaf> getBranch(int index) {
-        return index >= 0 && index < branches.size() ? branches.get(index) : null;
+        if (index < 0 || index >= branches.size()) return null;
+        return branches.get(index);
     }
 
     @Override

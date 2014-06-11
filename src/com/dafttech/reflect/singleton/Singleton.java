@@ -23,19 +23,17 @@ public class Singleton extends Reflector {
     @SuppressWarnings("unchecked")
     public final <ClassType> ClassType getInstance(Object... methodArgs) {
         for (Field field : getAnnotatedFields(SingletonInstance.class, null)) {
-            if (Modifier.isStatic(field.getModifiers())) {
-                try {
-                    return (ClassType) field.get(null);
-                } catch (Exception e) {
-                }
+            if (!Modifier.isStatic(field.getModifiers())) continue;
+            try {
+                return (ClassType) field.get(null);
+            } catch (Exception e) {
             }
         }
         for (Method method : getAnnotatedMethods(SingletonInstance.class, null)) {
-            if (Modifier.isStatic(method.getModifiers())) {
-                try {
-                    return (ClassType) method.invoke(null, methodArgs);
-                } catch (Exception e) {
-                }
+            if (!Modifier.isStatic(method.getModifiers())) continue;
+            try {
+                return (ClassType) method.invoke(null, methodArgs);
+            } catch (Exception e) {
             }
         }
         return null;
