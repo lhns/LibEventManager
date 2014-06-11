@@ -26,22 +26,21 @@ public class Event {
     }
 
     protected final void schedule() {
-        if (!isDone()) {
-            if (!filtered) {
-                for (int i = listenerContainers.size() - 1; i >= 0; i--)
-                    if (!listenerContainers.get(i).isFiltered(this)) listenerContainers.remove(i);
-                filtered = true;
-            }
-            type.onEvent(this);
-            if (cancelled) return;
-            for (ListenerContainer listenerContainer : listenerContainers) {
-                listenerContainer.invoke(this);
-                if (cancelled) return;
-            }
-            type.onEventPost(this);
-            if (cancelled) return;
-            done = true;
+        if (isDone()) return;
+        if (!filtered) {
+            for (int i = listenerContainers.size() - 1; i >= 0; i--)
+                if (!listenerContainers.get(i).isFiltered(this)) listenerContainers.remove(i);
+            filtered = true;
         }
+        type.onEvent(this);
+        if (isCancelled()) return;
+        for (ListenerContainer listenerContainer : listenerContainers) {
+            listenerContainer.invoke(this);
+            if (isCancelled()) break;
+        }
+        type.onEventPost(this);
+        if (isCancelled()) return;
+        done = true;
     }
 
     /**
@@ -137,8 +136,8 @@ public class Event {
      *         range
      */
     public final Object getInput(int index) {
-        if (index >= 0 && index < in.size()) return in.get(index);
-        return null;
+        if (index < 0 || index >= in.size()) return null;
+        return in.get(index);
     }
 
     /**
@@ -154,10 +153,9 @@ public class Event {
      */
     @SuppressWarnings("unchecked")
     public final <T> T getInput(int index, Class<T> cast) {
-        if (index >= 0
-                && index < in.size()
-                && (cast.isPrimitive() && Primitive.get(cast).getObjectClass().isInstance(in.get(index)) || cast.isInstance(in
-                        .get(index)))) return (T) in.get(index);
+        if (index < 0 || index >= in.size()) return null;
+        if (cast.isPrimitive() && Primitive.get(cast).getObjectClass().isInstance(in.get(index))
+                || cast.isInstance(in.get(index))) return (T) in.get(index);
         return null;
     }
 
@@ -189,21 +187,20 @@ public class Event {
      * @return List<Object> - output list, or null if the event is not done.
      */
     public final List<Object> getOutput() {
-        if (isDone()) return out;
-        return null;
+        if (!isDone()) return null;
+        return out;
     }
 
     public final Object getOutput(int index) {
-        if (index >= 0 && index < out.size()) return out.get(index);
-        return null;
+        if (index < 0 || index >= out.size()) return null;
+        return out.get(index);
     }
 
     @SuppressWarnings("unchecked")
     public final <T> T getOutput(int index, Class<T> cast) {
-        if (index >= 0
-                && index < out.size()
-                && (cast.isPrimitive() && Primitive.get(cast).getObjectClass().isInstance(out.get(index)) || cast.isInstance(out
-                        .get(index)))) return (T) out.get(index);
+        if (index < 0 && index >= out.size()) return null;
+        if (cast.isPrimitive() && Primitive.get(cast).getObjectClass().isInstance(out.get(index))
+                || cast.isInstance(out.get(index))) return (T) out.get(index);
         return null;
     }
 
@@ -219,14 +216,12 @@ public class Event {
      */
     @SuppressWarnings("unchecked")
     public final <T> List<T> getOutput(Class<T> cast) {
-        if (isDone()) {
-            List<T> newOut = new ArrayList<T>();
-            for (Object obj : out)
-                if (cast.isPrimitive() && Primitive.get(cast).getObjectClass().isInstance(obj) || cast.isInstance(obj))
-                    newOut.add((T) obj);
-            return newOut;
-        }
-        return null;
+        if (!isDone()) return null;
+        List<T> newOut = new ArrayList<T>();
+        for (Object obj : out)
+            if (cast.isPrimitive() && Primitive.get(cast).getObjectClass().isInstance(obj) || cast.isInstance(obj))
+                newOut.add((T) obj);
+        return newOut;
     }
 
     public final <T> T getOutput(Class<T> cast, int index) {

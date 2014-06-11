@@ -47,13 +47,12 @@ public class ListenerContainer {
         Object[][] eventFilters = getFilters();
         if (eventFilters.length == 0) return true;
         for (Object[] eventFilter : eventFilters) {
-            if (eventFilter.length > 0) {
-                try {
-                    if (event.getEventType().isFiltered(event, eventFilter, this)) return true;
-                } catch (ArrayIndexOutOfBoundsException e) {
-                } catch (ClassCastException e) {
-                } catch (NullPointerException e) {
-                }
+            if (eventFilter.length == 0) continue;
+            try {
+                if (event.getEventType().isFiltered(event, eventFilter, this)) return true;
+            } catch (ArrayIndexOutOfBoundsException e) {
+            } catch (ClassCastException e) {
+            } catch (NullPointerException e) {
             }
         }
         return false;
@@ -95,39 +94,38 @@ public class ListenerContainer {
         boolean isStatic;
         Class<?> filterClass;
         for (String filterName : filterNames) {
-            if (!filterName.equals("")) {
-                isStatic = isListenerStatic;
-                filterClass = listenerClass;
-                if (filterName.contains(".")) {
-                    if (filterName.startsWith(".")) filterName = listenerClass.getName() + filterName;
-                    if (filterName.contains("..")) {
-                        int backIndex;
-                        while (filterName.contains("..")) {
-                            backIndex = filterName.indexOf("..");
-                            while (filterName.length() > backIndex + 2 && filterName.charAt(backIndex + 2) == '.')
-                                backIndex++;
-                            filterName = filterName.substring(0, filterName.substring(0, backIndex).lastIndexOf(".") + 1)
-                                    + filterName.substring(backIndex + 2);
-                        }
+            if (filterName.equals("")) continue;
+            isStatic = isListenerStatic;
+            filterClass = listenerClass;
+            if (filterName.contains(".")) {
+                if (filterName.startsWith(".")) filterName = listenerClass.getName() + filterName;
+                if (filterName.contains("..")) {
+                    int backIndex;
+                    while (filterName.contains("..")) {
+                        backIndex = filterName.indexOf("..");
+                        while (filterName.length() > backIndex + 2 && filterName.charAt(backIndex + 2) == '.')
+                            backIndex++;
+                        filterName = filterName.substring(0, filterName.substring(0, backIndex).lastIndexOf(".") + 1)
+                                + filterName.substring(backIndex + 2);
                     }
-                    try {
-                        filterClass = Class.forName(filterName.substring(0, filterName.lastIndexOf('.')));
-                        filterName = filterName.substring(filterName.lastIndexOf('.') + 1);
-                        isStatic = true;
-                    } catch (ClassNotFoundException e) {
-                        e.printStackTrace();
-                    }
+                }
+                try {
+                    filterClass = Class.forName(filterName.substring(0, filterName.lastIndexOf('.')));
+                    filterName = filterName.substring(filterName.lastIndexOf('.') + 1);
+                    isStatic = true;
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                }
 
-                }
-                Reflector reflector = new Reflector(filterClass).showExceptions(true);
-                for (Field field : reflector.getAnnotatedFields(EventFilter.class, null)) {
-                    if ((!isStatic || Modifier.isStatic(field.getModifiers()))
-                            && field.getAnnotation(EventFilter.class).value().equals(filterName)) filterList.add(field);
-                }
-                for (Method method : reflector.getAnnotatedMethods(EventFilter.class, null, (Class<?>) null)) {
-                    if ((!isStatic || Modifier.isStatic(method.getModifiers()))
-                            && method.getAnnotation(EventFilter.class).value().equals(filterName)) filterList.add(method);
-                }
+            }
+            Reflector reflector = new Reflector(filterClass).showExceptions(true);
+            for (Field field : reflector.getAnnotatedFields(EventFilter.class, null)) {
+                if ((!isStatic || Modifier.isStatic(field.getModifiers()))
+                        && field.getAnnotation(EventFilter.class).value().equals(filterName)) filterList.add(field);
+            }
+            for (Method method : reflector.getAnnotatedMethods(EventFilter.class, null, (Class<?>) null)) {
+                if ((!isStatic || Modifier.isStatic(method.getModifiers()))
+                        && method.getAnnotation(EventFilter.class).value().equals(filterName)) filterList.add(method);
             }
         }
         return filterList.toArray();

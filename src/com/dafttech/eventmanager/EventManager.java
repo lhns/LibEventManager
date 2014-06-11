@@ -38,18 +38,14 @@ public class EventManager {
         for (Method method : reflector.getAnnotatedMethods(EventListener.class, null, (Class<?>) null)) {
             annotation = method.getAnnotation(EventListener.class);
             isListenerStatic = Modifier.isStatic(method.getModifiers());
-            if (!isStatic || isListenerStatic) {
-                for (String requestedEvent : annotation.value()) {
-                    type = EventType.types.get(requestedEvent);
-                    if (type != null) {
-                        if (type.isWhitelisted(this) && filterlist.isFiltered(type)) {
-                            addEventListenerContainer(type, new ListenerContainer(isListenerStatic,
-                                    isListenerStatic ? eventListenerClass : eventListener, method, annotation));
-                        }
-                    } else {
-                        throw new NoSuchElementException(requestedEvent);
-                    }
-                }
+            if (isStatic && !isListenerStatic) continue;
+            for (String requestedEvent : annotation.value()) {
+                type = EventType.types.get(requestedEvent);
+                if (type == null) throw new NoSuchElementException(requestedEvent);
+                if (!type.isWhitelisted(this)) continue;
+                if (!filterlist.isFiltered(type)) continue;
+                addEventListenerContainer(type, new ListenerContainer(isListenerStatic, isListenerStatic ? eventListenerClass
+                        : eventListener, method, annotation));
             }
         }
     }
@@ -73,13 +69,11 @@ public class EventManager {
         if (filterlist == null || !filterlist.isValid()) return;
         List<ListenerContainer> listenerContainers;
         for (EventType type : registeredListeners.keySet()) {
-            if (filterlist.isFiltered(type)) {
-                listenerContainers = registeredListeners.get(type);
-                if (listenerContainers != null && listenerContainers.size() > 0) {
-                    for (int i = listenerContainers.size() - 1; i >= 0; i--)
-                        if (listenerContainers.get(i).equals(eventListener)) listenerContainers.remove(i);
-                }
-            }
+            if (!filterlist.isFiltered(type)) continue;
+            listenerContainers = registeredListeners.get(type);
+            if (listenerContainers == null || listenerContainers.size() == 0) continue;
+            for (int i = listenerContainers.size() - 1; i >= 0; i--)
+                if (listenerContainers.get(i).equals(eventListener)) listenerContainers.remove(i);
         }
     }
 
