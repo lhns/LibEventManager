@@ -7,7 +7,8 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.dafttech.reflect.Reflector;
+import com.dafttech.type.Type;
+import com.dafttech.type.TypeClass;
 
 public class ListenerContainer {
     volatile private boolean isStatic;
@@ -30,7 +31,7 @@ public class ListenerContainer {
 
     protected final void invoke(Event event) {
         try {
-            method.invoke(isStatic ? null : eventListener, Reflector.buildArgumentArray(argTypes, Event.class, event));
+            method.invoke(isStatic ? null : eventListener, TypeClass.buildArgumentArray(argTypes, Event.class, event));
         } catch (IllegalAccessException e) {
             e.printStackTrace();
         } catch (IllegalArgumentException e) {
@@ -69,7 +70,7 @@ public class ListenerContainer {
                     if (filter instanceof Field) filterObj = ((Field) filter).get(isStatic ? null : eventListener);
                     if (filter instanceof Method)
                         filterObj = ((Method) filter).invoke(isStatic ? null : eventListener,
-                                Reflector.buildArgumentArray(((Method) filter).getParameterTypes()));
+                                TypeClass.buildArgumentArray(((Method) filter).getParameterTypes()));
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 } catch (IllegalArgumentException e) {
@@ -118,7 +119,7 @@ public class ListenerContainer {
                 }
 
             }
-            Reflector reflector = new Reflector(filterClass).showExceptions(true);
+            TypeClass reflector = ((TypeClass) Type.CLASS.create(filterClass)).showExceptions(true);
             for (Field field : reflector.getAnnotatedFields(EventFilter.class, null)) {
                 if ((!isStatic || Modifier.isStatic(field.getModifiers()))
                         && field.getAnnotation(EventFilter.class).value().equals(filterName)) filterList.add(field);
