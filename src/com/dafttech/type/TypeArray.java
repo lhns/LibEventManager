@@ -4,8 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 public class TypeArray extends Type<Object[]> {
-    public TypeArray(Object[] value) {
-        super(value);
+    protected TypeArray(boolean prototype) {
+        super(prototype);
     }
 
     @Override
@@ -15,7 +15,7 @@ public class TypeArray extends Type<Object[]> {
         for (Object obj : value) {
             try {
                 tempArray = Type.forObject(obj).toByteArray();
-                byteStream.write(new TypeInteger(tempArray.length).toByteArray());
+                byteStream.write(Type.INTEGER.create(tempArray.length).toByteArray());
                 byteStream.write(tempArray);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -25,7 +25,7 @@ public class TypeArray extends Type<Object[]> {
     }
 
     @Override
-    public Object[] fromByteArray(byte... array) {
+    public TypeArray fromByteArray(byte... array) {
         return null;
     }
 

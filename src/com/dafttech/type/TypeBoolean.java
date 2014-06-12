@@ -5,8 +5,8 @@ import java.lang.reflect.Field;
 public class TypeBoolean extends TypePrimitive<Boolean> {
     private static Field valueField = Type.getDeclaredField(Boolean.class, "value");
 
-    public TypeBoolean(Boolean value) {
-        super(value);
+    protected TypeBoolean(boolean prototype) {
+        super(prototype);
     }
 
     @Override

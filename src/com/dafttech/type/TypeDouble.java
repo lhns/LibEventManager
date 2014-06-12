@@ -5,8 +5,8 @@ import java.lang.reflect.Field;
 public class TypeDouble extends TypePrimitive<Double> {
     private static Field valueField = Type.getDeclaredField(Double.class, "value");
 
-    public TypeDouble(Double value) {
-        super(value);
+    protected TypeDouble(boolean prototype) {
+        super(prototype);
     }
 
     @Override

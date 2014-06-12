@@ -2,8 +2,8 @@ package com.dafttech.type;
 
 public class TypeNull extends Type<Void> {
 
-    public TypeNull() {
-        super(null);
+    protected TypeNull(boolean prototype) {
+        super(prototype);
     }
 
     @Override
@@ -12,7 +12,7 @@ public class TypeNull extends Type<Void> {
     }
 
     @Override
-    public Void fromByteArray(byte... array) {
+    public TypeNull fromByteArray(byte... array) {
         return null;
     }
 
@@ -29,10 +29,5 @@ public class TypeNull extends Type<Void> {
     @Override
     public boolean isType(Object obj) {
         return obj == null;
-    }
-
-    @Override
-    public Type<?> newInstance(Object obj) {
-        return new TypeNull();
     }
 }

@@ -3,8 +3,8 @@ package com.dafttech.type;
 import java.lang.reflect.Field;
 
 public abstract class TypePrimitive<ClassType> extends Type<ClassType> {
-    public TypePrimitive(ClassType value) {
-        super(value);
+    protected TypePrimitive(boolean prototype) {
+        super(prototype);
     }
 
     public abstract int getSize();
@@ -41,12 +41,12 @@ public abstract class TypePrimitive<ClassType> extends Type<ClassType> {
     }
 
     @Override
-    public ClassType fromByteArray(byte... array) {
+    public Type<ClassType> fromByteArray(byte... array) {
         long value = 0;
         int size = getBytes();
         for (int i = 0; i < size; i++)
             value = value | (array[i] & 0xFF) << (size - 1 - i) * 8;
-        return fromLong(value);
+        return create(fromLong(value));
     }
 
 }

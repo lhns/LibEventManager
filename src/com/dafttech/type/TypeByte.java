@@ -5,8 +5,8 @@ import java.lang.reflect.Field;
 public class TypeByte extends TypePrimitive<Byte> {
     private static Field valueField = Type.getDeclaredField(Byte.class, "value");
 
-    public TypeByte(Byte value) {
-        super(value);
+    protected TypeByte(boolean prototype) {
+        super(prototype);
     }
 
     @Override

@@ -5,8 +5,8 @@ import java.lang.reflect.Field;
 public class TypeLong extends TypePrimitive<Long> {
     private static Field valueField = Type.getDeclaredField(Long.class, "value");
 
-    public TypeLong(Long value) {
-        super(value);
+    protected TypeLong(boolean prototype) {
+        super(prototype);
     }
 
     @Override

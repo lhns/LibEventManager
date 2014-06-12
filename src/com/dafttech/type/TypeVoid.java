@@ -1,9 +1,11 @@
 package com.dafttech.type;
 
-public class TypeVoid extends Type<Void> {
+import java.lang.reflect.Field;
 
-    public TypeVoid() {
-        super(null);
+public class TypeVoid extends TypePrimitive<Void> {
+
+    protected TypeVoid(boolean prototype) {
+        super(prototype);
     }
 
     @Override
@@ -12,7 +14,7 @@ public class TypeVoid extends Type<Void> {
     }
 
     @Override
-    public Void fromByteArray(byte... array) {
+    public TypeVoid fromByteArray(byte... array) {
         return null;
     }
 
@@ -32,7 +34,31 @@ public class TypeVoid extends Type<Void> {
     }
 
     @Override
-    public Type<?> newInstance(Object obj) {
-        return new TypeVoid();
+    public int getSize() {
+        return 0;
+    }
+
+    @Override
+    public long toLong() {
+        return 0;
+    }
+
+    @Override
+    public Void fromLong(long val) {
+        return null;
+    }
+
+    @Override
+    protected Field getValueField() {
+        return null;
+    }
+
+    @Override
+    public void setValue(Void val) {
+    }
+
+    @Override
+    public Class<?> getPrimitiveClass() {
+        return void.class;
     }
 }

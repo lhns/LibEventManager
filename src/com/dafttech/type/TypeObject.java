@@ -2,8 +2,8 @@ package com.dafttech.type;
 
 public class TypeObject extends Type<Object> {
 
-    public TypeObject(Object value) {
-        super(value);
+    protected TypeObject(boolean prototype) {
+        super(prototype);
     }
 
     @Override
@@ -12,7 +12,7 @@ public class TypeObject extends Type<Object> {
     }
 
     @Override
-    public Object fromByteArray(byte... array) {
+    public TypeObject fromByteArray(byte... array) {
         return null;
     }
 

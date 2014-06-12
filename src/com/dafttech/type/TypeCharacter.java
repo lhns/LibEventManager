@@ -3,10 +3,11 @@ package com.dafttech.type;
 import java.lang.reflect.Field;
 
 public class TypeCharacter extends TypePrimitive<Character> {
+
     private static Field valueField = Type.getDeclaredField(Character.class, "value");
 
-    public TypeCharacter(Character value) {
-        super(value);
+    protected TypeCharacter(boolean prototype) {
+        super(prototype);
     }
 
     @Override

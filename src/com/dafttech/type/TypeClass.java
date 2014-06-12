@@ -2,8 +2,8 @@ package com.dafttech.type;
 
 public class TypeClass extends Type<Class<?>> {
 
-    public TypeClass(Class<?> value) {
-        super(value);
+    protected TypeClass(boolean prototype) {
+        super(prototype);
     }
 
     @Override
@@ -12,7 +12,7 @@ public class TypeClass extends Type<Class<?>> {
     }
 
     @Override
-    public Class<?> fromByteArray(byte... array) {
+    public TypeClass fromByteArray(byte... array) {
         return null;
     }
 

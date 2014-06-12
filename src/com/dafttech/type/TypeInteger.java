@@ -5,8 +5,8 @@ import java.lang.reflect.Field;
 public class TypeInteger extends TypePrimitive<Integer> {
     private static Field valueField = Type.getDeclaredField(Integer.class, "value");
 
-    public TypeInteger(Integer object) {
-        super(object);
+    protected TypeInteger(boolean prototype) {
+        super(prototype);
     }
 
     @Override

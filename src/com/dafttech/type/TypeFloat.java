@@ -5,8 +5,8 @@ import java.lang.reflect.Field;
 public class TypeFloat extends TypePrimitive<Float> {
     private static Field valueField = Type.getDeclaredField(Float.class, "value");
 
-    public TypeFloat(Float value) {
-        super(value);
+    protected TypeFloat(boolean prototype) {
+        super(prototype);
     }
 
     @Override

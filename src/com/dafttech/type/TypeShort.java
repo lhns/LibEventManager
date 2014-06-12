@@ -5,8 +5,8 @@ import java.lang.reflect.Field;
 public class TypeShort extends TypePrimitive<Short> {
     private static Field valueField = Type.getDeclaredField(Short.class, "value");
 
-    public TypeShort(Short value) {
-        super(value);
+    protected TypeShort(boolean prototype) {
+        super(prototype);
     }
 
     @Override
