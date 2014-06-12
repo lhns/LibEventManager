@@ -1,8 +1,8 @@
 package com.dafttech.type;
 
-public class TypeVoid extends Type<Void> {
+public class TypeNull extends Type<Void> {
 
-    public TypeVoid() {
+    public TypeNull() {
         super(null);
     }
 
@@ -18,7 +18,7 @@ public class TypeVoid extends Type<Void> {
 
     @Override
     public Class<?> getTypeClass() {
-        return Void.class;
+        return null;
     }
 
     @Override
@@ -28,11 +28,11 @@ public class TypeVoid extends Type<Void> {
 
     @Override
     public boolean isType(Object obj) {
-        return false;
+        return obj == null;
     }
 
     @Override
     public Type<?> newInstance(Object obj) {
-        return new TypeVoid();
+        return new TypeNull();
     }
 }

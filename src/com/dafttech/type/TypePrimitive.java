@@ -48,4 +48,5 @@ public abstract class TypePrimitive<ClassType> extends Type<ClassType> {
             value = value | (array[i] & 0xFF) << (size - 1 - i) * 8;
         return fromLong(value);
     }
+
 }

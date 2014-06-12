@@ -25,4 +25,9 @@ public class TypeObject extends Type<Object> {
     public Object getNullObject() {
         return null;
     }
+
+    @Override
+    public boolean isType(Object obj) {
+        return obj != null;
+    }
 }

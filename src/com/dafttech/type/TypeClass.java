@@ -18,12 +18,11 @@ public class TypeClass extends Type<Class<?>> {
 
     @Override
     public Class<?> getTypeClass() {
-        return null;
+        return Class.class;
     }
 
     @Override
     public Object getNullObject() {
         return null;
     }
-
 }

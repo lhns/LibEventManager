@@ -3,7 +3,7 @@ package com.dafttech.type;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-public class TypeArray<ArrayType extends Type<?>> extends Type<Object[]> {
+public class TypeArray extends Type<Object[]> {
     public TypeArray(Object[] value) {
         super(value);
     }
@@ -37,5 +37,10 @@ public class TypeArray<ArrayType extends Type<?>> extends Type<Object[]> {
     @Override
     public Object getNullObject() {
         return null;
+    }
+
+    @Override
+    public boolean isType(Object obj) {
+        return obj != null && obj.getClass().isArray();
     }
 }
