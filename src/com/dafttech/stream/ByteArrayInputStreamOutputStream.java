@@ -6,6 +6,8 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
+import com.dafttech.access.ByteArrayInputStreamAccess;
+
 public class ByteArrayInputStreamOutputStream extends OutputStream {
     protected ByteArrayInputStreamAccess inputStreamAccess;
 

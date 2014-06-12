@@ -1,19 +1,42 @@
 package com.dafttech.type;
 
-public class TypeBoolean extends TypePrimitive<Boolean> {
-    @Override
-    public long toLong(Boolean val) {
-        return 0;
-    }
+import java.lang.reflect.Field;
 
-    @Override
-    public Boolean fromLong(long val) {
-        return null;
+public class TypeBoolean extends TypePrimitive<Boolean> {
+    private static Field valueField = Type.getDeclaredField(Boolean.class, "value");
+
+    public TypeBoolean(Boolean value) {
+        super(value);
     }
 
     @Override
     public int getSize() {
-        return 1;
+        return Byte.SIZE;
+    }
+
+    @Override
+    public long toLong() {
+        return value ? 1 : 0;
+    }
+
+    @Override
+    public Boolean fromLong(long val) {
+        return val > 0;
+    }
+
+    @Override
+    protected Field getValueField() {
+        return valueField;
+    }
+
+    @Override
+    public Class<?> getPrimitiveClass() {
+        return boolean.class;
+    }
+
+    @Override
+    public Class<?> getTypeClass() {
+        return Boolean.class;
     }
 
     @Override

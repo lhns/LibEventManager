@@ -1,4 +1,4 @@
-package com.dafttech.stream;
+package com.dafttech.access;
 
 import java.io.ByteArrayInputStream;
 import java.lang.reflect.Field;

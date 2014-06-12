@@ -1,19 +1,17 @@
 package com.dafttech.type;
 
-public class TypeCharacter extends TypePrimitive<Character> {
-    @Override
-    public long toLong(Character val) {
-        return 0;
-    }
+import java.lang.reflect.Field;
 
-    @Override
-    public Character fromLong(long val) {
-        return null;
+public class TypeCharacter extends TypePrimitive<Character> {
+    private static Field valueField = Type.getDeclaredField(Character.class, "value");
+
+    public TypeCharacter(Character value) {
+        super(value);
     }
 
     @Override
     public int getSize() {
-        return 2;
+        return Character.SIZE;
     }
 
     @Override
@@ -21,4 +19,28 @@ public class TypeCharacter extends TypePrimitive<Character> {
         return '\u0000';
     }
 
+    @Override
+    public long toLong() {
+        return new Short((short) (char) value).longValue();
+    }
+
+    @Override
+    public Character fromLong(long val) {
+        return (char) new Long(val).shortValue();
+    }
+
+    @Override
+    protected Field getValueField() {
+        return valueField;
+    }
+
+    @Override
+    public Class<?> getTypeClass() {
+        return Character.class;
+    }
+
+    @Override
+    public Class<?> getPrimitiveClass() {
+        return char.class;
+    }
 }

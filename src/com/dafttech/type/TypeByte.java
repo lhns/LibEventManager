@@ -1,19 +1,17 @@
 package com.dafttech.type;
 
-public class TypeByte extends TypePrimitive<Byte> {
-    @Override
-    public long toLong(Byte val) {
-        return 0;
-    }
+import java.lang.reflect.Field;
 
-    @Override
-    public Byte fromLong(long val) {
-        return null;
+public class TypeByte extends TypePrimitive<Byte> {
+    private static Field valueField = Type.getDeclaredField(Byte.class, "value");
+
+    public TypeByte(Byte value) {
+        super(value);
     }
 
     @Override
     public int getSize() {
-        return 1;
+        return Byte.SIZE;
     }
 
     @Override
@@ -21,4 +19,28 @@ public class TypeByte extends TypePrimitive<Byte> {
         return 0;
     }
 
+    @Override
+    public long toLong() {
+        return value.longValue();
+    }
+
+    @Override
+    public Byte fromLong(long val) {
+        return new Long(val).byteValue();
+    }
+
+    @Override
+    protected Field getValueField() {
+        return valueField;
+    }
+
+    @Override
+    public Class<?> getTypeClass() {
+        return Byte.class;
+    }
+
+    @Override
+    public Class<?> getPrimitiveClass() {
+        return byte.class;
+    }
 }

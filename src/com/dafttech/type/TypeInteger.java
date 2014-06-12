@@ -1,24 +1,47 @@
 package com.dafttech.type;
 
+import java.lang.reflect.Field;
+
 public class TypeInteger extends TypePrimitive<Integer> {
-    @Override
-    public long toLong(Integer val) {
-        return 0;
+    private static Field valueField = Type.getDeclaredField(Integer.class, "value");
+
+    public TypeInteger(Integer object) {
+        super(object);
     }
 
     @Override
-    public Integer fromLong(long val) {
-        return null;
+    public long toLong() {
+        return value.longValue();
+    }
+
+    @Override
+    public Integer fromLong(long value) {
+        return new Long(value).intValue();
     }
 
     @Override
     public int getSize() {
-        return 4;
+        return Integer.SIZE;
     }
 
     @Override
     public Object getNullObject() {
         return 0;
+    }
+
+    @Override
+    protected Field getValueField() {
+        return valueField;
+    }
+
+    @Override
+    public Class<?> getTypeClass() {
+        return Integer.class;
+    }
+
+    @Override
+    public Class<?> getPrimitiveClass() {
+        return int.class;
     }
 
 }

@@ -1,8 +1,8 @@
 package com.dafttech.type;
 
-public class TypeObject extends Type<Object> {
+public class TypeClass extends Type<Class<?>> {
 
-    public TypeObject(Object value) {
+    public TypeClass(Class<?> value) {
         super(value);
     }
 
@@ -12,17 +12,18 @@ public class TypeObject extends Type<Object> {
     }
 
     @Override
-    public Object fromByteArray(byte... array) {
+    public Class<?> fromByteArray(byte... array) {
         return null;
     }
 
     @Override
     public Class<?> getTypeClass() {
-        return Object.class;
+        return null;
     }
 
     @Override
     public Object getNullObject() {
         return null;
     }
+
 }

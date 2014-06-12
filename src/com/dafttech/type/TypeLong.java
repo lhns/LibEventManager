@@ -1,24 +1,47 @@
 package com.dafttech.type;
 
-public class TypeLong extends TypePrimitive<Long> {
-    @Override
-    public long toLong(Long val) {
-        return 0;
-    }
+import java.lang.reflect.Field;
 
-    @Override
-    public Long fromLong(long val) {
-        return null;
+public class TypeLong extends TypePrimitive<Long> {
+    private static Field valueField = Type.getDeclaredField(Long.class, "value");
+
+    public TypeLong(Long value) {
+        super(value);
     }
 
     @Override
     public int getSize() {
-        return 8;
+        return Long.SIZE;
     }
 
     @Override
     public Object getNullObject() {
         return 0;
+    }
+
+    @Override
+    public long toLong() {
+        return value;
+    }
+
+    @Override
+    public Long fromLong(long val) {
+        return val;
+    }
+
+    @Override
+    protected Field getValueField() {
+        return valueField;
+    }
+
+    @Override
+    public Class<?> getTypeClass() {
+        return Long.class;
+    }
+
+    @Override
+    public Class<?> getPrimitiveClass() {
+        return long.class;
     }
 
 }
