@@ -119,7 +119,7 @@ public class ListenerContainer {
                 }
 
             }
-            TypeClass reflector = ((TypeClass) Type.CLASS.create(filterClass)).showExceptions(true);
+            TypeClass reflector = Type.CLASS.create(filterClass).showExceptions(true);
             for (Field field : reflector.getAnnotatedFields(EventFilter.class, null)) {
                 if ((!isStatic || Modifier.isStatic(field.getModifiers()))
                         && field.getAnnotation(EventFilter.class).value().equals(filterName)) filterList.add(field);

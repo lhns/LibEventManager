@@ -63,7 +63,7 @@ public abstract class Type<ClassType> {
     }
 
     @SuppressWarnings("unchecked")
-    public final Type<ClassType> create(Object obj) {
+    public Type<ClassType> create(Object obj) {
         if (!getTypeClass().isAssignableFrom(obj.getClass())) return null;
         try {
             Type<ClassType> newInstance = getClass().getDeclaredConstructor(boolean.class).newInstance(false);

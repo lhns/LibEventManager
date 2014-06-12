@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.dafttech.primitive.Primitive;
+import com.dafttech.type.TypePrimitive;
 
 public class Event {
     volatile private EventManager eventManager = null;
@@ -154,7 +154,7 @@ public class Event {
     @SuppressWarnings("unchecked")
     public final <T> T getInput(int index, Class<T> cast) {
         if (index < 0 || index >= in.size()) return null;
-        if (cast.isPrimitive() && Primitive.get(cast).getObjectClass().isInstance(in.get(index))
+        if (cast.isPrimitive() && TypePrimitive.forObject(cast).getTypeClass().isInstance(in.get(index))
                 || cast.isInstance(in.get(index))) return (T) in.get(index);
         return null;
     }
@@ -163,7 +163,7 @@ public class Event {
     public final <T> List<T> getInput(Class<T> cast) {
         List<T> newOut = new ArrayList<T>();
         for (Object obj : in)
-            if (cast.isPrimitive() && Primitive.get(cast).getObjectClass().isInstance(obj) || cast.isInstance(obj))
+            if (cast.isPrimitive() && TypePrimitive.forObject(cast).getTypeClass().isInstance(obj) || cast.isInstance(obj))
                 newOut.add((T) obj);
         return newOut;
     }
@@ -177,7 +177,8 @@ public class Event {
 
     public final boolean containsInput(Class<?> cast) {
         for (Object obj : in)
-            if (cast.isPrimitive() && Primitive.get(cast).getObjectClass().isInstance(obj) || cast.isInstance(obj)) return true;
+            if (cast.isPrimitive() && TypePrimitive.forObject(cast).getTypeClass().isInstance(obj) || cast.isInstance(obj))
+                return true;
         return false;
     }
 
@@ -199,7 +200,7 @@ public class Event {
     @SuppressWarnings("unchecked")
     public final <T> T getOutput(int index, Class<T> cast) {
         if (index < 0 && index >= out.size()) return null;
-        if (cast.isPrimitive() && Primitive.get(cast).getObjectClass().isInstance(out.get(index))
+        if (cast.isPrimitive() && TypePrimitive.forObject(cast).getTypeClass().isInstance(out.get(index))
                 || cast.isInstance(out.get(index))) return (T) out.get(index);
         return null;
     }
@@ -219,7 +220,7 @@ public class Event {
         if (!isDone()) return null;
         List<T> newOut = new ArrayList<T>();
         for (Object obj : out)
-            if (cast.isPrimitive() && Primitive.get(cast).getObjectClass().isInstance(obj) || cast.isInstance(obj))
+            if (cast.isPrimitive() && TypePrimitive.forObject(cast).getTypeClass().isInstance(obj) || cast.isInstance(obj))
                 newOut.add((T) obj);
         return newOut;
     }
@@ -233,7 +234,8 @@ public class Event {
 
     public final boolean containsOutput(Class<?> cast) {
         for (Object obj : out)
-            if (cast.isPrimitive() && Primitive.get(cast).getObjectClass().isInstance(obj) || cast.isInstance(obj)) return true;
+            if (cast.isPrimitive() && TypePrimitive.forObject(cast).getTypeClass().isInstance(obj) || cast.isInstance(obj))
+                return true;
         return false;
     }
 }

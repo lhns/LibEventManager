@@ -49,4 +49,18 @@ public abstract class TypePrimitive<ClassType> extends Type<ClassType> {
         return create(fromLong(value));
     }
 
+    @Override
+    public TypePrimitive<ClassType> create(Object obj) {
+        return (TypePrimitive<ClassType>) super.create(obj);
+    }
+
+    public static TypePrimitive<?> forObject(Object obj) {
+        for (Type<?> type : types) {
+            if (!type.isType(obj)) continue;
+            if (!(type instanceof TypePrimitive)) continue;
+            return (TypePrimitive<?>) type.create(obj);
+        }
+        return VOID.create(null);
+    }
+
 }

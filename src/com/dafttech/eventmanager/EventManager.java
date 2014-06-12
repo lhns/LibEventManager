@@ -35,7 +35,7 @@ public class EventManager {
         Class<?> eventListenerClass = isStatic ? (Class<?>) eventListener : eventListener.getClass();
         EventListener annotation = null;
         EventType type = null;
-        TypeClass typeClass = ((TypeClass) Type.CLASS.create(eventListenerClass)).showExceptions(true);
+        TypeClass typeClass = Type.CLASS.create(eventListenerClass).showExceptions(true);
         for (Method method : typeClass.getAnnotatedMethods(EventListener.class, null, (Class<?>) null)) {
             annotation = method.getAnnotation(EventListener.class);
             isListenerStatic = Modifier.isStatic(method.getModifiers());
