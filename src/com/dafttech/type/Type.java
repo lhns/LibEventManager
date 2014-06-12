@@ -63,10 +63,10 @@ public abstract class Type<ClassType> {
     }
 
     @SuppressWarnings("unchecked")
-    public Type<ClassType> create(Object obj) {
+    public <ReturnType extends Type<ClassType>> ReturnType create(Object obj) {
         if (!getTypeClass().isAssignableFrom(obj.getClass())) return null;
         try {
-            Type<ClassType> newInstance = getClass().getDeclaredConstructor(boolean.class).newInstance(false);
+            ReturnType newInstance = (ReturnType) getClass().getDeclaredConstructor(boolean.class).newInstance(false);
             newInstance.value = (ClassType) obj;
             return newInstance;
         } catch (InstantiationException e) {

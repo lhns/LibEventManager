@@ -30,9 +30,4 @@ public class TypeObject extends Type<Object> {
     public boolean isType(Object obj) {
         return obj != null;
     }
-
-    @Override
-    public TypeObject create(Object obj) {
-        return (TypeObject) super.create(obj);
-    }
 }

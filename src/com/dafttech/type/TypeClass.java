@@ -195,9 +195,4 @@ public class TypeClass extends Type<Class<?>> {
         }
         return null;
     }
-
-    @Override
-    public TypeClass create(Object obj) {
-        return (TypeClass) super.create(obj);
-    }
 }
