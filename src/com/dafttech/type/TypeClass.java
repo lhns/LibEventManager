@@ -92,7 +92,7 @@ public class TypeClass extends Type<Class<?>> {
 
     public final List<Method> getAllDeclaredMethods() {
         List<Method> methods = new ArrayList<Method>();
-        getAllDeclaredMethods(this, value, null);
+        getAllDeclaredMethods(this, value, methods);
         return methods;
     }
 
@@ -153,7 +153,8 @@ public class TypeClass extends Type<Class<?>> {
                 }
             }
             if (args[i1] == null && argTypes[i1].isPrimitive())
-                args[i1] = ((TypePrimitive<?>) Type.forObject(argTypes[i1])).getNullObject();
+                args[i1] = ((TypePrimitive<?>) Type.forClass(argTypes[i1])).getNullObject();
+
         }
         return args;
     }

@@ -41,6 +41,12 @@ public abstract class TypePrimitive<ClassType> extends Type<ClassType> {
     }
 
     @Override
+    public boolean isClass(Class<?> targetClass) {
+        return targetClass != null
+                && (getTypeClass().isAssignableFrom(targetClass) || getPrimitiveClass().isAssignableFrom(targetClass));
+    }
+
+    @Override
     public Type<ClassType> fromByteArray(byte... array) {
         long value = 0;
         int size = getBytes();
@@ -58,4 +64,12 @@ public abstract class TypePrimitive<ClassType> extends Type<ClassType> {
         return VOID.<TypeVoid> create(null);
     }
 
+    public static TypePrimitive<?> forClass(Class<?> targetClass) {
+        for (Type<?> type : types) {
+            if (!type.isClass(targetClass)) continue;
+            if (!(type instanceof TypePrimitive)) continue;
+            return (TypePrimitive<?>) type.create(null);
+        }
+        return VOID.<TypeVoid> create(null);
+    }
 }

@@ -59,12 +59,16 @@ public abstract class Type<ClassType> {
     public abstract Object getNullObject();
 
     public boolean isType(Object obj) {
-        return obj != null && getTypeClass().isAssignableFrom(obj.getClass());
+        return obj != null && isClass(obj.getClass());
+    }
+
+    public boolean isClass(Class<?> targetClass) {
+        return targetClass != null && getTypeClass().isAssignableFrom(targetClass);
     }
 
     @SuppressWarnings("unchecked")
     public <ReturnType extends Type<ClassType>> ReturnType create(Object obj) {
-        if (!getTypeClass().isAssignableFrom(obj.getClass())) return null;
+        if (obj != null && !getTypeClass().isAssignableFrom(obj.getClass())) return null;
         try {
             ReturnType newInstance = (ReturnType) getClass().getDeclaredConstructor(boolean.class).newInstance(false);
             newInstance.value = (ClassType) obj;
@@ -90,6 +94,14 @@ public abstract class Type<ClassType> {
             if (!type.isType(obj)) continue;
             return type.create(obj);
         }
-        return VOID.create(null);
+        return VOID.<TypeVoid> create(null);
+    }
+
+    public static Type<?> forClass(Class<?> targetClass) {
+        for (Type<?> type : types) {
+            if (!type.isClass(targetClass)) continue;
+            return type.create(null);
+        }
+        return VOID.<TypeVoid> create(null);
     }
 }

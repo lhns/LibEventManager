@@ -40,8 +40,8 @@ public class TypeArray extends Type<Object[]> {
     }
 
     @Override
-    public boolean isType(Object obj) {
-        return obj != null && obj.getClass().isArray();
+    public boolean isClass(Class<?> targetClass) {
+        return targetClass != null && targetClass.isArray();
     }
 
     public static double interpolate(double[] array, int[] translation, double index) {

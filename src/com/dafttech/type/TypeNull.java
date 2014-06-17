@@ -30,4 +30,9 @@ public class TypeNull extends Type<Void> {
     public boolean isType(Object obj) {
         return obj == null;
     }
+
+    @Override
+    public boolean isClass(Class<?> targetClass) {
+        return targetClass == null;
+    }
 }
