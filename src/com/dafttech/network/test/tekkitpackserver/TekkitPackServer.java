@@ -1,4 +1,4 @@
-package com.dafttech.network.test.webserver;
+package com.dafttech.network.test.tekkitpackserver;
 
 import java.io.IOException;
 
@@ -8,7 +8,7 @@ import com.dafttech.network.disconnect.Disconnect;
 import com.dafttech.network.packet.RawPacket;
 import com.dafttech.network.protocol.RawProtocol;
 
-public class Webserver {
+public class TekkitPackServer {
     public static String inHeader = "", outHeader = "", content = "";
 
     public static void main(String[] args) {
@@ -18,8 +18,8 @@ public class Webserver {
                 public void receive(Client<RawPacket> client, RawPacket packet) {
                     inHeader = inHeader + new String(packet.data);
                     if (inHeader.endsWith("\r\n\r\n")) {
-                        content = "{\"name\":\"nothingspecial\","
-                                + "\"displayName\":\" Minecraft: Nothing Special\","
+                        content = "{\"name\":\"xdcraft\","
+                                + "\"displayName\":\" Minecraft: XDCraft\","
                                 + "\"user\":\"LolHens\","
                                 + "\"version\":\"1.0\","
                                 + "\"url\":\"https://dl.dropboxusercontent.com/u/148704233/Minecraft%20-%20The%20Next%20Generation.zip\","
