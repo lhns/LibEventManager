@@ -43,4 +43,13 @@ public class TypeDouble extends TypePrimitive<Double> {
     public Class<?> getPrimitiveClass() {
         return double.class;
     }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <ReturnType extends Type<Double>> ReturnType create(Object obj) {
+        if (obj != null && !getTypeClass().isAssignableFrom(obj.getClass())) return null;
+        ReturnType type = (ReturnType) new TypeDouble(false);
+        type.value = (Double) obj;
+        return type;
+    }
 }

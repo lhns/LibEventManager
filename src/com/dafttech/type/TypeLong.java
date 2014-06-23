@@ -44,4 +44,12 @@ public class TypeLong extends TypePrimitive<Long> {
         return long.class;
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public <ReturnType extends Type<Long>> ReturnType create(Object obj) {
+        if (obj != null && !getTypeClass().isAssignableFrom(obj.getClass())) return null;
+        ReturnType type = (ReturnType) new TypeLong(false);
+        type.value = (Long) obj;
+        return type;
+    }
 }

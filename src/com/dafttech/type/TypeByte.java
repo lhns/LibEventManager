@@ -43,4 +43,13 @@ public class TypeByte extends TypePrimitive<Byte> {
     public Class<?> getPrimitiveClass() {
         return byte.class;
     }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <ReturnType extends Type<Byte>> ReturnType create(Object obj) {
+        if (obj != null && !getTypeClass().isAssignableFrom(obj.getClass())) return null;
+        ReturnType type = (ReturnType) new TypeByte(false);
+        type.value = (Byte) obj;
+        return type;
+    }
 }

@@ -44,4 +44,12 @@ public class TypeShort extends TypePrimitive<Short> {
         return short.class;
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public <ReturnType extends Type<Short>> ReturnType create(Object obj) {
+        if (obj != null && !getTypeClass().isAssignableFrom(obj.getClass())) return null;
+        ReturnType type = (ReturnType) new TypeShort(false);
+        type.value = (Short) obj;
+        return type;
+    }
 }

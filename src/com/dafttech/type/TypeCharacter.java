@@ -44,4 +44,13 @@ public class TypeCharacter extends TypePrimitive<Character> {
     public Class<?> getPrimitiveClass() {
         return char.class;
     }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <ReturnType extends Type<Character>> ReturnType create(Object obj) {
+        if (obj != null && !getTypeClass().isAssignableFrom(obj.getClass())) return null;
+        ReturnType type = (ReturnType) new TypeCharacter(false);
+        type.value = (Character) obj;
+        return type;
+    }
 }

@@ -44,4 +44,12 @@ public class TypeFloat extends TypePrimitive<Float> {
         return float.class;
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public <ReturnType extends Type<Float>> ReturnType create(Object obj) {
+        if (obj != null && !getTypeClass().isAssignableFrom(obj.getClass())) return null;
+        ReturnType type = (ReturnType) new TypeFloat(false);
+        type.value = (Float) obj;
+        return type;
+    }
 }

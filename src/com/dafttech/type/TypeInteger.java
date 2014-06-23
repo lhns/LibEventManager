@@ -44,4 +44,12 @@ public class TypeInteger extends TypePrimitive<Integer> {
         return int.class;
     }
 
+    @Override
+    @SuppressWarnings("unchecked")
+    public <ReturnType extends Type<Integer>> ReturnType create(Object obj) {
+        if (obj != null && !getTypeClass().isAssignableFrom(obj.getClass())) return null;
+        ReturnType type = (ReturnType) new TypeInteger(false);
+        type.value = (Integer) obj;
+        return type;
+    }
 }

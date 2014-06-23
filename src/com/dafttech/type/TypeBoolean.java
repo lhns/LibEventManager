@@ -43,4 +43,13 @@ public class TypeBoolean extends TypePrimitive<Boolean> {
     public Object getNullObject() {
         return false;
     }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public <ReturnType extends Type<Boolean>> ReturnType create(Object obj) {
+        if (obj != null && !getTypeClass().isAssignableFrom(obj.getClass())) return null;
+        ReturnType type = (ReturnType) new TypeBoolean(false);
+        type.value = (Boolean) obj;
+        return type;
+    }
 }
