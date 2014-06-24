@@ -136,7 +136,7 @@ public class ListenerContainer extends AccObjContainer<Method> {
         if (obj instanceof ListenerContainer) {
             return ((ListenerContainer) obj).target.equals(target) && ((ListenerContainer) obj).isStatic == isStatic;
         } else {
-            return obj == targetInstance || obj.equals(targetInstance);
+            return obj == targetInstance || obj == targetClass || obj.equals(targetInstance) || obj.equals(targetClass);
         }
     }
 
