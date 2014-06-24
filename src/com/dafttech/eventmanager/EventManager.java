@@ -35,7 +35,7 @@ public class EventManager {
         Class<?> eventListenerClass = isStatic ? (Class<?>) eventListener : eventListener.getClass();
         EventListener annotation = null;
         EventType type = null;
-        TypeClass typeClass = Type.CLASS.<TypeClass> create(eventListenerClass).showExceptions(true);
+        TypeClass typeClass = Type.CLASS.<TypeClass> create(eventListenerClass);
         for (Method method : typeClass.getAnnotatedMethods(EventListener.class, null, (Class<?>) null)) {
             annotation = method.getAnnotation(EventListener.class);
             isListenerStatic = Modifier.isStatic(method.getModifiers());
@@ -45,8 +45,7 @@ public class EventManager {
                 if (type == null) throw new NoSuchElementException(requestedEvent);
                 if (!type.isWhitelisted(this)) continue;
                 if (!filterlist.isFiltered(type)) continue;
-                addEventListenerContainer(type, new ListenerContainer(isListenerStatic, isListenerStatic ? eventListenerClass
-                        : eventListener, method, annotation));
+                addEventListenerContainer(type, new ListenerContainer(method, eventListener, annotation));
             }
         }
     }

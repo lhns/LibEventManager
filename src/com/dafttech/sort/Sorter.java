@@ -1,14 +1,20 @@
 package com.dafttech.sort;
 
+import java.util.Arrays;
+
 public class Sorter<Type extends Comparable<Type>> {
     private Type[] array;
+    private boolean sorting = false;
 
     public Sorter(Type[] array) {
         this.array = array;
     }
 
     public Type[] quickSort() {
+        if (sorting) return null;
+        sorting = true;
         quickSort(0, array.length - 1);
+        sorting = false;
         return array;
     }
 
@@ -32,5 +38,22 @@ public class Sorter<Type extends Comparable<Type>> {
         }
         quickSort(startIndex, pivotIndex - 1);
         quickSort(pivotIndex + 1, endIndex);
+    }
+
+    public Type[] mergeSort() {
+        if (sorting) return null;
+        sorting = true;
+        mergeSort(0, array.length - 1);
+        sorting = false;
+        return array;
+    }
+
+    private void mergeSort(int startIndex, int endIndex) {
+        if (startIndex == endIndex) return;
+        int midIndex = (startIndex + endIndex) / 2;
+        mergeSort(startIndex, midIndex);
+        mergeSort(midIndex + 1, endIndex);
+        Type[] tmpArray = Arrays.copyOfRange(array, startIndex, endIndex);
+
     }
 }

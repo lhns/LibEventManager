@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class TypeClass extends Type<Class<?>> {
-    public boolean exception = false;
 
     protected TypeClass(boolean prototype) {
         super(prototype);
@@ -43,11 +42,6 @@ public class TypeClass extends Type<Class<?>> {
         return null;
     }
 
-    public TypeClass showExceptions(boolean value) {
-        exception = value;
-        return this;
-    }
-
     public final List<Method> getAnnotatedMethods(Class<? extends Annotation> annotation, Class<?> reqType, Class<?>... reqArgs) {
         List<Method> methods = new ArrayList<Method>();
         for (Method method : getAllDeclaredMethods()) {
@@ -56,17 +50,6 @@ public class TypeClass extends Type<Class<?>> {
                     && (reqArgs == null || reqArgs.length == 1 && reqArgs[0] == null || Arrays.equals(method.getParameterTypes(),
                             reqArgs))) {
                 methods.add(method);
-            } else if (exception) {
-                String errorMessage = "\nat " + value.getName() + " at Annotation " + annotation.getName() + ":";
-                errorMessage += "\nexpected: " + reqType.getName() + " with " + (reqArgs.length == 0 ? "no args" : "args:");
-                for (Class<?> arg : reqArgs)
-                    errorMessage += ", " + arg.getName();
-                errorMessage += "\nand got:  " + method.getReturnType() + " with "
-                        + (method.getParameterTypes().length == 0 ? "no args" : "args:");
-                for (Class<?> arg : method.getParameterTypes())
-                    errorMessage += ", " + arg.getName();
-                errorMessage += ".";
-                throw new IllegalArgumentException(errorMessage);
             }
         }
         return methods;
@@ -79,12 +62,6 @@ public class TypeClass extends Type<Class<?>> {
             if (!field.isAnnotationPresent(annotation)) continue;
             if (reqType == null || field.getType() == reqType) {
                 fields.add(field);
-            } else if (exception) {
-                String errorMessage = "\nat " + value.getName() + " at Annotation " + annotation.getName() + ":";
-                errorMessage += "\nexpected: " + reqType.getName();
-                errorMessage += "\nand got:  " + field.getType();
-                errorMessage += ".";
-                throw new IllegalArgumentException(errorMessage);
             }
         }
         return fields;
@@ -105,7 +82,7 @@ public class TypeClass extends Type<Class<?>> {
                     methods.add(method);
                 }
         } catch (NoClassDefFoundError e) {
-            if (typeClass.exception) e.printStackTrace();
+            e.printStackTrace();
         }
         Class<?> superclass = target.getSuperclass();
         if (superclass != null) getAllDeclaredMethods(typeClass, superclass, methods);
@@ -125,7 +102,7 @@ public class TypeClass extends Type<Class<?>> {
                     fields.add(field);
                 }
         } catch (NoClassDefFoundError e) {
-            if (typeClass.exception) e.printStackTrace();
+            e.printStackTrace();
         }
         Class<?> superclass = target.getSuperclass();
         if (superclass != null) getAllDeclaredFields(typeClass, superclass, fields);
