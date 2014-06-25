@@ -9,8 +9,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.dafttech.type.Type;
-import com.dafttech.type.TypeClass;
+import com.dafttech.manager.ReflectionManager;
 
 public class ListenerContainer extends AccObjContainer<Method> {
     volatile private int priority;
@@ -53,13 +52,12 @@ public class ListenerContainer extends AccObjContainer<Method> {
                 }
 
             }
-            TypeClass reflector = Type.CLASS.<TypeClass> create(filterClass);
-            for (Field field : reflector.getAnnotatedFields(EventFilter.class, null)) {
+            for (Field field : ReflectionManager.getAnnotatedFields(filterClass, EventFilter.class, null)) {
                 if ((!mustBeStatic || Modifier.isStatic(field.getModifiers()))
                         && field.getAnnotation(EventFilter.class).value().equals(filterName))
                     filterList.add(new AccObjContainer<AccessibleObject>(field, targetClass, targetInstance));
             }
-            for (Method method : reflector.getAnnotatedMethods(EventFilter.class, null, (Class<?>[]) null)) {
+            for (Method method : ReflectionManager.getAnnotatedMethods(filterClass, EventFilter.class, null, (Class<?>[]) null)) {
                 if ((!mustBeStatic || Modifier.isStatic(method.getModifiers()))
                         && method.getAnnotation(EventFilter.class).value().equals(filterName))
                     filterList.add(new AccObjContainer<AccessibleObject>(method, targetClass, targetInstance));

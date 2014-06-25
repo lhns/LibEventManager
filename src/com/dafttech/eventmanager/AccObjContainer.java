@@ -6,7 +6,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import com.dafttech.type.TypeClass;
+import com.dafttech.manager.ReflectionManager;
 
 class AccObjContainer<Type extends AccessibleObject> {
     volatile protected Type target;
@@ -61,7 +61,7 @@ class AccObjContainer<Type extends AccessibleObject> {
         if (!isStatic && targetInstance == null)
             throw new IllegalArgumentException("Instance of non-static AccessObject cannot be null!");
 
-        nullArgs = TypeClass.buildArgumentArray(argTypes);
+        nullArgs = ReflectionManager.buildArgumentArray(argTypes);
     }
 
     protected AccObjContainer(Type target, Class<?> targetClass, Object targetInstance) {

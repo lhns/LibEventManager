@@ -10,8 +10,7 @@ import java.util.NoSuchElementException;
 
 import com.dafttech.filterlist.Blacklist;
 import com.dafttech.filterlist.Filterlist;
-import com.dafttech.type.Type;
-import com.dafttech.type.TypeClass;
+import com.dafttech.manager.ReflectionManager;
 
 public class EventManager {
     volatile protected Map<EventType, List<ListenerContainer>> registeredListeners = new HashMap<EventType, List<ListenerContainer>>();
@@ -35,8 +34,8 @@ public class EventManager {
         Class<?> eventListenerClass = isStatic ? (Class<?>) eventListener : eventListener.getClass();
         EventListener annotation = null;
         EventType type = null;
-        TypeClass typeClass = Type.CLASS.<TypeClass> create(eventListenerClass);
-        for (Method method : typeClass.getAnnotatedMethods(EventListener.class, null, (Class<?>) null)) {
+        for (Method method : ReflectionManager
+                .getAnnotatedMethods(eventListenerClass, EventListener.class, null, (Class<?>) null)) {
             annotation = method.getAnnotation(EventListener.class);
             isListenerStatic = Modifier.isStatic(method.getModifiers());
             if (isStatic && !isListenerStatic) continue;

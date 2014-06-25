@@ -2,9 +2,9 @@ package com.dafttech.network.protocol;
 
 import java.nio.ByteBuffer;
 
+import com.dafttech.manager.PrimitiveManager;
 import com.dafttech.network.NetworkInterface;
 import com.dafttech.network.packet.SimplePacket;
-import com.dafttech.type.Type;
 
 public class SimpleProtocol extends Protocol<SimplePacket> {
     public SimpleProtocol(NetworkInterface<SimplePacket> netInterface) {
@@ -15,15 +15,15 @@ public class SimpleProtocol extends Protocol<SimplePacket> {
     public SimplePacket receive() {
         // System.out.println(getParent());
         byte[] integer = new byte[4];
-        return new SimplePacket(Type.INTEGER.fromByteArray(read(integer)).getValue(), read(new byte[Type.INTEGER.fromByteArray(
-                read(integer)).getValue()]));
+        return new SimplePacket(PrimitiveManager.INTEGER.fromByteArray(read(integer)),
+                read(new byte[PrimitiveManager.INTEGER.fromByteArray(read(integer))]));
     }
 
     @Override
     public void send(SimplePacket packet) {
         ByteBuffer packetBuffer = ByteBuffer.allocate(8 + packet.data.length);
-        packetBuffer.put(Type.INTEGER.create(packet.channel).toByteArray());
-        packetBuffer.put(Type.INTEGER.create(packet.data.length).toByteArray());
+        packetBuffer.put(PrimitiveManager.INTEGER.toByteArray(packet.channel));
+        packetBuffer.put(PrimitiveManager.INTEGER.toByteArray(packet.data.length));
         packetBuffer.put(packet.data);
         write(packetBuffer.array());
     }

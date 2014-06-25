@@ -1,4 +1,4 @@
-package com.dafttech.type;
+package com.dafttech.manager;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
@@ -16,35 +16,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class TypeClass extends Type<Class<?>> {
-
-    protected TypeClass(boolean prototype) {
-        super(prototype);
-    }
-
-    @Override
-    public byte[] toByteArray() {
-        return null;
-    }
-
-    @Override
-    public TypeClass fromByteArray(byte... array) {
-        return null;
-    }
-
-    @Override
-    public Class<?> getTypeClass() {
-        return Class.class;
-    }
-
-    @Override
-    public Object getNullObject() {
-        return null;
-    }
-
-    public final List<Method> getAnnotatedMethods(Class<? extends Annotation> annotation, Class<?> reqType, Class<?>... reqArgs) {
+public class ReflectionManager {
+    public static final List<Method> getAnnotatedMethods(Class<?> target, Class<? extends Annotation> annotation,
+            Class<?> reqType, Class<?>... reqArgs) {
         List<Method> methods = new ArrayList<Method>();
-        for (Method method : getAllDeclaredMethods()) {
+        for (Method method : getAllDeclaredMethods(target)) {
             if (!method.isAnnotationPresent(annotation)) continue;
             if ((reqType == null || method.getReturnType() == reqType)
                     && (reqArgs == null || reqArgs.length == 1 && reqArgs[0] == null || Arrays.equals(method.getParameterTypes(),
@@ -55,10 +31,10 @@ public class TypeClass extends Type<Class<?>> {
         return methods;
     }
 
-    public final List<Field> getAnnotatedFields(Class<? extends Annotation> annotation, Class<?> reqType) {
+    public static final List<Field> getAnnotatedFields(Class<?> target, Class<? extends Annotation> annotation, Class<?> reqType) {
         List<Field> fields = new ArrayList<Field>();
         if (reqType == void.class) return fields;
-        for (Field field : getAllDeclaredFields()) {
+        for (Field field : getAllDeclaredFields(target)) {
             if (!field.isAnnotationPresent(annotation)) continue;
             if (reqType == null || field.getType() == reqType) {
                 fields.add(field);
@@ -67,13 +43,13 @@ public class TypeClass extends Type<Class<?>> {
         return fields;
     }
 
-    public final List<Method> getAllDeclaredMethods() {
+    public static final List<Method> getAllDeclaredMethods(Class<?> target) {
         List<Method> methods = new ArrayList<Method>();
-        getAllDeclaredMethods(this, value, methods);
+        getAllDeclaredMethods(target, methods);
         return methods;
     }
 
-    private static final void getAllDeclaredMethods(TypeClass typeClass, Class<?> target, List<Method> methods) {
+    private static final void getAllDeclaredMethods(Class<?> target, List<Method> methods) {
         if (methods == null) methods = new ArrayList<Method>();
         try {
             for (Method method : target.getDeclaredMethods())
@@ -85,16 +61,16 @@ public class TypeClass extends Type<Class<?>> {
             e.printStackTrace();
         }
         Class<?> superclass = target.getSuperclass();
-        if (superclass != null) getAllDeclaredMethods(typeClass, superclass, methods);
+        if (superclass != null) getAllDeclaredMethods(superclass, methods);
     }
 
-    public final List<Field> getAllDeclaredFields() {
+    public static final List<Field> getAllDeclaredFields(Class<?> target) {
         List<Field> fields = new ArrayList<Field>();
-        getAllDeclaredFields(this, value, fields);
+        getAllDeclaredFields(target, fields);
         return fields;
     }
 
-    private static final void getAllDeclaredFields(TypeClass typeClass, Class<?> target, List<Field> fields) {
+    private static final void getAllDeclaredFields(Class<?> target, List<Field> fields) {
         try {
             for (Field field : target.getDeclaredFields())
                 if (!fields.contains(field)) {
@@ -105,7 +81,7 @@ public class TypeClass extends Type<Class<?>> {
             e.printStackTrace();
         }
         Class<?> superclass = target.getSuperclass();
-        if (superclass != null) getAllDeclaredFields(typeClass, superclass, fields);
+        if (superclass != null) getAllDeclaredFields(superclass, fields);
     }
 
     /**
@@ -129,16 +105,15 @@ public class TypeClass extends Type<Class<?>> {
                     break;
                 }
             }
-            if (args[i1] == null && argTypes[i1].isPrimitive())
-                args[i1] = ((TypePrimitive<?>) Type.forClass(argTypes[i1])).getNullObject();
+            if (args[i1] == null && argTypes[i1].isPrimitive()) args[i1] = PrimitiveManager.get(argTypes[i1]).nullObj;
 
         }
         return args;
     }
 
-    public Constructor<?> getConstructor() {
+    public Constructor<?> getConstructor(Class<?> target) {
         try {
-            Constructor<?> constructor = value.getDeclaredConstructor();
+            Constructor<?> constructor = target.getDeclaredConstructor();
             constructor.setAccessible(true);
             return constructor;
         } catch (NoSuchMethodException e) {
@@ -156,18 +131,18 @@ public class TypeClass extends Type<Class<?>> {
     }
 
     @SuppressWarnings("unchecked")
-    public final <ClassType> ClassType getSingletonInstance(Object... methodArgs) {
-        for (Field field : getAnnotatedFields(SingletonInstance.class, null)) {
+    public static final <ClassType> ClassType getSingletonInstance(Class<?> target, Object... appliedArgs) {
+        for (Field field : getAnnotatedFields(target, SingletonInstance.class, null)) {
             if (!Modifier.isStatic(field.getModifiers())) continue;
             try {
                 return (ClassType) field.get(null);
             } catch (Exception e) {
             }
         }
-        for (Method method : getAnnotatedMethods(SingletonInstance.class, null)) {
+        for (Method method : getAnnotatedMethods(target, SingletonInstance.class, null, (Class<?>[]) null)) {
             if (!Modifier.isStatic(method.getModifiers())) continue;
             try {
-                return (ClassType) method.invoke(null, methodArgs);
+                return (ClassType) method.invoke(null, buildArgumentArray(method.getParameterTypes(), appliedArgs));
             } catch (Exception e) {
             }
         }
