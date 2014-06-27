@@ -1,5 +1,6 @@
 package com.dafttech.sort;
 
+import java.util.Arrays;
 
 public class Sorter<Type extends Comparable<Type>> {
     private Type[] array;
@@ -47,13 +48,30 @@ public class Sorter<Type extends Comparable<Type>> {
         return array;
     }
 
-    @Deprecated
     private void mergeSort(int startIndex, int endIndex) {
         if (startIndex == endIndex) return;
         int midIndex = (startIndex + endIndex) / 2;
         mergeSort(startIndex, midIndex);
         mergeSort(midIndex + 1, endIndex);
-        // Type[] tmpArray = Arrays.copyOfRange(array, startIndex, endIndex);
-        // TODO: implement merge
+        Type[] tmpArray = Arrays.copyOfRange(array, startIndex, endIndex + 1);
+        int readIndex = startIndex, readLeftIndex = startIndex, readRightIndex = midIndex + 1;
+        Type readLeft, readRight;
+        while (readLeftIndex <= midIndex && readRightIndex <= endIndex) {
+            readLeft = tmpArray[readLeftIndex - startIndex];
+            readRight = tmpArray[readRightIndex - startIndex];
+            if (readLeft.compareTo(readRight) <= 0) {
+                array[readIndex] = readLeft;
+                readLeftIndex++;
+            } else {
+                array[readIndex] = readRight;
+                readRightIndex++;
+            }
+            readIndex++;
+        }
+        while (readLeftIndex <= midIndex) {
+            array[readIndex] = tmpArray[readLeftIndex - startIndex];
+            readLeftIndex++;
+            readIndex++;
+        }
     }
 }
