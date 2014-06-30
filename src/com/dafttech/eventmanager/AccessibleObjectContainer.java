@@ -8,7 +8,7 @@ import java.lang.reflect.Modifier;
 
 import com.dafttech.util.ReflectionUtil;
 
-class AccObjContainer<Type extends AccessibleObject> {
+class AccessibleObjectContainer<Type extends AccessibleObject> {
     volatile protected Type target;
     volatile protected Class<?> targetClass;
     volatile protected Object targetInstance;
@@ -19,7 +19,7 @@ class AccObjContainer<Type extends AccessibleObject> {
     volatile protected Class<?>[] argTypes;
     volatile protected Object[] nullArgs;
 
-    protected AccObjContainer(Type target, Object access) {
+    protected AccessibleObjectContainer(Type target, Object access) {
         this.target = target;
         if (access == null) {
             return;
@@ -64,7 +64,7 @@ class AccObjContainer<Type extends AccessibleObject> {
         nullArgs = ReflectionUtil.buildArgumentArray(argTypes);
     }
 
-    protected AccObjContainer(Type target, Class<?> targetClass, Object targetInstance) {
+    protected AccessibleObjectContainer(Type target, Class<?> targetClass, Object targetInstance) {
         this(target, targetInstance == null ? targetClass : targetInstance);
     }
 

@@ -11,10 +11,10 @@ import java.util.List;
 
 import com.dafttech.util.ReflectionUtil;
 
-public class ListenerContainer extends AccObjContainer<Method> {
+public class ListenerContainer extends AccessibleObjectContainer<Method> {
     volatile private int priority;
 
-    volatile private AccObjContainer<AccessibleObject>[] filters;
+    volatile private AccessibleObjectContainer<AccessibleObject>[] filters;
 
     protected ListenerContainer(Method target, Object access, EventListener annotation) {
         super(target, access);
@@ -23,8 +23,8 @@ public class ListenerContainer extends AccObjContainer<Method> {
     }
 
     @SuppressWarnings("unchecked")
-    private final AccObjContainer<AccessibleObject>[] getFilterContainers(String[] filterNames) {
-        List<AccObjContainer<AccessibleObject>> filterList = new ArrayList<AccObjContainer<AccessibleObject>>();
+    private final AccessibleObjectContainer<AccessibleObject>[] getFilterContainers(String[] filterNames) {
+        List<AccessibleObjectContainer<AccessibleObject>> filterList = new ArrayList<AccessibleObjectContainer<AccessibleObject>>();
         boolean mustBeStatic;
         Class<?> filterClass;
         for (String filterName : filterNames) {
@@ -55,15 +55,15 @@ public class ListenerContainer extends AccObjContainer<Method> {
             for (Field field : ReflectionUtil.getAnnotatedFields(filterClass, EventFilter.class, null)) {
                 if ((!mustBeStatic || Modifier.isStatic(field.getModifiers()))
                         && field.getAnnotation(EventFilter.class).value().equals(filterName))
-                    filterList.add(new AccObjContainer<AccessibleObject>(field, targetClass, targetInstance));
+                    filterList.add(new AccessibleObjectContainer<AccessibleObject>(field, targetClass, targetInstance));
             }
             for (Method method : ReflectionUtil.getAnnotatedMethods(filterClass, EventFilter.class, null, (Class<?>[]) null)) {
                 if ((!mustBeStatic || Modifier.isStatic(method.getModifiers()))
                         && method.getAnnotation(EventFilter.class).value().equals(filterName))
-                    filterList.add(new AccObjContainer<AccessibleObject>(method, targetClass, targetInstance));
+                    filterList.add(new AccessibleObjectContainer<AccessibleObject>(method, targetClass, targetInstance));
             }
         }
-        return filterList.toArray(new AccObjContainer[0]);
+        return filterList.toArray(new AccessibleObjectContainer[0]);
     }
 
     protected final void invoke(Event event) {
@@ -101,7 +101,7 @@ public class ListenerContainer extends AccObjContainer<Method> {
 
     private final Object[][] getFilters() {
         Object[][] filterArray = new Object[filters.length][];
-        AccObjContainer<AccessibleObject> filter;
+        AccessibleObjectContainer<AccessibleObject> filter;
         Object retObj;
         for (int i = 0; i < filters.length; i++) {
             filter = filters[i];
