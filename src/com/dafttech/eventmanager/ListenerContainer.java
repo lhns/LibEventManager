@@ -8,41 +8,36 @@ import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import com.dafttech.util.ReflectionUtil;
 
 public class ListenerContainer extends AccessibleObjectContainer<Method> {
+    volatile private AccessibleObjectContainer<AccessibleObject>[] filters;
     volatile private int priority;
 
-    volatile private AccessibleObjectContainer<AccessibleObject>[] filters;
-
-    protected ListenerContainer(Method target, Object access, EventListener annotation) {
+    protected ListenerContainer(Method target, Object access, String[] filters, int priority, Map<String, String> filterShortcuts) {
         super(target, access);
-        priority = annotation.priority();
-        filters = getFilterContainers(annotation.filter());
+        this.filters = getFilterContainers(filters, filterShortcuts);
+        this.priority = priority;
     }
 
     @SuppressWarnings("unchecked")
-    private final AccessibleObjectContainer<AccessibleObject>[] getFilterContainers(String[] filterNames) {
+    private final AccessibleObjectContainer<AccessibleObject>[] getFilterContainers(String[] filterNames,
+            Map<String, String> filterShortcuts) {
         List<AccessibleObjectContainer<AccessibleObject>> filterList = new ArrayList<AccessibleObjectContainer<AccessibleObject>>();
         boolean mustBeStatic;
         Class<?> filterClass;
         for (String filterName : filterNames) {
             if (filterName.equals("")) continue;
+
             mustBeStatic = isStatic;
             filterClass = targetClass;
+
+            if (filterShortcuts.containsKey(filterName)) filterName = filterShortcuts.get(filterName);
+            filterName = resolveClassPath(filterName, targetClass.getName());
+
             if (filterName.contains(".")) {
-                if (filterName.startsWith(".")) filterName = targetClass.getName() + filterName;
-                if (filterName.contains("..")) {
-                    int backIndex;
-                    while (filterName.contains("..")) {
-                        backIndex = filterName.indexOf("..");
-                        while (filterName.length() > backIndex + 2 && filterName.charAt(backIndex + 2) == '.')
-                            backIndex++;
-                        filterName = filterName.substring(0, filterName.substring(0, backIndex).lastIndexOf(".") + 1)
-                                + filterName.substring(backIndex + 2);
-                    }
-                }
                 try {
                     filterClass = Class.forName(filterName.substring(0, filterName.lastIndexOf('.')));
                     filterName = filterName.substring(filterName.lastIndexOf('.') + 1);
@@ -50,20 +45,37 @@ public class ListenerContainer extends AccessibleObjectContainer<Method> {
                 } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
-
             }
-            for (Field field : ReflectionUtil.getAnnotatedFields(filterClass, EventFilter.class, null)) {
+
+            for (Field field : ReflectionUtil.getAnnotatedFields(filterClass, EventListener.Filter.class, null)) {
                 if ((!mustBeStatic || Modifier.isStatic(field.getModifiers()))
-                        && field.getAnnotation(EventFilter.class).value().equals(filterName))
+                        && field.getAnnotation(EventListener.Filter.class).value().equals(filterName))
                     filterList.add(new AccessibleObjectContainer<AccessibleObject>(field, targetClass, targetInstance));
             }
-            for (Method method : ReflectionUtil.getAnnotatedMethods(filterClass, EventFilter.class, null, (Class<?>[]) null)) {
+            for (Method method : ReflectionUtil.getAnnotatedMethods(filterClass, EventListener.Filter.class, null,
+                    (Class<?>[]) null)) {
                 if ((!mustBeStatic || Modifier.isStatic(method.getModifiers()))
-                        && method.getAnnotation(EventFilter.class).value().equals(filterName))
+                        && method.getAnnotation(EventListener.Filter.class).value().equals(filterName))
                     filterList.add(new AccessibleObjectContainer<AccessibleObject>(method, targetClass, targetInstance));
             }
         }
-        return filterList.toArray(new AccessibleObjectContainer[0]);
+        return filterList.toArray(new AccessibleObjectContainer[filterList.size()]);
+    }
+
+    private static final String resolveClassPath(String classPath, String relativeClassPath) {
+        if (!classPath.contains(".")) return classPath;
+
+        if (classPath.startsWith(".")) classPath = relativeClassPath + classPath;
+
+        int backIndex = classPath.indexOf("..");
+        while (backIndex > -1) {
+            while (classPath.length() > backIndex + 2 && classPath.charAt(backIndex + 2) == '.')
+                backIndex++;
+            classPath = classPath.substring(0, classPath.substring(0, backIndex).lastIndexOf(".") + 1)
+                    + classPath.substring(backIndex + 2);
+            backIndex = classPath.indexOf("..");
+        }
+        return classPath;
     }
 
     protected final void invoke(Event event) {
@@ -85,57 +97,48 @@ public class ListenerContainer extends AccessibleObjectContainer<Method> {
 
     protected final boolean isFiltered(Event event) {
         if (filters.length == 0) return true;
-        Object[][] eventFilters = getFilters();
-        if (eventFilters.length == 0) return true;
-        for (Object[] eventFilter : eventFilters) {
-            if (eventFilter.length == 0) continue;
-            try {
-                if (event.getEventType().isFiltered(event, eventFilter, this)) return true;
-            } catch (ArrayIndexOutOfBoundsException e) {
-            } catch (ClassCastException e) {
-            } catch (NullPointerException e) {
-            }
+        try {
+            return event.getEventType().isFiltered(event, getFilters(), this);
+        } catch (ArrayIndexOutOfBoundsException e) {
+        } catch (ClassCastException e) {
+        } catch (NullPointerException e) {
         }
         return false;
     }
 
-    private final Object[][] getFilters() {
-        Object[][] filterArray = new Object[filters.length][];
+    private final Object[] getFilters() {
+        Object[] returnObjects = new Object[filters.length];
         AccessibleObjectContainer<AccessibleObject> filter;
-        Object retObj;
         for (int i = 0; i < filters.length; i++) {
             filter = filters[i];
-            retObj = null;
-            if (filter != null) {
-                try {
-                    if (filter.isField()) retObj = ((Field) filter.target).get(filter.targetInstance);
-                    if (filter.isMethod()) retObj = ((Method) filter.target).invoke(filter.targetInstance, filter.nullArgs);
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (IllegalArgumentException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
+            if (filter == null) continue;
+            try {
+                if (filter.isField()) {
+                    returnObjects[i] = ((Field) filter.target).get(filter.targetInstance);
+                } else if (filter.isMethod()) {
+                    returnObjects[i] = ((Method) filter.target).invoke(filter.targetInstance, filter.nullArgs);
                 }
-            }
-            if (retObj == null) {
-                filterArray[i] = new Object[0];
-            } else if (retObj instanceof Object[]) {
-                filterArray[i] = (Object[]) retObj;
-            } else {
-                filterArray[i] = new Object[] { retObj };
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (IllegalArgumentException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
             }
         }
-        return filterArray;
+        return returnObjects;
     }
 
     @Override
     public final boolean equals(Object obj) {
         if (obj instanceof ListenerContainer) {
-            return ((ListenerContainer) obj).target.equals(target) && ((ListenerContainer) obj).isStatic == isStatic;
-        } else {
-            return obj == targetInstance || obj == targetClass || obj.equals(targetInstance) || obj.equals(targetClass);
+            ListenerContainer listenerContainer = (ListenerContainer) obj;
+            return (listenerContainer.target == target || listenerContainer.target.equals(target))
+                    && (listenerContainer.targetClass == targetClass || listenerContainer.targetClass.equals(targetClass))
+                    && (listenerContainer.targetInstance == targetInstance || listenerContainer.targetInstance
+                            .equals(targetInstance));
         }
+        return false;
     }
 
     public boolean isStatic() {

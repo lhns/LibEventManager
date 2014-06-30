@@ -24,6 +24,11 @@ public class EventType {
         return name;
     }
 
+    @Override
+    public String toString() {
+        return name;
+    }
+
     /**
      * Used to be overridden in subclasses (use anonymous classes), to filter
      * out the EventListeners
@@ -63,7 +68,7 @@ public class EventType {
         if (object instanceof EventType) {
             if (object == this) return true;
         } else if (object instanceof String) {
-            if (((String) object).equals(name)) return true;
+            if (name.equals(object)) return true;
         }
         return false;
     }

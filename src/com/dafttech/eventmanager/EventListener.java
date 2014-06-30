@@ -1,5 +1,6 @@
 package com.dafttech.eventmanager;
 
+import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -14,13 +15,27 @@ import java.lang.annotation.Target;
  * @param String
  *            []: Namen der Events.
  */
-@Target(METHOD)
+@Target({ METHOD })
 @Retention(RUNTIME)
 @Documented
 public @interface EventListener {
     String[] value();
 
+    String[] filter() default {};
+
     int priority() default EventType.PRIORITY_STANDARD;
 
-    String[] filter() default {};
+    @Target({ METHOD })
+    @Retention(RUNTIME)
+    @Documented
+    public static @interface Group {
+        EventListener[] value();
+    }
+
+    @Target({ METHOD, FIELD })
+    @Retention(RUNTIME)
+    @Documented
+    public @interface Filter {
+        String value();
+    }
 }

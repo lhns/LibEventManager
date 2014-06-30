@@ -3,10 +3,13 @@ package com.dafttech.eventmanager;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 
 import com.dafttech.filterlist.Blacklist;
 import com.dafttech.filterlist.Filterlist;
@@ -14,6 +17,7 @@ import com.dafttech.util.ReflectionUtil;
 
 public class EventManager {
     volatile protected Map<EventType, List<ListenerContainer>> registeredListeners = new HashMap<EventType, List<ListenerContainer>>();
+    volatile protected Map<String, String> filterShortcuts = new HashMap<String, String>();
 
     public EventManager() {
     }
@@ -30,20 +34,36 @@ public class EventManager {
      */
     public final void registerEventListener(Object eventListener, Filterlist<EventType> filterlist) {
         if (filterlist == null || !filterlist.isValid()) return;
-        boolean isStatic = eventListener.getClass() == Class.class, isListenerStatic;
+
+        boolean isStatic = eventListener.getClass() == Class.class;
         Class<?> eventListenerClass = isStatic ? (Class<?>) eventListener : eventListener.getClass();
-        EventListener annotation = null;
-        EventType type = null;
-        for (Method method : ReflectionUtil.getAnnotatedMethods(eventListenerClass, EventListener.class, null, (Class<?>) null)) {
-            annotation = method.getAnnotation(EventListener.class);
-            isListenerStatic = Modifier.isStatic(method.getModifiers());
-            if (isStatic && !isListenerStatic) continue;
-            for (String requestedEvent : annotation.value()) {
-                type = EventType.types.get(requestedEvent);
-                if (type == null) throw new NoSuchElementException(requestedEvent);
-                if (!type.isWhitelisted(this)) continue;
-                if (!filterlist.isFiltered(type)) continue;
-                addEventListenerContainer(type, new ListenerContainer(method, eventListener, annotation));
+
+        Set<Method> methods = new HashSet<Method>();
+        methods.addAll(ReflectionUtil.getAnnotatedMethods(eventListenerClass, EventListener.class, null, (Class<?>[]) null));
+        methods.addAll(ReflectionUtil.getAnnotatedMethods(eventListenerClass, EventListener.Group.class, null, (Class<?>[]) null));
+        for (Method method : methods) {
+            if (isStatic && !Modifier.isStatic(method.getModifiers())) continue;
+
+            List<EventListener> annotations = new ArrayList<EventListener>();
+
+            if (method.isAnnotationPresent(EventListener.class)) annotations.add(method.getAnnotation(EventListener.class));
+            if (method.isAnnotationPresent(EventListener.Group.class))
+                Collections.addAll(annotations, method.getAnnotation(EventListener.Group.class).value());
+
+            for (EventListener listenerAnnotation : annotations) {
+                String[] filters = listenerAnnotation.filter();
+                int priority = listenerAnnotation.priority();
+
+                for (String event : listenerAnnotation.value()) {
+                    EventType type = EventType.types.get(event);
+
+                    if (type == null) throw new NoSuchElementException(event);
+                    if (!type.isWhitelisted(this)) continue;
+                    if (!filterlist.isFiltered(type)) continue;
+
+                    addEventListenerContainer(type, new ListenerContainer(method, eventListener, filters, priority,
+                            filterShortcuts));
+                }
             }
         }
     }
@@ -65,11 +85,14 @@ public class EventManager {
 
     public final void unregisterEventListener(Object eventListener, Filterlist<EventType> filterlist) {
         if (filterlist == null || !filterlist.isValid()) return;
+
         List<ListenerContainer> listenerContainers;
         for (EventType type : registeredListeners.keySet()) {
             if (!filterlist.isFiltered(type)) continue;
+
             listenerContainers = registeredListeners.get(type);
             if (listenerContainers == null || listenerContainers.size() == 0) continue;
+
             for (int i = listenerContainers.size() - 1; i >= 0; i--)
                 if (listenerContainers.get(i).equals(eventListener)) listenerContainers.remove(i);
         }
@@ -82,11 +105,13 @@ public class EventManager {
     private final void addEventListenerContainer(EventType type, ListenerContainer newListenerContainer) {
         if (!registeredListeners.containsKey(type) || registeredListeners.get(type) == null)
             registeredListeners.put(type, new ArrayList<ListenerContainer>());
+
         List<ListenerContainer> listenerContainers = registeredListeners.get(type);
         ListenerContainer listenerContainer;
         for (int i = 0; i < listenerContainers.size(); i++) {
             listenerContainer = listenerContainers.get(i);
             if (listenerContainer == newListenerContainer) return;
+
             if (listenerContainer.getPriority() < newListenerContainer.getPriority()) {
                 listenerContainers.add(i, newListenerContainer);
                 return;
@@ -133,5 +158,10 @@ public class EventManager {
         Event event = new Event(this, type, objects, registeredListeners.get(type));
         new AsyncEventThread(event);
         return event;
+    }
+
+    public final EventManager addFilterShortcut(String shortcutName, String classPath) {
+        filterShortcuts.put(shortcutName, classPath);
+        return this;
     }
 }
