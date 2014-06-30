@@ -1,4 +1,4 @@
-package com.dafttech.manager;
+package com.dafttech.util;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ReflectionManager {
+public class ReflectionUtil {
     public static final List<Method> getAnnotatedMethods(Class<?> target, Class<? extends Annotation> annotation,
             Class<?> reqType, Class<?>... reqArgs) {
         List<Method> methods = new ArrayList<Method>();
@@ -105,7 +105,7 @@ public class ReflectionManager {
                     break;
                 }
             }
-            if (args[i1] == null && argTypes[i1].isPrimitive()) args[i1] = PrimitiveManager.get(argTypes[i1]).nullObj;
+            if (args[i1] == null && argTypes[i1].isPrimitive()) args[i1] = PrimitiveUtil.get(argTypes[i1]).nullObj;
 
         }
         return args;

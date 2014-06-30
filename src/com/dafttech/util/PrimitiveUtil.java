@@ -1,10 +1,10 @@
-package com.dafttech.manager;
+package com.dafttech.util;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PrimitiveManager {
+public class PrimitiveUtil {
     private static final List<Primitive<?>> PRIMITIVES = new ArrayList<Primitive<?>>();
 
     public static final Primitive<Byte> BYTE = new Primitive<Byte>("byte", Byte.class, 0) {

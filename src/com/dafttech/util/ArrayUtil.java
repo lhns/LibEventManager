@@ -1,6 +1,6 @@
-package com.dafttech.manager;
+package com.dafttech.util;
 
-public class ArrayManager {
+public class ArrayUtil {
     public static double interpolate(double[] array, int[] translation, double index) {
         int length = translation == null ? array.length : translation.length;
         int floor = (int) index;
