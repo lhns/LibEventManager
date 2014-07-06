@@ -15,9 +15,9 @@ import com.dafttech.util.ReflectionUtil;
 
 public class ListenerContainer extends AnnotatedElementContainer<AnnotatedElement> {
     volatile private AnnotatedElementContainer<AnnotatedElement>[] filters;
-    volatile private int priority;
+    volatile private double priority;
 
-    protected ListenerContainer(AnnotatedElement target, Object access, String[] filters, int priority,
+    protected ListenerContainer(AnnotatedElement target, Object access, String[] filters, double priority,
             Map<String, String> filterShortcuts) {
         super(target, access);
         this.filters = getFilterContainers(filters, filterShortcuts);
@@ -52,22 +52,21 @@ public class ListenerContainer extends AnnotatedElementContainer<AnnotatedElemen
             if (filterClass.isAnnotationPresent(EventListener.Filter.class)
                     && filterClass.getAnnotation(EventListener.Filter.class).value().equals(filterName))
                 filterList.add(new AnnotatedElementContainer<AnnotatedElement>(filterClass, targetClass, targetInstance));
-            for (Field field : ReflectionUtil.getAnnotatedFields(filterClass, EventListener.Filter.class, null)) {
+
+            for (Field field : ReflectionUtil.getAnnotatedFields(filterClass, EventListener.Filter.class, null))
                 if ((!mustBeStatic || Modifier.isStatic(field.getModifiers()))
                         && field.getAnnotation(EventListener.Filter.class).value().equals(filterName))
                     filterList.add(new AnnotatedElementContainer<AnnotatedElement>(field, targetClass, targetInstance));
-            }
-            for (Method method : ReflectionUtil.getAnnotatedMethods(filterClass, EventListener.Filter.class, null,
-                    (Class<?>[]) null)) {
+
+            for (Method method : ReflectionUtil.getAnnotatedMethods(filterClass, EventListener.Filter.class, null, null))
                 if ((!mustBeStatic || Modifier.isStatic(method.getModifiers()))
                         && method.getAnnotation(EventListener.Filter.class).value().equals(filterName))
                     filterList.add(new AnnotatedElementContainer<AnnotatedElement>(method, targetClass, targetInstance));
-            }
+
             for (Constructor<?> constructor : ReflectionUtil.getAnnotatedConstructors(filterClass, EventListener.Filter.class,
-                    (Class<?>[]) null)) {
+                    null))
                 if (constructor.getAnnotation(EventListener.Filter.class).value().equals(filterName))
                     filterList.add(new AnnotatedElementContainer<AnnotatedElement>(constructor, targetClass, targetInstance));
-            }
         }
         return filterList.toArray(new AnnotatedElementContainer[filterList.size()]);
     }
@@ -153,9 +152,11 @@ public class ListenerContainer extends AnnotatedElementContainer<AnnotatedElemen
 
     @Override
     public final boolean equals(Object obj) {
+        if (obj == this) return true;
         if (obj instanceof ListenerContainer) {
             ListenerContainer listenerContainer = (ListenerContainer) obj;
-            return (listenerContainer.target == target || listenerContainer.target.equals(target))
+            return listenerContainer.typeVal == typeVal
+                    && (listenerContainer.target == target || listenerContainer.target.equals(target))
                     && (listenerContainer.targetClass == targetClass || listenerContainer.targetClass.equals(targetClass))
                     && (listenerContainer.targetInstance == targetInstance || listenerContainer.targetInstance
                             .equals(targetInstance));
@@ -175,7 +176,7 @@ public class ListenerContainer extends AnnotatedElementContainer<AnnotatedElemen
         return target;
     }
 
-    public int getPriority() {
+    public double getPriority() {
         return priority;
     }
 }

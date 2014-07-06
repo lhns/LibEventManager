@@ -9,7 +9,10 @@ public class EventType {
     volatile private EventManager[] eventManagerWhitelist;
 
     protected static Map<String, EventType> types = new HashMap<String, EventType>();
-    public static final int PRIORITY_STANDARD = 0;
+
+    public static final double PRIORITY_LOW = -1;
+    public static final double PRIORITY_NORMAL = 0;
+    public static final double PRIORITY_HIGH = 1;
 
     public EventType(String name, EventManager... eventManagerWhitelist) {
         this.name = name;

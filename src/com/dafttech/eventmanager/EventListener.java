@@ -25,13 +25,15 @@ public @interface EventListener {
 
     String[] filter() default {};
 
-    int priority() default EventType.PRIORITY_STANDARD;
+    double priority() default EventType.PRIORITY_NORMAL;
 
     @Target({ METHOD })
     @Retention(RUNTIME)
     @Documented
     public static @interface Group {
         EventListener[] value();
+
+        String[] filter() default {};
     }
 
     @Target({ METHOD, FIELD, CONSTRUCTOR, TYPE })

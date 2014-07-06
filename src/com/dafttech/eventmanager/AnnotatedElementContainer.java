@@ -13,7 +13,7 @@ class AnnotatedElementContainer<Type extends AnnotatedElement> {
     volatile protected Class<?> targetClass;
     volatile protected Object targetInstance;
     volatile protected Class<?> type;
-    volatile private int typeVal;
+    volatile protected int typeVal;
     volatile protected boolean isStatic;
     volatile protected Class<?> retType;
     volatile protected Class<?>[] argTypes;

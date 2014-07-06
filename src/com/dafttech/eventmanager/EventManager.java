@@ -5,6 +5,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,10 +42,10 @@ public class EventManager {
         Class<?> eventListenerClass = isStatic ? (Class<?>) eventListener : eventListener.getClass();
 
         Set<AnnotatedElement> targets = new HashSet<AnnotatedElement>();
-        targets.addAll(ReflectionUtil.getAnnotatedMethods(eventListenerClass, EventListener.class, null, (Class<?>[]) null));
-        targets.addAll(ReflectionUtil.getAnnotatedMethods(eventListenerClass, EventListener.Group.class, null, (Class<?>[]) null));
-        targets.addAll(ReflectionUtil.getAnnotatedConstructors(eventListenerClass, EventListener.class, (Class<?>[]) null));
-        targets.addAll(ReflectionUtil.getAnnotatedConstructors(eventListenerClass, EventListener.Group.class, (Class<?>[]) null));
+        targets.addAll(ReflectionUtil.getAnnotatedMethods(eventListenerClass,
+                Arrays.asList(EventListener.class, EventListener.Group.class), null, null));
+        targets.addAll(ReflectionUtil.getAnnotatedConstructors(eventListenerClass,
+                Arrays.asList(EventListener.class, EventListener.Group.class), null));
 
         for (AnnotatedElement target : targets) {
             boolean staticTarget = false;
@@ -63,7 +64,7 @@ public class EventManager {
 
             for (EventListener listenerAnnotation : annotations) {
                 String[] filters = listenerAnnotation.filter();
-                int priority = listenerAnnotation.priority();
+                double priority = listenerAnnotation.priority();
 
                 for (String event : listenerAnnotation.value()) {
                     EventType type = EventType.types.get(event);
@@ -114,14 +115,13 @@ public class EventManager {
     }
 
     private final void addEventListenerContainer(EventType type, ListenerContainer newListenerContainer) {
-        if (!registeredListeners.containsKey(type) || registeredListeners.get(type) == null)
-            registeredListeners.put(type, new ArrayList<ListenerContainer>());
+        if (!registeredListeners.containsKey(type)) registeredListeners.put(type, new ArrayList<ListenerContainer>());
 
         List<ListenerContainer> listenerContainers = registeredListeners.get(type);
         ListenerContainer listenerContainer;
         for (int i = 0; i < listenerContainers.size(); i++) {
             listenerContainer = listenerContainers.get(i);
-            if (listenerContainer == newListenerContainer) return;
+            if (listenerContainer.equals(newListenerContainer)) return;
 
             if (listenerContainer.getPriority() < newListenerContainer.getPriority()) {
                 listenerContainers.add(i, newListenerContainer);

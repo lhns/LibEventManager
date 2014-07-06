@@ -13,48 +13,60 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 public class ReflectionUtil {
 
-    public static final Set<Field> getAnnotatedFields(Class<?> target, Class<? extends Annotation> annotation, Class<?> reqType) {
+    public static final Set<Field> getAnnotatedFields(Class<?> target, List<Class<? extends Annotation>> annotations,
+            Class<?> reqType) {
         Set<Field> fields = new HashSet<Field>();
         if (reqType == void.class) return fields;
         for (Field field : getAllDeclaredFields(target)) {
-            if (!field.isAnnotationPresent(annotation)) continue;
-            if (reqType == null || field.getType() == reqType) {
-                fields.add(field);
-            }
+            if (Collections.disjoint(Arrays.asList(field.getAnnotations()), annotations)) continue;
+            if (reqType != null && field.getType() != reqType) continue;
+            fields.add(field);
         }
         return fields;
     }
 
-    public static final Set<Method> getAnnotatedMethods(Class<?> target, Class<? extends Annotation> annotation,
-            Class<?> reqType, Class<?>... reqArgs) {
+    public static final Set<Field> getAnnotatedFields(Class<?> target, Class<? extends Annotation> annotation, Class<?> reqType) {
+        return getAnnotatedFields(target, Arrays.<Class<? extends Annotation>> asList(annotation), reqType);
+    }
+
+    public static final Set<Method> getAnnotatedMethods(Class<?> target, List<Class<? extends Annotation>> annotations,
+            Class<?> reqType, List<Class<?>> reqArgs) {
         Set<Method> methods = new HashSet<Method>();
         for (Method method : getAllDeclaredMethods(target)) {
-            if (!method.isAnnotationPresent(annotation)) continue;
-            if ((reqType == null || method.getReturnType() == reqType)
-                    && (reqArgs == null || reqArgs.length == 1 && reqArgs[0] == null || Arrays.equals(method.getParameterTypes(),
-                            reqArgs))) {
-                methods.add(method);
-            }
+            if (Collections.disjoint(Arrays.asList(method.getAnnotations()), annotations)) continue;
+            if (reqType != null && method.getReturnType() != reqType) continue;
+            if (reqArgs != null && !reqArgs.equals(Arrays.asList(method.getParameterTypes()))) continue;
+            methods.add(method);
         }
         return methods;
     }
 
-    public static final Set<Constructor<?>> getAnnotatedConstructors(Class<?> target, Class<? extends Annotation> annotation,
-            Class<?>... reqArgs) {
+    public static final Set<Method> getAnnotatedMethods(Class<?> target, Class<? extends Annotation> annotation,
+            Class<?> reqType, List<Class<?>> reqArgs) {
+        return getAnnotatedMethods(target, Arrays.<Class<? extends Annotation>> asList(annotation), reqType, reqArgs);
+    }
+
+    public static final Set<Constructor<?>> getAnnotatedConstructors(Class<?> target,
+            List<Class<? extends Annotation>> annotations, List<Class<?>> reqArgs) {
         Set<Constructor<?>> constructors = new HashSet<Constructor<?>>();
         for (Constructor<?> constructor : getAllDeclaredConstructors(target)) {
-            if (!constructor.isAnnotationPresent(annotation)) continue;
-            if (reqArgs == null || reqArgs.length == 1 && reqArgs[0] == null
-                    || Arrays.equals(constructor.getParameterTypes(), reqArgs)) {
-                constructors.add(constructor);
-            }
+            if (Collections.disjoint(Arrays.asList(constructor.getAnnotations()), annotations)) continue;
+            if (reqArgs != null && !reqArgs.equals(Arrays.asList(constructor.getParameterTypes()))) continue;
+            constructors.add(constructor);
         }
         return constructors;
+    }
+
+    public static final Set<Constructor<?>> getAnnotatedConstructors(Class<?> target, Class<? extends Annotation> annotation,
+            List<Class<?>> reqArgs) {
+        return getAnnotatedConstructors(target, Arrays.<Class<? extends Annotation>> asList(annotation), reqArgs);
     }
 
     public static final Set<Field> getAllDeclaredFields(Class<?> target) {
@@ -169,7 +181,7 @@ public class ReflectionUtil {
             } catch (Exception e) {
             }
         }
-        for (Method method : getAnnotatedMethods(target, SingletonInstance.class, null, (Class<?>[]) null)) {
+        for (Method method : getAnnotatedMethods(target, SingletonInstance.class, null, null)) {
             if (!Modifier.isStatic(method.getModifiers())) continue;
             try {
                 return (ClassType) method.invoke(null, buildArgumentArray(method.getParameterTypes(), appliedArgs));
