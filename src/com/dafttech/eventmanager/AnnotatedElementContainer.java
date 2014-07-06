@@ -1,6 +1,6 @@
 package com.dafttech.eventmanager;
 
-import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -8,7 +8,7 @@ import java.lang.reflect.Modifier;
 
 import com.dafttech.util.ReflectionUtil;
 
-class AccessibleObjectContainer<Type extends AccessibleObject> {
+class AnnotatedElementContainer<Type extends AnnotatedElement> {
     volatile protected Type target;
     volatile protected Class<?> targetClass;
     volatile protected Object targetInstance;
@@ -19,7 +19,7 @@ class AccessibleObjectContainer<Type extends AccessibleObject> {
     volatile protected Class<?>[] argTypes;
     volatile protected Object[] nullArgs;
 
-    protected AccessibleObjectContainer(Type target, Object access) {
+    protected AnnotatedElementContainer(Type target, Object access) {
         this.target = target;
         if (access == null) {
             return;
@@ -32,31 +32,31 @@ class AccessibleObjectContainer<Type extends AccessibleObject> {
         }
 
         type = target.getClass();
-        int modifiers;
         if (Field.class.isAssignableFrom(type)) {
             Field field = (Field) target;
-            modifiers = field.getModifiers();
+            isStatic = Modifier.isStatic(field.getModifiers());
             typeVal = 0;
             retType = field.getType();
             argTypes = new Class<?>[0];
         } else if (Method.class.isAssignableFrom(type)) {
             Method method = (Method) target;
-            modifiers = method.getModifiers();
+            isStatic = Modifier.isStatic(method.getModifiers());
             typeVal = 1;
             retType = method.getReturnType();
             argTypes = method.getParameterTypes();
 
         } else if (Constructor.class.isAssignableFrom(type)) {
             Constructor<?> constructor = (Constructor<?>) target;
-            modifiers = constructor.getModifiers();
+            isStatic = true;
             typeVal = 2;
             retType = constructor.getDeclaringClass();
             argTypes = constructor.getParameterTypes();
-        } else {
-            modifiers = 0;
+        } else if (type == Class.class) {
+            isStatic = true;
+            typeVal = 3;
+            retType = null;
+            argTypes = new Class<?>[0];
         }
-
-        isStatic = Modifier.isStatic(modifiers);
 
         if (!isStatic && targetInstance == null)
             throw new IllegalArgumentException("Instance of non-static AccessObject cannot be null!");
@@ -64,7 +64,7 @@ class AccessibleObjectContainer<Type extends AccessibleObject> {
         nullArgs = ReflectionUtil.buildArgumentArray(argTypes);
     }
 
-    protected AccessibleObjectContainer(Type target, Class<?> targetClass, Object targetInstance) {
+    protected AnnotatedElementContainer(Type target, Class<?> targetClass, Object targetInstance) {
         this(target, targetInstance == null ? targetClass : targetInstance);
     }
 
@@ -78,6 +78,10 @@ class AccessibleObjectContainer<Type extends AccessibleObject> {
 
     public boolean isConstructor() {
         return typeVal == 2;
+    }
+
+    public boolean isClass() {
+        return typeVal == 3;
     }
 
     public Object access(Object... params) {

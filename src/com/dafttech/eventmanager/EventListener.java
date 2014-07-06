@@ -1,7 +1,9 @@
 package com.dafttech.eventmanager;
 
+import static java.lang.annotation.ElementType.CONSTRUCTOR;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 import java.lang.annotation.Documented;
@@ -15,7 +17,7 @@ import java.lang.annotation.Target;
  * @param String
  *            []: Namen der Events.
  */
-@Target({ METHOD })
+@Target({ METHOD, CONSTRUCTOR })
 @Retention(RUNTIME)
 @Documented
 public @interface EventListener {
@@ -32,7 +34,7 @@ public @interface EventListener {
         EventListener[] value();
     }
 
-    @Target({ METHOD, FIELD })
+    @Target({ METHOD, FIELD, CONSTRUCTOR, TYPE })
     @Retention(RUNTIME)
     @Documented
     public @interface Filter {

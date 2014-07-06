@@ -1,5 +1,7 @@
 package com.dafttech.eventmanager;
 
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
@@ -38,17 +40,26 @@ public class EventManager {
         boolean isStatic = eventListener.getClass() == Class.class;
         Class<?> eventListenerClass = isStatic ? (Class<?>) eventListener : eventListener.getClass();
 
-        Set<Method> methods = new HashSet<Method>();
-        methods.addAll(ReflectionUtil.getAnnotatedMethods(eventListenerClass, EventListener.class, null, (Class<?>[]) null));
-        methods.addAll(ReflectionUtil.getAnnotatedMethods(eventListenerClass, EventListener.Group.class, null, (Class<?>[]) null));
-        for (Method method : methods) {
-            if (isStatic && !Modifier.isStatic(method.getModifiers())) continue;
+        Set<AnnotatedElement> targets = new HashSet<AnnotatedElement>();
+        targets.addAll(ReflectionUtil.getAnnotatedMethods(eventListenerClass, EventListener.class, null, (Class<?>[]) null));
+        targets.addAll(ReflectionUtil.getAnnotatedMethods(eventListenerClass, EventListener.Group.class, null, (Class<?>[]) null));
+        targets.addAll(ReflectionUtil.getAnnotatedConstructors(eventListenerClass, EventListener.class, (Class<?>[]) null));
+        targets.addAll(ReflectionUtil.getAnnotatedConstructors(eventListenerClass, EventListener.Group.class, (Class<?>[]) null));
+
+        for (AnnotatedElement target : targets) {
+            boolean staticTarget = false;
+            if (target instanceof Method) {
+                staticTarget = Modifier.isStatic(((Method) target).getModifiers());
+            } else if (target instanceof Constructor<?>) {
+                staticTarget = true;
+            }
+            if (isStatic && !staticTarget) continue;
 
             List<EventListener> annotations = new ArrayList<EventListener>();
 
-            if (method.isAnnotationPresent(EventListener.class)) annotations.add(method.getAnnotation(EventListener.class));
-            if (method.isAnnotationPresent(EventListener.Group.class))
-                Collections.addAll(annotations, method.getAnnotation(EventListener.Group.class).value());
+            if (target.isAnnotationPresent(EventListener.class)) annotations.add(target.getAnnotation(EventListener.class));
+            if (target.isAnnotationPresent(EventListener.Group.class))
+                Collections.addAll(annotations, target.getAnnotation(EventListener.Group.class).value());
 
             for (EventListener listenerAnnotation : annotations) {
                 String[] filters = listenerAnnotation.filter();
@@ -61,7 +72,7 @@ public class EventManager {
                     if (!type.isWhitelisted(this)) continue;
                     if (!filterlist.isFiltered(type)) continue;
 
-                    addEventListenerContainer(type, new ListenerContainer(method, eventListener, filters, priority,
+                    addEventListenerContainer(type, new ListenerContainer(target, eventListener, filters, priority,
                             filterShortcuts));
                 }
             }

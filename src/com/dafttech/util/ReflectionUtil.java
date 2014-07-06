@@ -12,14 +12,27 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 public class ReflectionUtil {
-    public static final List<Method> getAnnotatedMethods(Class<?> target, Class<? extends Annotation> annotation,
+
+    public static final Set<Field> getAnnotatedFields(Class<?> target, Class<? extends Annotation> annotation, Class<?> reqType) {
+        Set<Field> fields = new HashSet<Field>();
+        if (reqType == void.class) return fields;
+        for (Field field : getAllDeclaredFields(target)) {
+            if (!field.isAnnotationPresent(annotation)) continue;
+            if (reqType == null || field.getType() == reqType) {
+                fields.add(field);
+            }
+        }
+        return fields;
+    }
+
+    public static final Set<Method> getAnnotatedMethods(Class<?> target, Class<? extends Annotation> annotation,
             Class<?> reqType, Class<?>... reqArgs) {
-        List<Method> methods = new ArrayList<Method>();
+        Set<Method> methods = new HashSet<Method>();
         for (Method method : getAllDeclaredMethods(target)) {
             if (!method.isAnnotationPresent(annotation)) continue;
             if ((reqType == null || method.getReturnType() == reqType)
@@ -31,32 +44,50 @@ public class ReflectionUtil {
         return methods;
     }
 
-    public static final List<Field> getAnnotatedFields(Class<?> target, Class<? extends Annotation> annotation, Class<?> reqType) {
-        List<Field> fields = new ArrayList<Field>();
-        if (reqType == void.class) return fields;
-        for (Field field : getAllDeclaredFields(target)) {
-            if (!field.isAnnotationPresent(annotation)) continue;
-            if (reqType == null || field.getType() == reqType) {
-                fields.add(field);
+    public static final Set<Constructor<?>> getAnnotatedConstructors(Class<?> target, Class<? extends Annotation> annotation,
+            Class<?>... reqArgs) {
+        Set<Constructor<?>> constructors = new HashSet<Constructor<?>>();
+        for (Constructor<?> constructor : getAllDeclaredConstructors(target)) {
+            if (!constructor.isAnnotationPresent(annotation)) continue;
+            if (reqArgs == null || reqArgs.length == 1 && reqArgs[0] == null
+                    || Arrays.equals(constructor.getParameterTypes(), reqArgs)) {
+                constructors.add(constructor);
             }
         }
+        return constructors;
+    }
+
+    public static final Set<Field> getAllDeclaredFields(Class<?> target) {
+        Set<Field> fields = new HashSet<Field>();
+        getAllDeclaredFields(target, fields);
         return fields;
     }
 
-    public static final List<Method> getAllDeclaredMethods(Class<?> target) {
-        List<Method> methods = new ArrayList<Method>();
+    private static final void getAllDeclaredFields(Class<?> target, Set<Field> fields) {
+        try {
+            for (Field field : target.getDeclaredFields()) {
+                if (!field.isAccessible()) field.setAccessible(true);
+                fields.add(field);
+            }
+        } catch (NoClassDefFoundError e) {
+            e.printStackTrace();
+        }
+        Class<?> superclass = target.getSuperclass();
+        if (superclass != null) getAllDeclaredFields(superclass, fields);
+    }
+
+    public static final Set<Method> getAllDeclaredMethods(Class<?> target) {
+        Set<Method> methods = new HashSet<Method>();
         getAllDeclaredMethods(target, methods);
         return methods;
     }
 
-    private static final void getAllDeclaredMethods(Class<?> target, List<Method> methods) {
-        if (methods == null) methods = new ArrayList<Method>();
+    private static final void getAllDeclaredMethods(Class<?> target, Set<Method> methods) {
         try {
-            for (Method method : target.getDeclaredMethods())
-                if (!methods.contains(method)) {
-                    method.setAccessible(true);
-                    methods.add(method);
-                }
+            for (Method method : target.getDeclaredMethods()) {
+                if (!method.isAccessible()) method.setAccessible(true);
+                methods.add(method);
+            }
         } catch (NoClassDefFoundError e) {
             e.printStackTrace();
         }
@@ -64,24 +95,23 @@ public class ReflectionUtil {
         if (superclass != null) getAllDeclaredMethods(superclass, methods);
     }
 
-    public static final List<Field> getAllDeclaredFields(Class<?> target) {
-        List<Field> fields = new ArrayList<Field>();
-        getAllDeclaredFields(target, fields);
-        return fields;
+    public static final Set<Constructor<?>> getAllDeclaredConstructors(Class<?> target) {
+        Set<Constructor<?>> constructors = new HashSet<Constructor<?>>();
+        getAllDeclaredConstructors(target, constructors);
+        return constructors;
     }
 
-    private static final void getAllDeclaredFields(Class<?> target, List<Field> fields) {
+    private static final void getAllDeclaredConstructors(Class<?> target, Set<Constructor<?>> constructors) {
         try {
-            for (Field field : target.getDeclaredFields())
-                if (!fields.contains(field)) {
-                    field.setAccessible(true);
-                    fields.add(field);
-                }
+            for (Constructor<?> constructor : target.getDeclaredConstructors()) {
+                if (!constructor.isAccessible()) constructor.setAccessible(true);
+                constructors.add(constructor);
+            }
         } catch (NoClassDefFoundError e) {
             e.printStackTrace();
         }
         Class<?> superclass = target.getSuperclass();
-        if (superclass != null) getAllDeclaredFields(superclass, fields);
+        if (superclass != null) getAllDeclaredConstructors(superclass, constructors);
     }
 
     /**
