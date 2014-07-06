@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import com.dafttech.filterlist.Blacklist;
 import com.dafttech.filterlist.Filterlist;
@@ -21,6 +23,7 @@ import com.dafttech.util.ReflectionUtil;
 public class EventManager {
     volatile protected Map<EventType, List<ListenerContainer>> registeredListeners = new HashMap<EventType, List<ListenerContainer>>();
     volatile protected Map<String, String> filterShortcuts = new HashMap<String, String>();
+    volatile private ExecutorService asyncEventExecutor = Executors.newCachedThreadPool();
 
     public EventManager() {
     }
@@ -164,15 +167,19 @@ public class EventManager {
      *         is done, getting the output and checking if the event was
      *         cancelled
      */
-    public final Event callAsync(EventType type, Object... objects) {
+    public final AsyncEvent callAsync(EventType type, Object... objects) {
         if (type == null) return null;
-        Event event = new Event(this, type, objects, registeredListeners.get(type));
-        new AsyncEventThread(event);
+        AsyncEvent event = new AsyncEvent(this, type, objects, registeredListeners.get(type));
+        event.setFuture(asyncEventExecutor.submit(new AsyncEventRunnable(event)));
         return event;
     }
 
     public final EventManager addFilterShortcut(String shortcutName, String classPath) {
         filterShortcuts.put(shortcutName, classPath);
         return this;
+    }
+
+    public final void close() {
+        asyncEventExecutor.shutdown();
     }
 }

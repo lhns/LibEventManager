@@ -13,7 +13,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,8 +23,18 @@ public class ReflectionUtil {
             Class<?> reqType) {
         Set<Field> fields = new HashSet<Field>();
         if (reqType == void.class) return fields;
+
         for (Field field : getAllDeclaredFields(target)) {
-            if (Collections.disjoint(Arrays.asList(field.getAnnotations()), annotations)) continue;
+            if (annotations != null) {
+                boolean annotationPresent = false;
+                for (Class<? extends Annotation> annotation : annotations)
+                    if (field.isAnnotationPresent(annotation)) {
+                        annotationPresent = true;
+                        break;
+                    }
+                if (!annotationPresent) continue;
+            }
+
             if (reqType != null && field.getType() != reqType) continue;
             fields.add(field);
         }
@@ -39,8 +48,18 @@ public class ReflectionUtil {
     public static final Set<Method> getAnnotatedMethods(Class<?> target, List<Class<? extends Annotation>> annotations,
             Class<?> reqType, List<Class<?>> reqArgs) {
         Set<Method> methods = new HashSet<Method>();
+
         for (Method method : getAllDeclaredMethods(target)) {
-            if (Collections.disjoint(Arrays.asList(method.getAnnotations()), annotations)) continue;
+            if (annotations != null) {
+                boolean annotationPresent = false;
+                for (Class<? extends Annotation> annotation : annotations)
+                    if (method.isAnnotationPresent(annotation)) {
+                        annotationPresent = true;
+                        break;
+                    }
+                if (!annotationPresent) continue;
+            }
+
             if (reqType != null && method.getReturnType() != reqType) continue;
             if (reqArgs != null && !reqArgs.equals(Arrays.asList(method.getParameterTypes()))) continue;
             methods.add(method);
@@ -56,8 +75,18 @@ public class ReflectionUtil {
     public static final Set<Constructor<?>> getAnnotatedConstructors(Class<?> target,
             List<Class<? extends Annotation>> annotations, List<Class<?>> reqArgs) {
         Set<Constructor<?>> constructors = new HashSet<Constructor<?>>();
+
         for (Constructor<?> constructor : getAllDeclaredConstructors(target)) {
-            if (Collections.disjoint(Arrays.asList(constructor.getAnnotations()), annotations)) continue;
+            if (annotations != null) {
+                boolean annotationPresent = false;
+                for (Class<? extends Annotation> annotation : annotations)
+                    if (constructor.isAnnotationPresent(annotation)) {
+                        annotationPresent = true;
+                        break;
+                    }
+                if (!annotationPresent) continue;
+            }
+
             if (reqArgs != null && !reqArgs.equals(Arrays.asList(constructor.getParameterTypes()))) continue;
             constructors.add(constructor);
         }
