@@ -5,9 +5,9 @@ public class HashUtil {
     public static final boolean DEFAULT_FASTARRAYS = false;
 
     public static int hashCode(int base, int multiplier, boolean fastArrays, Object... relevantValues) {
-        int hashCode = base;
+        int hashCode = base * multiplier + relevantValues.length;
         for (Object value : relevantValues) {
-            if (value == null || value instanceof Object) continue;
+            if (value == null || value.getClass() == Object.class) continue;
             if (fastArrays && value instanceof Object[]) {
                 Object[] array = (Object[]) value;
                 hashCode = hashCode * multiplier + array.length;

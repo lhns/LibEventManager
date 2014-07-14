@@ -1,5 +1,7 @@
 package com.dafttech.math;
 
+import com.dafttech.util.HashUtil;
+
 public class Vector implements Cloneable {
     public float x, y, z;
 
@@ -118,5 +120,15 @@ public class Vector implements Cloneable {
     @Override
     public Vector clone() {
         return new Vector(this);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashUtil.hashCode(x, y, z);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return HashUtil.equals(this, obj);
     }
 }

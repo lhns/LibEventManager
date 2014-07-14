@@ -74,7 +74,7 @@ public class EventType {
 
     @Override
     public int hashCode() {
-        return name.hashCode();
+        return HashUtil.hashCode(name);
     }
 
     @Override
