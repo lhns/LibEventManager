@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.dafttech.util.HashUtil;
-import com.dafttech.util.PrimitiveUtil;
+import com.dafttech.hash.HashUtil;
+import com.dafttech.primitive.PrimitiveUtil;
 
 public class Event {
     volatile private EventManager eventManager = null;

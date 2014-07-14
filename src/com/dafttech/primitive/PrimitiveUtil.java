@@ -1,4 +1,4 @@
-package com.dafttech.util;
+package com.dafttech.primitive;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;

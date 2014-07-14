@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.dafttech.util.HashUtil;
+import com.dafttech.hash.HashUtil;
 
 public class LinkedTree<Leaf> implements Tree<Leaf>, Cloneable, Serializable {
     /**

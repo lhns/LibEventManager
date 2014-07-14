@@ -18,7 +18,7 @@ import java.util.concurrent.Executors;
 
 import com.dafttech.filterlist.Blacklist;
 import com.dafttech.filterlist.Filterlist;
-import com.dafttech.util.ReflectionUtil;
+import com.dafttech.reflect.ReflectionUtil;
 
 public class EventManager {
     volatile protected Map<EventType, List<ListenerContainer>> registeredListeners = new HashMap<EventType, List<ListenerContainer>>();

@@ -1,6 +1,6 @@
 package com.dafttech.math;
 
-import com.dafttech.util.HashUtil;
+import com.dafttech.hash.HashUtil;
 
 public class Vector implements Cloneable {
     public float x, y, z;

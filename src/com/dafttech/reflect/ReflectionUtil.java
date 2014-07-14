@@ -1,4 +1,4 @@
-package com.dafttech.util;
+package com.dafttech.reflect;
 
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.ElementType.METHOD;
@@ -16,6 +16,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
+import com.dafttech.primitive.PrimitiveUtil;
 
 public class ReflectionUtil {
 

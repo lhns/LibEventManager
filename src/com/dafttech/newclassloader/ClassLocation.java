@@ -3,7 +3,7 @@ package com.dafttech.newclassloader;
 import java.net.URL;
 import java.util.Set;
 
-import com.dafttech.util.HashUtil;
+import com.dafttech.hash.HashUtil;
 
 public class ClassLocation {
     private URL sourceURL;

@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.dafttech.util.HashUtil;
+import com.dafttech.hash.HashUtil;
 
 public class EventType {
     volatile private String name = "";

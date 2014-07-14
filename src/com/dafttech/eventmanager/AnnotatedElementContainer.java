@@ -6,8 +6,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
-import com.dafttech.util.HashUtil;
-import com.dafttech.util.ReflectionUtil;
+import com.dafttech.hash.HashUtil;
+import com.dafttech.reflect.ReflectionUtil;
 
 class AnnotatedElementContainer<Type extends AnnotatedElement> {
     volatile protected Type target;

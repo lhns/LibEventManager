@@ -1,6 +1,6 @@
 package com.dafttech.filterlist;
 
-import com.dafttech.util.HashUtil;
+import com.dafttech.hash.HashUtil;
 
 public abstract class Filterlist<FilterType> {
     protected FilterType[] filterObjects;

@@ -1,6 +1,6 @@
 package com.dafttech.network.protocol;
 
-import static com.dafttech.util.PrimitiveUtil.INTEGER;
+import static com.dafttech.primitive.PrimitiveUtil.INTEGER;
 
 import java.nio.ByteBuffer;
 

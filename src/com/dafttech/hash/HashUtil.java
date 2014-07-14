@@ -1,4 +1,4 @@
-package com.dafttech.util;
+package com.dafttech.hash;
 
 public class HashUtil {
     public static final int DEFAULT_BASE = 17, DEFAULT_MULTIPLIER = 59;
