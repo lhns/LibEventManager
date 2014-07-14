@@ -8,6 +8,8 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.dafttech.util.HashUtil;
+
 public class LinkedTree<Leaf> implements Tree<Leaf>, Cloneable, Serializable {
     /**
      * 
@@ -190,16 +192,21 @@ public class LinkedTree<Leaf> implements Tree<Leaf>, Cloneable, Serializable {
         return new LinkedTree<Leaf>(this);
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        return obj == this || obj == leaf;
-    }
-
     private void writeObject(ObjectOutputStream objectoutputstream) throws IOException {
         objectoutputstream.defaultWriteObject();
     }
 
     private void readObject(ObjectInputStream objectinputstream) throws IOException, ClassNotFoundException {
         objectinputstream.defaultReadObject();
+    }
+
+    @Override
+    public int hashCode() {
+        return HashUtil.hashCode(leaf, branches);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return HashUtil.equals(this, obj);
     }
 }

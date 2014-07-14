@@ -6,6 +6,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 
+import com.dafttech.util.HashUtil;
 import com.dafttech.util.ReflectionUtil;
 
 class AnnotatedElementContainer<Type extends AnnotatedElement> {
@@ -86,5 +87,15 @@ class AnnotatedElementContainer<Type extends AnnotatedElement> {
 
     public Object access(Object... params) {
         return null;
+    }
+
+    @Override
+    public int hashCode() {
+        return HashUtil.hashCode(target, isStatic, targetClass, targetInstance);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return HashUtil.equals(this, obj);
     }
 }

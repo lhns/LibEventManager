@@ -4,6 +4,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.dafttech.util.HashUtil;
+
 public class EventType {
     volatile private String name = "";
     volatile private EventManager[] eventManagerWhitelist;
@@ -66,17 +68,17 @@ public class EventType {
         return eventManagerWhitelist.length == 0 || Arrays.asList(eventManagerWhitelist).contains(eventManager);
     }
 
-    @Override
-    public final boolean equals(Object object) {
-        if (object instanceof EventType) {
-            if (object == this) return true;
-        } else if (object instanceof String) {
-            if (name.equals(object)) return true;
-        }
-        return false;
-    }
-
     public static final EventType getByName(String name) {
         return types.get(name);
+    }
+
+    @Override
+    public int hashCode() {
+        return name.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return HashUtil.equals(this, obj);
     }
 }

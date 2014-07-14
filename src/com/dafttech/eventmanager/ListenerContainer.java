@@ -11,6 +11,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import com.dafttech.util.HashUtil;
 import com.dafttech.util.ReflectionUtil;
 
 public class ListenerContainer extends AnnotatedElementContainer<AnnotatedElement> {
@@ -150,20 +151,6 @@ public class ListenerContainer extends AnnotatedElementContainer<AnnotatedElemen
         return returnObjects;
     }
 
-    @Override
-    public final boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (obj instanceof ListenerContainer) {
-            ListenerContainer listenerContainer = (ListenerContainer) obj;
-            return listenerContainer.typeVal == typeVal
-                    && (listenerContainer.target == target || listenerContainer.target.equals(target))
-                    && (listenerContainer.targetClass == targetClass || listenerContainer.targetClass.equals(targetClass))
-                    && (listenerContainer.targetInstance == targetInstance || listenerContainer.targetInstance
-                            .equals(targetInstance));
-        }
-        return false;
-    }
-
     public boolean isStatic() {
         return isStatic;
     }
@@ -178,5 +165,15 @@ public class ListenerContainer extends AnnotatedElementContainer<AnnotatedElemen
 
     public double getPriority() {
         return priority;
+    }
+
+    @Override
+    public int hashCode() {
+        return HashUtil.hashCode(filters, priority, super.hashCode());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return HashUtil.equals(this, obj);
     }
 }

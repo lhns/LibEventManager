@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.dafttech.util.HashUtil;
 import com.dafttech.util.PrimitiveUtil;
 
 public class Event {
@@ -235,5 +236,15 @@ public class Event {
         for (Object obj : out)
             if (cast.isPrimitive() && PrimitiveUtil.get(cast).wrapperClass.isInstance(obj) || cast.isInstance(obj)) return true;
         return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return HashUtil.hashCode(eventManager, listenerContainers, type);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return HashUtil.equals(this, obj);
     }
 }

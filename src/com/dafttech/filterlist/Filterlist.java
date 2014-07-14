@@ -1,5 +1,7 @@
 package com.dafttech.filterlist;
 
+import com.dafttech.util.HashUtil;
+
 public abstract class Filterlist<FilterType> {
     protected FilterType[] filterObjects;
 
@@ -29,4 +31,14 @@ public abstract class Filterlist<FilterType> {
     public abstract boolean isFiltered(Object object);
 
     public abstract boolean isValid();
+
+    @Override
+    public int hashCode() {
+        return HashUtil.hashCode(filterObjects, isWhitelist());
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return HashUtil.equals(this, obj);
+    }
 }
