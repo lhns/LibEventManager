@@ -6,18 +6,18 @@ import java.util.Set;
 
 import com.dafttech.hash.HashUtil;
 
-public class ClassLocation {
+public class URLClassLocation {
     public static final String EXT_CLASS = ".class";
 
     private URL sourceURL;
     private String qualifiedName;
 
-    public ClassLocation(URL sourceURL, String qualifiedName) {
+    public URLClassLocation(URL sourceURL, String qualifiedName) {
         this.sourceURL = sourceURL;
         this.qualifiedName = qualifiedName;
     }
 
-    public ClassLocation(Class<?> target) {
+    public URLClassLocation(Class<?> target) {
         this(target.getResource("/" + target.getName().replace(".", "/") + EXT_CLASS), target.getName());
     }
 
@@ -49,7 +49,7 @@ public class ClassLocation {
     }
 
     // TODO
-    public static Set<ClassLocation> discoverSourceURL(URL sourceURL) {
+    public static Set<URLClassLocation> discoverSourceURL(URL sourceURL) {
         return null;
     }
 
