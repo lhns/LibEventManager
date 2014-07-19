@@ -1,17 +1,24 @@
 package com.dafttech.newclassloader;
 
 import java.net.URL;
+import java.net.URLClassLoader;
 import java.util.Set;
 
 import com.dafttech.hash.HashUtil;
 
 public class ClassLocation {
+    public static final String EXT_CLASS = ".class";
+
     private URL sourceURL;
     private String qualifiedName;
 
     public ClassLocation(URL sourceURL, String qualifiedName) {
         this.sourceURL = sourceURL;
         this.qualifiedName = qualifiedName;
+    }
+
+    public ClassLocation(Class<?> target) {
+        this(target.getResource("/" + target.getName().replace(".", "/") + EXT_CLASS), target.getName());
     }
 
     public URL getSourceURL() {
@@ -22,6 +29,26 @@ public class ClassLocation {
         return qualifiedName;
     }
 
+    public Class<?> loadClass() {
+        return loadClass(null);
+    }
+
+    public Class<?> loadClass(ClassLoader parent) {
+        return loadClassWithClassLoader(URLClassLoader.newInstance(new URL[] { sourceURL }, parent));
+    }
+
+    public Class<?> loadClassWithClassLoader(URLClassLoader classLoader) {
+        if (classLoader == null) return null;
+
+        try {
+            return classLoader.loadClass(qualifiedName);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // TODO
     public static Set<ClassLocation> discoverSourceURL(URL sourceURL) {
         return null;
     }
