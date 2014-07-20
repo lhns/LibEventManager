@@ -12,11 +12,11 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-public class URLClassDiscoverer {
+public class FSClassDiscoverer {
     private URL target;
     private Set<URLClassLocation> discoveredClasses = new HashSet<URLClassLocation>();
 
-    public URLClassDiscoverer(URL target) {
+    public FSClassDiscoverer(URL target) {
         this.target = target;
     }
 
@@ -31,7 +31,7 @@ public class URLClassDiscoverer {
     }
 
     private static abstract class DiscoverStrategy {
-        public abstract void discover(URLClassDiscoverer classDiscoverer, URL url);
+        public abstract void discover(FSClassDiscoverer classDiscoverer, URL url);
 
         public static final DiscoverStrategy discoverDir = new DiscoverDir();
         public static final DiscoverStrategy discoverJar = new DiscoverJar();
@@ -52,7 +52,7 @@ public class URLClassDiscoverer {
 
     private static class DiscoverDir extends DiscoverStrategy {
         @Override
-        public void discover(URLClassDiscoverer classDiscoverer, URL url) {
+        public void discover(FSClassDiscoverer classDiscoverer, URL url) {
             File file = new File(url.getFile());
             for (File child : file.listFiles()) {
                 if (child.isFile()) {
@@ -72,7 +72,7 @@ public class URLClassDiscoverer {
 
     private static class DiscoverJar extends DiscoverStrategy {
         @Override
-        public void discover(URLClassDiscoverer classDiscoverer, URL url) {
+        public void discover(FSClassDiscoverer classDiscoverer, URL url) {
             File file = new File(url.getFile());
             try {
                 JarFile jarfile = new JarFile(file);
@@ -97,7 +97,7 @@ public class URLClassDiscoverer {
 
     private static class NullDiscoverStrategy extends DiscoverStrategy {
         @Override
-        public void discover(URLClassDiscoverer classDiscoverer, URL url) {
+        public void discover(FSClassDiscoverer classDiscoverer, URL url) {
         }
     }
 }
