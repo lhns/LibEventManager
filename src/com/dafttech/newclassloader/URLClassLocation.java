@@ -1,6 +1,7 @@
 package com.dafttech.newclassloader;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -27,7 +28,18 @@ public class URLClassLocation {
     }
 
     public URLClassLocation(Class<?> target) {
-        this(target.getResource("/" + target.getName().replace(".", "/") + EXT_CLASS), target.getName());
+        this(getClassSourceURL(target), target.getName());
+    }
+
+    private static URL getClassSourceURL(Class<?> target) {
+        String resource = "/" + target.getName().replace(".", "/") + EXT_CLASS;
+        String resourceURLString = target.getResource(resource).toString();
+        try {
+            return new URL(resourceURLString.substring(0, resourceURLString.length() - resource.length()));
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public URL getSourceURL() {
@@ -57,6 +69,25 @@ public class URLClassLocation {
         return null;
     }
 
+    public Set<URLClassLocation> discoverSourceURL() {
+        return discoverSourceURL(sourceURL);
+    }
+
+    @Override
+    public String toString() {
+        return sourceURL + ", " + qualifiedName;
+    }
+
+    @Override
+    public int hashCode() {
+        return HashUtil.hashCode(sourceURL, qualifiedName);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        return HashUtil.equals(this, obj);
+    }
+
     public static Set<URLClassLocation> discoverSourceURL(final URL sourceURL) {
         final Set<URLClassLocation> discovered = new HashSet<URLClassLocation>();
         try {
@@ -65,7 +96,9 @@ public class URLClassLocation {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                     if (file.getFileName().toString().toLowerCase().endsWith(EXT_CLASS)) {
-                        String qualifiedName = file.relativize(sourcePath).toString().replace("/", ".");
+                        String qualifiedName = sourcePath.relativize(file).toString();
+                        qualifiedName = qualifiedName.replace("/", ".");
+                        qualifiedName = qualifiedName.replace("\\", ".");
                         qualifiedName = qualifiedName.substring(0, qualifiedName.length() - EXT_CLASS.length());
                         discovered.add(new URLClassLocation(sourceURL, qualifiedName));
                     }
@@ -78,15 +111,5 @@ public class URLClassLocation {
             e.printStackTrace();
         }
         return discovered;
-    }
-
-    @Override
-    public int hashCode() {
-        return HashUtil.hashCode(sourceURL, qualifiedName);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return HashUtil.equals(this, obj);
     }
 }
