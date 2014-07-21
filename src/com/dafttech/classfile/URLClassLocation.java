@@ -63,6 +63,10 @@ public class URLClassLocation {
         return qualifiedName;
     }
 
+    public String getClassName() {
+        return qualifiedName.substring(qualifiedName.lastIndexOf('.') + 1);
+    }
+
     public Class<?> loadClass() {
         return loadClass(null);
     }
@@ -106,8 +110,6 @@ public class URLClassLocation {
         try {
             final Path sourcePath;
             if (!sourceURL.toString().contains("!")) {
-                System.out.println(sourceURL);
-                System.out.println(sourceURL.toURI());
                 sourcePath = Paths.get(sourceURL.toURI());
             } else {
                 // JAVA BUG WORKAROUND
