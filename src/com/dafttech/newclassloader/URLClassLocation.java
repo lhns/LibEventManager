@@ -1,5 +1,6 @@
 package com.dafttech.newclassloader;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -38,7 +39,14 @@ public class URLClassLocation {
     private static URL getClassSourceURL(Class<?> target) {
         String resource = target.getName().replace(".", "/") + EXT_CLASS;
         String resourceURLString = target.getResource("/" + resource).toString();
+
+        if (resourceURLString.startsWith("rsrc:"))
+            resourceURLString = "jar:file:/"
+                    + new File(System.getProperty("java.class.path")).getAbsolutePath().replace("\\", "/") + "!/"
+                    + resourceURLString.substring(5);
+
         String sourceURLString = resourceURLString.substring(0, resourceURLString.length() - resource.length());
+
         try {
             return new URL(sourceURLString);
         } catch (MalformedURLException e) {
@@ -98,6 +106,8 @@ public class URLClassLocation {
         try {
             final Path sourcePath;
             if (!sourceURL.toString().contains("!")) {
+                System.out.println(sourceURL);
+                System.out.println(sourceURL.toURI());
                 sourcePath = Paths.get(sourceURL.toURI());
             } else {
                 // JAVA BUG WORKAROUND
