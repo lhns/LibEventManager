@@ -99,6 +99,8 @@ public class Client<Packet extends IPacket> extends NetworkInterface<Packet> {
                 e.printStackTrace();
             }
 
+            if (getParent() != null) getParent().removeClient(Client.this);
+
             getProtocol().disconnect(reason);
         }
     }

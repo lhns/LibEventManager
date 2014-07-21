@@ -101,6 +101,10 @@ public abstract class NetworkInterface<Packet extends IPacket> {
         if (parent != null && data != null) parent.write(data);
     }
 
+    protected void removeClient(NetworkInterface<Packet> client) {
+
+    }
+
     public Class<? extends Protocol<Packet>> getProtocolClass() {
         return protocolClass;
     }

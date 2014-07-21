@@ -72,8 +72,10 @@ public class Server<Packet extends IPacket> extends NetworkInterface<Packet> {
         @Override
         public void run() {
             while (!closed) {
-                for (int i = clients.size() - 1; i >= 0; i--)
-                    if (!clients.get(i).isAlive()) clients.remove(i);
+                /*
+                 * for (int i = clients.size() - 1; i >= 0; i--) if
+                 * (!clients.get(i).isAlive()) clients.remove(i);
+                 */
                 try {
                     clients.add(new Client<Packet>(getProtocolClass(), serverSocket.accept(), Server.this));
                 } catch (IOException e) {
@@ -86,6 +88,11 @@ public class Server<Packet extends IPacket> extends NetworkInterface<Packet> {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    protected void removeClient(NetworkInterface<Packet> client) {
+        clients.remove(client);
     }
 
     @Override
