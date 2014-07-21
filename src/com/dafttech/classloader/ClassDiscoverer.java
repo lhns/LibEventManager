@@ -6,20 +6,24 @@ import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+@Deprecated
 public class ClassDiscoverer {
     public static String[] containers = new String[] { "jar", "zip" };
     public static String classExt = ".class";
 
     private ContainedFile sourceDir = null;
 
+    @Deprecated
     public ClassDiscoverer(ContainedFile dir) {
         sourceDir = dir;
     }
 
+    @Deprecated
     public ClassDiscoverer(Class<?> sourceClass, String packageName) {
         this(new ClassPathFinder(sourceClass).getPackagePath(packageName));
     }
 
+    @Deprecated
     public List<ContainedFile> discover() {
         List<ContainedFile> classes = new LinkedList<ContainedFile>();
         discover(sourceDir, classes);

@@ -6,10 +6,12 @@ import java.net.URL;
 public class ClassPathFinder {
     private Class<?> context;
 
+    @Deprecated
     public ClassPathFinder(Class<?> context) {
         this.context = context;
     }
 
+    @Deprecated
     public ContainedFile getClassPath() {
         URL url = context.getResource("/" + context.getName().replace(".", "/") + ClassDiscoverer.classExt);
         if (url != null) {
@@ -24,6 +26,7 @@ public class ClassPathFinder {
         return null;
     }
 
+    @Deprecated
     public ContainedFile getPackagePath(String packageName) {
         ContainedFile path = getClassPath();
         if (path != null) return ContainedFile.fromPackage(path.getWithoutPackage(), packageName);

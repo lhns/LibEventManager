@@ -1,4 +1,4 @@
-package com.dafttech.newclassloader;
+package com.dafttech.classfile;
 
 import java.io.File;
 import java.io.IOException;

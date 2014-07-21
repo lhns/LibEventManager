@@ -8,28 +8,34 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Deprecated
 public class ClassFileLoader {
     private List<ContainedFile> classFiles;
     private ClassLoader parentLoader;
 
+    @Deprecated
     public ClassFileLoader(List<ContainedFile> classFiles) {
         this.classFiles = classFiles;
         parentLoader = getClass().getClassLoader();
     }
 
+    @Deprecated
     public ClassFileLoader(ContainedFile dir) {
         this(new ClassDiscoverer(dir).discover());
     }
 
+    @Deprecated
     public ClassFileLoader(Class<?> sourceClass, String packageName) {
         this(new ClassDiscoverer(sourceClass, packageName).discover());
     }
 
+    @Deprecated
     public ClassFileLoader setParentClassLoader(ClassLoader parentLoader) {
         this.parentLoader = parentLoader;
         return this;
     }
 
+    @Deprecated
     public List<Class<?>> loadClasses() {
         List<Class<?>> classes = new ArrayList<Class<?>>();
         if (parentLoader == null) parentLoader = ClassDiscoverer.class.getClassLoader();

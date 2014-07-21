@@ -4,6 +4,7 @@ import java.io.File;
 import java.lang.reflect.Field;
 import java.net.URI;
 
+@Deprecated
 public class ContainedFile extends File {
 
     private static Field pathField;
@@ -25,22 +26,27 @@ public class ContainedFile extends File {
 
     private boolean withPackage = false;
 
+    @Deprecated
     public ContainedFile(File file, String string) {
         super(getWithoutProtocol(file.toString()), getWithoutProtocol(string));
     }
 
+    @Deprecated
     public ContainedFile(String string) {
         super(getWithoutProtocol(string));
     }
 
+    @Deprecated
     public ContainedFile(String string1, String string2) {
         super(getWithoutProtocol(string1), getWithoutProtocol(string2));
     }
 
+    @Deprecated
     public ContainedFile(URI uri) {
         super(getWithoutProtocol(uri.toString()));
     }
 
+    @Deprecated
     public ContainedFile(File file) {
         super(getWithoutProtocol(file.toString()));
     }
