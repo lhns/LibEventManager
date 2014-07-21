@@ -3,23 +3,18 @@ package com.dafttech.classfile;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.file.FileSystem;
-import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
 import com.dafttech.hash.HashUtil;
+import com.dafttech.nio.file.PathUtil;
 
 public class URLClassLocation {
     public static final String EXT_CLASS = ".class";
@@ -36,7 +31,7 @@ public class URLClassLocation {
         this(getClassSourceURL(target), target.getName());
     }
 
-    private static URL getClassSourceURL(Class<?> target) {
+    public static URL getClassSourceURL(Class<?> target) {
         String resource = target.getName().replace(".", "/") + EXT_CLASS;
         String resourceURLString = target.getResource("/" + resource).toString();
 
@@ -108,15 +103,7 @@ public class URLClassLocation {
     public static Set<URLClassLocation> discoverSourceURL(final URL sourceURL) {
         final Set<URLClassLocation> discovered = new HashSet<URLClassLocation>();
         try {
-            final Path sourcePath;
-            if (!sourceURL.toString().contains("!")) {
-                sourcePath = Paths.get(sourceURL.toURI());
-            } else {
-                // JAVA BUG WORKAROUND
-                String splitURL[] = sourceURL.toString().split("!");
-                FileSystem fs = FileSystems.newFileSystem(URI.create(splitURL[0]), new HashMap<String, String>());
-                sourcePath = fs.getPath(splitURL[1]);
-            }
+            final Path sourcePath = PathUtil.get(sourceURL);
             Files.walkFileTree(sourcePath, new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
@@ -131,8 +118,6 @@ public class URLClassLocation {
                 }
             });
         } catch (IOException e) {
-            e.printStackTrace();
-        } catch (URISyntaxException e) {
             e.printStackTrace();
         }
         return discovered;
