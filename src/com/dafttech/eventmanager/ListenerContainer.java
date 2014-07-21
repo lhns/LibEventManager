@@ -79,10 +79,10 @@ public class ListenerContainer extends AnnotatedElementContainer<AnnotatedElemen
 
         int backIndex = classPath.indexOf("..");
         while (backIndex > -1) {
-            while (classPath.length() > backIndex + 2 && classPath.charAt(backIndex + 2) == '.')
-                backIndex++;
-            classPath = classPath.substring(0, classPath.substring(0, backIndex).lastIndexOf(".") + 1)
+            classPath = classPath.substring(0,
+                    classPath.substring(0, backIndex).lastIndexOf(".") + (classPath.charAt(backIndex + 3) == '.' ? 0 : 1))
                     + classPath.substring(backIndex + 2);
+
             backIndex = classPath.indexOf("..");
         }
         return classPath;
@@ -149,18 +149,6 @@ public class ListenerContainer extends AnnotatedElementContainer<AnnotatedElemen
             }
         }
         return returnObjects;
-    }
-
-    public boolean isStatic() {
-        return isStatic;
-    }
-
-    public Object getEventListener() {
-        return targetInstance;
-    }
-
-    public AnnotatedElement getTarget() {
-        return target;
     }
 
     public double getPriority() {

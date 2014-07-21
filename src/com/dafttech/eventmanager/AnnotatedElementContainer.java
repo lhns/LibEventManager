@@ -85,8 +85,24 @@ class AnnotatedElementContainer<Type extends AnnotatedElement> {
         return typeVal == 3;
     }
 
-    public Object access(Object... params) {
-        return null;
+    public Type getTarget() {
+        return target;
+    }
+
+    public Class<?> getTargetClass() {
+        return targetClass;
+    }
+
+    public Object getTargetInstance() {
+        return targetInstance;
+    }
+
+    public Class<?> getType() {
+        return type;
+    }
+
+    public boolean isStatic() {
+        return isStatic;
     }
 
     @Override

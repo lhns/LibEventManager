@@ -16,6 +16,7 @@ public class Event {
     volatile private boolean filtered = false;
     volatile private boolean done = false;
     volatile private boolean cancelled = false;
+    volatile private ListenerContainer currListenerContainer;
 
     protected Event(EventManager eventManager, EventType type, Object[] in, List<ListenerContainer> listenerContainers) {
         this.eventManager = eventManager;
@@ -28,19 +29,26 @@ public class Event {
 
     protected final void schedule() {
         if (isDone()) return;
+
         if (!filtered) {
             for (int i = listenerContainers.size() - 1; i >= 0; i--)
                 if (!listenerContainers.get(i).isFiltered(this)) listenerContainers.remove(i);
             filtered = true;
         }
+
         type.onEvent(this);
         if (isCancelled()) return;
+
         for (ListenerContainer listenerContainer : listenerContainers) {
-            listenerContainer.invoke(this);
+            currListenerContainer = listenerContainer;
+            currListenerContainer.invoke(this);
             if (isCancelled()) break;
         }
+        currListenerContainer = null;
+
         type.onEventPost(this);
         if (isCancelled()) return;
+
         done = true;
     }
 
@@ -71,6 +79,10 @@ public class Event {
      */
     public final boolean isEventType(EventType eventType) {
         return type.equals(eventType);
+    }
+
+    public final ListenerContainer getCurrentListenerContainer() {
+        return currListenerContainer;
     }
 
     /**
