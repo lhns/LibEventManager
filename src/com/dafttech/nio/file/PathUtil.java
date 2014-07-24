@@ -11,7 +11,7 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 
 public class PathUtil {
-    public static Path get(URI uri) {
+    public static Path get(URI uri) throws IllegalArgumentException {
         if (!uri.toString().contains("!")) {
             return Paths.get(uri);
         } else {
@@ -21,18 +21,16 @@ public class PathUtil {
                 FileSystem fs = FileSystems.newFileSystem(URI.create(splitURL[0]), new HashMap<String, String>());
                 return fs.getPath(splitURL[1]);
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new IllegalArgumentException("Unable to get Path from: " + uri.toString(), e);
             }
         }
-        return null;
     }
 
-    public static Path get(URL url) {
+    public static Path get(URL url) throws IllegalArgumentException {
         try {
             return get(url.toURI());
         } catch (URISyntaxException e) {
-            e.printStackTrace();
+            throw new IllegalArgumentException("Unable to convert to URI: " + url.toString(), e);
         }
-        return null;
     }
 }
