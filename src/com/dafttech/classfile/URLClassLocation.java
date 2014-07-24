@@ -31,7 +31,7 @@ public class URLClassLocation {
         this(getClassSourceURL(target), target.getName());
     }
 
-    public static URL getClassSourceURL(Class<?> target) {
+    public static URL getClassSourceURL(Class<?> target) throws IllegalArgumentException {
         String resource = target.getName().replace(".", "/") + EXT_CLASS;
         String resourceURLString = target.getResource("/" + resource).toString();
 
@@ -45,9 +45,8 @@ public class URLClassLocation {
         try {
             return new URL(sourceURLString);
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            throw new IllegalArgumentException("Unable to get source URL for: " + target.getName(), e);
         }
-        return null;
     }
 
     public URL getSourceURL() {
@@ -62,26 +61,21 @@ public class URLClassLocation {
         return qualifiedName.substring(qualifiedName.lastIndexOf('.') + 1);
     }
 
-    public Class<?> loadClass() {
+    public Class<?> loadClass() throws ClassNotFoundException {
         return loadClass(null);
     }
 
-    public Class<?> loadClass(ClassLoader parent) {
+    public Class<?> loadClass(ClassLoader parent) throws ClassNotFoundException {
         return loadClassWithClassLoader(URLClassLoader.newInstance(new URL[] { sourceURL }, parent));
     }
 
-    public Class<?> loadClassWithClassLoader(URLClassLoader classLoader) {
+    public Class<?> loadClassWithClassLoader(URLClassLoader classLoader) throws ClassNotFoundException {
         if (classLoader == null) return null;
 
-        try {
-            return classLoader.loadClass(qualifiedName);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return classLoader.loadClass(qualifiedName);
     }
 
-    public Set<URLClassLocation> discoverSourceURL() {
+    public Set<URLClassLocation> discoverSourceURL() throws IOException {
         return discoverSourceURL(sourceURL);
     }
 
@@ -100,26 +94,22 @@ public class URLClassLocation {
         return HashUtil.equals(this, obj);
     }
 
-    public static Set<URLClassLocation> discoverSourceURL(final URL sourceURL) {
+    public static Set<URLClassLocation> discoverSourceURL(final URL sourceURL) throws IOException {
         final Set<URLClassLocation> discovered = new HashSet<URLClassLocation>();
-        try {
-            final Path sourcePath = PathUtil.get(sourceURL);
-            Files.walkFileTree(sourcePath, new SimpleFileVisitor<Path>() {
-                @Override
-                public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                    if (file.getFileName().toString().toLowerCase().endsWith(EXT_CLASS)) {
-                        String qualifiedName = sourcePath.relativize(file).normalize().toString();
-                        qualifiedName = qualifiedName.replace("/", ".");
-                        qualifiedName = qualifiedName.replace("\\", ".");
-                        qualifiedName = qualifiedName.substring(0, qualifiedName.length() - EXT_CLASS.length());
-                        discovered.add(new URLClassLocation(sourceURL, qualifiedName));
-                    }
-                    return FileVisitResult.CONTINUE;
+        final Path sourcePath = PathUtil.get(sourceURL);
+        Files.walkFileTree(sourcePath, new SimpleFileVisitor<Path>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                if (file.getFileName().toString().toLowerCase().endsWith(EXT_CLASS)) {
+                    String qualifiedName = sourcePath.relativize(file).normalize().toString();
+                    qualifiedName = qualifiedName.replace("/", ".");
+                    qualifiedName = qualifiedName.replace("\\", ".");
+                    qualifiedName = qualifiedName.substring(0, qualifiedName.length() - EXT_CLASS.length());
+                    discovered.add(new URLClassLocation(sourceURL, qualifiedName));
                 }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+                return FileVisitResult.CONTINUE;
+            }
+        });
         return discovered;
     }
 }
