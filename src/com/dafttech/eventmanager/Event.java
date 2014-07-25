@@ -1,55 +1,86 @@
 package com.dafttech.eventmanager;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import com.dafttech.hash.HashUtil;
-import com.dafttech.primitive.PrimitiveUtil;
+import com.dafttech.list.TupleArrayList;
+import com.dafttech.list.TupleList;
+import com.dafttech.list.UnmodifiableTupleList;
 
 public class Event {
-    volatile private EventManager eventManager = null;
-    volatile private EventType type = null;
-    volatile private List<Object> in = new ArrayList<Object>();
-    volatile private List<ListenerContainer> listenerContainers = new LinkedList<ListenerContainer>();
-    volatile private List<Object> out = new ArrayList<Object>();
-    volatile private boolean filtered = false;
-    volatile private boolean done = false;
-    volatile private boolean cancelled = false;
-    volatile private ListenerContainer currListenerContainer;
+    private static enum State {
+        NONE(0), STARTED(1), DONE(2), CANCELLED(3);
+
+        int phase;
+
+        State(int phase) {
+            this.phase = phase;
+        }
+
+        public boolean isChangable() {
+            return phase == 1;
+        }
+
+        public boolean isStarted() {
+            return phase >= 1;
+        }
+
+        public boolean isDone() {
+            return phase >= 2;
+        }
+
+        public boolean isCancelled() {
+            return phase == 3;
+        }
+    };
+
+    private final EventManager eventManager;
+    private final EventType type;
+
+    public final TupleList in;
+    public final TupleList out = new TupleArrayList();
+
+    private volatile State state = State.NONE;
+
+    private final List<ListenerContainer> listenerContainers = new LinkedList<ListenerContainer>();
+    private volatile ListenerContainer currListenerContainer;
 
     protected Event(EventManager eventManager, EventType type, Object[] in, List<ListenerContainer> listenerContainers) {
         this.eventManager = eventManager;
         this.type = type;
-        for (Object obj : in)
-            this.in.add(obj);
-        this.listenerContainers = listenerContainers == null ? new LinkedList<ListenerContainer>()
-                : new LinkedList<ListenerContainer>(listenerContainers);
+
+        if (listenerContainers != null) this.listenerContainers.addAll(listenerContainers);
+
+        this.in = new UnmodifiableTupleList(new TupleArrayList(Arrays.asList(in)));
     }
 
     protected final void schedule() {
-        if (isDone()) return;
+        if (state.isStarted()) return;
+        state = State.STARTED;
 
-        if (!filtered) {
-            for (int i = listenerContainers.size() - 1; i >= 0; i--)
-                if (!listenerContainers.get(i).isFiltered(this)) listenerContainers.remove(i);
-            filtered = true;
-        }
+        Iterator<ListenerContainer> iterator = listenerContainers.iterator();
+        while (iterator.hasNext())
+            if (!iterator.next().isFiltered(this)) iterator.remove();
 
         type.onEvent(this);
-        if (isCancelled()) return;
+        if (state.isCancelled()) return;
 
-        for (ListenerContainer listenerContainer : listenerContainers) {
-            currListenerContainer = listenerContainer;
+        iterator = listenerContainers.iterator();
+        while (iterator.hasNext()) {
+            currListenerContainer = iterator.next();
             currListenerContainer.invoke(this);
-            if (isCancelled()) break;
+            if (state.isCancelled()) break;
         }
         currListenerContainer = null;
 
         type.onEventPost(this);
-        if (isCancelled()) return;
+        if (state.isCancelled()) return;
 
-        done = true;
+        state = State.DONE;
     }
 
     /**
@@ -81,45 +112,12 @@ public class Event {
         return type.equals(eventType);
     }
 
+    public final List<ListenerContainer> getListenerContainers() {
+        return new ArrayList<ListenerContainer>(listenerContainers);
+    }
+
     public final ListenerContainer getCurrentListenerContainer() {
         return currListenerContainer;
-    }
-
-    /**
-     * Cancel this EventStream to stop the process of calling all the other
-     * EventListeners.
-     */
-    public final void cancel() {
-        if (done) return;
-        cancelled = true;
-    }
-
-    public final void setCancelled(boolean cancelled) {
-        if (done) return;
-        this.cancelled = cancelled;
-    }
-
-    public List<ListenerContainer> getListenerContainers() {
-        return filtered ? listenerContainers : null;
-    }
-
-    /**
-     * Add objects to the output list.
-     * 
-     * @param obj
-     *            Object - object to add to the output list.
-     */
-    public final void addOutput(Object obj) {
-        out.add(obj);
-    }
-
-    /**
-     * Check if the event is cancelled
-     * 
-     * @return boolean - true, if the event was cancelled.
-     */
-    public final boolean isCancelled() {
-        return cancelled;
     }
 
     /**
@@ -128,126 +126,28 @@ public class Event {
      * @return boolean - true, if the event is done.
      */
     public final boolean isDone() {
-        return done || cancelled;
+        return state.isDone();
     }
 
     /**
-     * Retrieve all objects given, when the event was called
-     * 
-     * @return List<Object> - the objects
+     * Cancel this EventStream to stop the process of calling all the other
+     * EventListeners.
      */
-    public final List<Object> getInput() {
-        return in;
+    public final void cancel() {
+        if (state.isChangable()) state = State.CANCELLED;
+    }
+
+    public final void setCancelled(boolean cancelled) {
+        if (cancelled && state.isChangable()) state = State.CANCELLED;
     }
 
     /**
-     * Retrieve a specific object given, when the event was called
+     * Check if the event is cancelled
      * 
-     * @param index
-     *            int - number of the object to request
-     * @return Object - the requested object, or null if the number was out of
-     *         range
+     * @return boolean - true, if the event was cancelled.
      */
-    public final Object getInput(int index) {
-        if (index < 0 || index >= in.size()) return null;
-        return in.get(index);
-    }
-
-    /**
-     * Retrieve a specific object given, when the event was called and cast it
-     * to the given class
-     * 
-     * @param index
-     *            int - number of the object to request
-     * @param cast
-     *            Class<T> the class to cast to
-     * @return T - the requested object casted to T, or null if the number was
-     *         out of range
-     */
-    @SuppressWarnings("unchecked")
-    public final <T> T getInput(int index, Class<T> cast) {
-        if (index < 0 || index >= in.size()) return null;
-        if (cast.isPrimitive() && PrimitiveUtil.get(cast).wrapperClass.isInstance(in.get(index))
-                || cast.isInstance(in.get(index))) return (T) in.get(index);
-        return null;
-    }
-
-    @SuppressWarnings("unchecked")
-    public final <T> List<T> getInput(Class<T> cast) {
-        List<T> newOut = new ArrayList<T>();
-        for (Object obj : in)
-            if (cast.isPrimitive() && PrimitiveUtil.get(cast).wrapperClass.isInstance(obj) || cast.isInstance(obj))
-                newOut.add((T) obj);
-        return newOut;
-    }
-
-    public final <T> T getInput(Class<T> cast, int index) {
-        List<T> newOut = getInput(cast);
-        if (newOut.size() == 0) return null;
-        if (index >= newOut.size()) return newOut.get(newOut.size() - 1);
-        return newOut.get(index);
-    }
-
-    public final boolean containsInput(Class<?> cast) {
-        for (Object obj : in)
-            if (cast.isPrimitive() && PrimitiveUtil.get(cast).wrapperClass.isInstance(obj) || cast.isInstance(obj)) return true;
-        return false;
-    }
-
-    /**
-     * Use this to get all the objects out of the output list.
-     * 
-     * @return List<Object> - output list, or null if the event is not done.
-     */
-    public final List<Object> getOutput() {
-        if (!isDone()) return null;
-        return out;
-    }
-
-    public final Object getOutput(int index) {
-        if (index < 0 || index >= out.size()) return null;
-        return out.get(index);
-    }
-
-    @SuppressWarnings("unchecked")
-    public final <T> T getOutput(int index, Class<T> cast) {
-        if (index < 0 && index >= out.size()) return null;
-        if (cast.isPrimitive() && PrimitiveUtil.get(cast).wrapperClass.isInstance(out.get(index))
-                || cast.isInstance(out.get(index))) return (T) out.get(index);
-        return null;
-    }
-
-    /**
-     * Use this to get all the objects out of the output list, but sort out all
-     * null values.
-     * 
-     * @param cast
-     *            Class<T> With this argument you can filter outputs of specific
-     *            types and get a casted list
-     * @return List<Object> - output list without null values, or null if the
-     *         event is not done.
-     */
-    @SuppressWarnings("unchecked")
-    public final <T> List<T> getOutput(Class<T> cast) {
-        if (!isDone()) return null;
-        List<T> newOut = new ArrayList<T>();
-        for (Object obj : out)
-            if (cast.isPrimitive() && PrimitiveUtil.get(cast).wrapperClass.isInstance(obj) || cast.isInstance(obj))
-                newOut.add((T) obj);
-        return newOut;
-    }
-
-    public final <T> T getOutput(Class<T> cast, int index) {
-        List<T> newOut = getOutput(cast);
-        if (newOut.size() == 0) return null;
-        if (index >= newOut.size()) return newOut.get(newOut.size() - 1);
-        return newOut.get(index);
-    }
-
-    public final boolean containsOutput(Class<?> cast) {
-        for (Object obj : out)
-            if (cast.isPrimitive() && PrimitiveUtil.get(cast).wrapperClass.isInstance(obj) || cast.isInstance(obj)) return true;
-        return false;
+    public final boolean isCancelled() {
+        return state.isCancelled();
     }
 
     @Override
