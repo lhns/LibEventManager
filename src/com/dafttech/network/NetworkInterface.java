@@ -4,10 +4,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import com.dafttech.filterlist.Filterlist;
 import com.dafttech.network.disconnect.Disconnect;
 import com.dafttech.network.packet.IPacket;
 import com.dafttech.network.protocol.Protocol;
+import com.dafttech.storage.filterlist.Filterlist;
 
 public abstract class NetworkInterface<Packet extends IPacket> {
     private volatile Class<? extends Protocol<Packet>> protocolClass;

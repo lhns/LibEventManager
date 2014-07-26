@@ -1,10 +1,10 @@
 package com.dafttech.network.protocol;
 
-import com.dafttech.filterlist.Filterlist;
 import com.dafttech.network.Client;
 import com.dafttech.network.NetworkInterface;
 import com.dafttech.network.disconnect.Disconnect;
 import com.dafttech.network.packet.IPacket;
+import com.dafttech.storage.filterlist.Filterlist;
 
 public abstract class Protocol<Packet extends IPacket> extends NetworkInterface<Packet> {
 

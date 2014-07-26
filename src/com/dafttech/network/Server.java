@@ -5,10 +5,10 @@ import java.net.ServerSocket;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.dafttech.filterlist.Filterlist;
 import com.dafttech.network.disconnect.Disconnect;
 import com.dafttech.network.packet.IPacket;
 import com.dafttech.network.protocol.Protocol;
+import com.dafttech.storage.filterlist.Filterlist;
 
 public class Server<Packet extends IPacket> extends NetworkInterface<Packet> {
     private volatile ServerSocket serverSocket;

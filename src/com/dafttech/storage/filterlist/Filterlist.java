@@ -1,4 +1,4 @@
-package com.dafttech.filterlist;
+package com.dafttech.storage.filterlist;
 
 import com.dafttech.hash.HashUtil;
 

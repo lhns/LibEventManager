@@ -1,15 +1,14 @@
 package com.dafttech.eventmanager;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
 import com.dafttech.hash.HashUtil;
-import com.dafttech.list.TupleArrayList;
-import com.dafttech.list.TupleList;
-import com.dafttech.list.UnmodifiableTupleList;
+import com.dafttech.storage.tuple.ArrayTuple;
+import com.dafttech.storage.tuple.Tuple;
+import com.dafttech.storage.tuple.UnmodifiableTuple;
 
 public class Event {
     private static enum State {
@@ -41,8 +40,8 @@ public class Event {
     private final EventManager eventManager;
     private final EventType type;
 
-    public final TupleList in;
-    public final TupleList out = new TupleArrayList();
+    public final Tuple in;
+    public final Tuple out = new ArrayTuple();
 
     private volatile State state = State.NONE;
 
@@ -55,7 +54,7 @@ public class Event {
 
         if (listenerContainers != null) this.listenerContainers.addAll(listenerContainers);
 
-        this.in = new UnmodifiableTupleList(new TupleArrayList(Arrays.asList(in)));
+        this.in = new UnmodifiableTuple(in);
     }
 
     protected final void schedule() {

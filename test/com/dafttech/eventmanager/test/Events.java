@@ -17,7 +17,7 @@ public class Events {
     public static final EventType testevent2 = new EventType("test2", eventmanager) {
         @Override
         protected boolean isFiltered(Event event, Object[] filter, ListenerContainer eventListener) {
-            return event.getInput(0).equals(filter[0]);
+            return event.in.get(0).equals(filter[0]);
         };
     };
 }

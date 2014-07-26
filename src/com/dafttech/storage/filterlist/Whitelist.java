@@ -1,4 +1,4 @@
-package com.dafttech.filterlist;
+package com.dafttech.storage.filterlist;
 
 public class Whitelist<FilterType> extends Filterlist<FilterType> {
     @SafeVarargs
