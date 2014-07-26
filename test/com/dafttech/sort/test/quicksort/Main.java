@@ -1,6 +1,6 @@
 package com.dafttech.sort.test.quicksort;
 
-import com.dafttech.sort.Sorter;
+import com.dafttech.storage.array.sort.Sorter;
 
 public class Main {
 

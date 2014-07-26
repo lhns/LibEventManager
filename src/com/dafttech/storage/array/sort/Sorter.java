@@ -1,4 +1,4 @@
-package com.dafttech.sort;
+package com.dafttech.storage.array.sort;
 
 import java.util.Arrays;
 

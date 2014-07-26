@@ -1,4 +1,4 @@
-package com.dafttech.array;
+package com.dafttech.storage.array;
 
 public class ArrayUtil {
     public static double interpolate(double[] array, int[] translation, double index) {
