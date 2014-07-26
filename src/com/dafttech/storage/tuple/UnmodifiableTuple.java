@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.RandomAccess;
 
+import com.dafttech.hash.HashUtil;
+
 public class UnmodifiableTuple extends AbstractUnmodifiableTuple implements Tuple, RandomAccess, Cloneable, Serializable {
     /**
      * 
@@ -102,5 +104,15 @@ public class UnmodifiableTuple extends AbstractUnmodifiableTuple implements Tupl
 
         for (int i = 0; i < elementData.length; i++)
             elementData[i] = paramObjectInputStream.readObject();
+    }
+
+    @Override
+    public int hashCode() {
+        return HashUtil.hashCode(elementData);
+    }
+
+    @Override
+    public boolean equals(Object target) {
+        return HashUtil.equals(this, target);
     }
 }

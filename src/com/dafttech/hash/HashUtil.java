@@ -6,6 +6,7 @@ public class HashUtil {
 
     public static int hashCode(int base, int multiplier, boolean fastArrays, Object... relevantValues) {
         int hashCode = base * multiplier + relevantValues.length;
+
         for (Object value : relevantValues) {
             if (value == null || value.getClass() == Object.class) continue;
             if (fastArrays && value instanceof Object[]) {
