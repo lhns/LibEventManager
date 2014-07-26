@@ -9,10 +9,12 @@ import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Set;
 
 import com.dafttech.hash.HashUtil;
 import com.dafttech.reflect.ReflectionUtil;
+import com.dafttech.storage.tuple.UnmodifiableTuple;
 
 public class ListenerContainer extends AnnotatedElementContainer<AnnotatedElement> {
     volatile private AnnotatedElementContainer<AnnotatedElement>[] filters;
@@ -114,8 +116,9 @@ public class ListenerContainer extends AnnotatedElementContainer<AnnotatedElemen
     protected final boolean isFiltered(Event event) {
         if (filters.length == 0) return true;
         try {
-            return event.getEventType().isFiltered(event, getFilters(), this);
-        } catch (ArrayIndexOutOfBoundsException e) {
+            return event.getEventType().isFiltered(event, new UnmodifiableTuple(getFilters()), this);
+        } catch (IndexOutOfBoundsException e) {
+        } catch (NoSuchElementException e) {
         } catch (ClassCastException e) {
         } catch (NullPointerException e) {
         }

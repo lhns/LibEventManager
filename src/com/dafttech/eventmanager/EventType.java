@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.dafttech.hash.HashUtil;
+import com.dafttech.storage.tuple.Tuple;
 
 public class EventType {
     volatile private String name = "";
@@ -41,13 +42,13 @@ public class EventType {
      * @param event
      *            Event - the called event
      * @param filter
-     *            Object[] - Is the given filter on registering an EventListener
+     *            Tuple - Is the given filter on registering an EventListener
      * @param listenerContainer
      *            ListenerContainer - Is the container of the EventListener
      * 
      * @return boolean: true, if the EventListener should be called.
      */
-    protected boolean isFiltered(Event event, Object[] filter, ListenerContainer listenerContainer) {
+    protected boolean isFiltered(Event event, Tuple filter, ListenerContainer listenerContainer) {
         return true;
     }
 
