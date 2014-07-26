@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.RandomAccess;
 
+import com.dafttech.hash.HashUtil;
+
 public class ArrayTuple extends AbstractTuple implements Tuple, RandomAccess, Cloneable, Serializable {
     /**
      * 
@@ -137,5 +139,20 @@ public class ArrayTuple extends AbstractTuple implements Tuple, RandomAccess, Cl
     @Override
     public ListIterator<Object> listIterator(int paramInt) {
         return parent.listIterator(paramInt);
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return new ArrayTuple(parent);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashUtil.hashCode(parent);
+    }
+
+    @Override
+    public boolean equals(Object target) {
+        return HashUtil.equals(this, target);
     }
 }
