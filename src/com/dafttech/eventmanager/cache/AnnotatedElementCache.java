@@ -6,6 +6,8 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+import com.dafttech.hash.HashUtil;
+
 public abstract class AnnotatedElementCache<R, T extends AnnotatedElement> {
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
     private static final Class<?>[] EMPTY_CLASS_ARRAY = new Class<?>[0];
@@ -70,6 +72,16 @@ public abstract class AnnotatedElementCache<R, T extends AnnotatedElement> {
 
     public abstract R getValue(Object... args) throws IllegalArgumentException, IllegalAccessException,
             InvocationTargetException, InstantiationException;
+
+    @Override
+    public int hashCode() {
+        return HashUtil.hashCode(element, elementStatic, type, accessClass, accessInstance);
+    }
+
+    @Override
+    public boolean equals(Object target) {
+        return HashUtil.equals(this, target);
+    }
 
     public static AnnotatedElementCache<?, ?> getNewInstance(AnnotatedElement element, Object access) {
         if (element instanceof Field)

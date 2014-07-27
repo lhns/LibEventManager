@@ -3,6 +3,8 @@ package com.dafttech.eventmanager.cache;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.InvocationTargetException;
 
+import com.dafttech.hash.HashUtil;
+
 public class CachedAnnotatedElementContainer<T extends AnnotatedElement> {
     protected final AnnotatedElementCache<?, ?> annotatedElementCache;
 
@@ -45,5 +47,15 @@ public class CachedAnnotatedElementContainer<T extends AnnotatedElement> {
     public Object getValue(Object... args) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException,
             InstantiationException {
         return annotatedElementCache.getValue(args);
+    }
+
+    @Override
+    public int hashCode() {
+        return HashUtil.hashCode(annotatedElementCache);
+    }
+
+    @Override
+    public boolean equals(Object target) {
+        return HashUtil.equals(this, target);
     }
 }
