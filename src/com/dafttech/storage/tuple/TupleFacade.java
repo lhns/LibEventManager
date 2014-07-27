@@ -137,7 +137,7 @@ public class TupleFacade extends AbstractTuple implements Tuple, RandomAccess, C
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
+    public TupleFacade clone() throws CloneNotSupportedException {
         return new TupleFacade(parent);
     }
 

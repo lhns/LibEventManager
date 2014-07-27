@@ -10,7 +10,7 @@ import java.util.RandomAccess;
 
 import com.dafttech.hash.HashUtil;
 
-public class ArrayTuple extends AbstractUnmodifiableTuple implements Tuple, RandomAccess, Cloneable, Serializable {
+public class ArrayTuple extends AbstractTuple implements Tuple, RandomAccess, Cloneable, Serializable {
     /**
      * 
      */
