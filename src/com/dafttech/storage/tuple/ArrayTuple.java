@@ -1,8 +1,5 @@
 package com.dafttech.storage.tuple;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
@@ -16,7 +13,7 @@ public class ArrayTuple extends AbstractTuple implements Tuple, RandomAccess, Cl
      */
     private static final long serialVersionUID = 5291579362104103299L;
 
-    private transient Object[] elementData;
+    protected final transient Object[] elementData;
 
     public ArrayTuple(Object... array) {
         elementData = Arrays.copyOf(array, array.length);
@@ -82,28 +79,6 @@ public class ArrayTuple extends AbstractTuple implements Tuple, RandomAccess, Cl
     @Override
     public ArrayTuple clone() throws CloneNotSupportedException {
         return new ArrayTuple(elementData);
-    }
-
-    private void writeObject(ObjectOutputStream paramObjectOutputStream) throws IOException {
-        paramObjectOutputStream.defaultWriteObject();
-
-        paramObjectOutputStream.writeInt(elementData.length);
-
-        for (int i = 0; i < elementData.length; i++)
-            paramObjectOutputStream.writeObject(elementData[i]);
-    }
-
-    private void readObject(ObjectInputStream paramObjectInputStream) throws IOException, ClassNotFoundException {
-        elementData = null;
-
-        paramObjectInputStream.defaultReadObject();
-
-        elementData = new Object[paramObjectInputStream.readInt()];
-
-        if (elementData.length <= 0) return;
-
-        for (int i = 0; i < elementData.length; i++)
-            elementData[i] = paramObjectInputStream.readObject();
     }
 
     @Override
