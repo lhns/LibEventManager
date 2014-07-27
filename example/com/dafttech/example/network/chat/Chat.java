@@ -1,4 +1,4 @@
-package com.dafttech.network.test.chat;
+package com.dafttech.example.network.chat;
 
 import java.io.BufferedReader;
 import java.io.IOException;

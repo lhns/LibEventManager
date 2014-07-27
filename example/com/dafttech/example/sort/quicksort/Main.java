@@ -1,4 +1,4 @@
-package com.dafttech.sort.test.quicksort;
+package com.dafttech.example.sort.quicksort;
 
 import com.dafttech.storage.array.sort.Sorter;
 

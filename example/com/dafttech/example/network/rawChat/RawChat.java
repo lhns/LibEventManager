@@ -1,4 +1,4 @@
-package com.dafttech.network.test.rawChat;
+package com.dafttech.example.network.rawChat;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;

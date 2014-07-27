@@ -1,4 +1,4 @@
-package com.dafttech.network.test.soundsend;
+package com.dafttech.example.network.soundsend;
 
 import java.io.BufferedReader;
 import java.io.IOException;

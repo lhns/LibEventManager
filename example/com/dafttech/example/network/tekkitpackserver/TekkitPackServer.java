@@ -1,4 +1,4 @@
-package com.dafttech.network.test.tekkitpackserver;
+package com.dafttech.example.network.tekkitpackserver;
 
 import java.io.IOException;
 

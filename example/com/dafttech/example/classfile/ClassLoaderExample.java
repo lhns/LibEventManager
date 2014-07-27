@@ -1,4 +1,4 @@
-package com.dafttech.classfile.test;
+package com.dafttech.example.classfile;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
