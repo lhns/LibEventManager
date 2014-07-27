@@ -1,5 +1,6 @@
 package com.dafttech.storage.tuple;
 
+import java.lang.reflect.Array;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +43,7 @@ public abstract class AbstractTuple extends AbstractList<Object> implements Tupl
 
     @Override
     @SuppressWarnings("unchecked")
-    public <T> List<T> getAll(Class<T> type) {
+    public <T> List<T> getType(Class<T> type) {
         List<T> ret = new ArrayList<T>();
 
         Object[] elementData = toArray();
@@ -52,6 +53,12 @@ public abstract class AbstractTuple extends AbstractList<Object> implements Tupl
             if (primitive != null && primitive.isInstance(elementData[i]) || type.isInstance(elementData[i]))
                 ret.add((T) elementData[i]);
         return ret;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T[] getTypeArray(Class<T> type) {
+        return getType(type).toArray((T[]) Array.newInstance(type, 0));
     }
 
     @Override

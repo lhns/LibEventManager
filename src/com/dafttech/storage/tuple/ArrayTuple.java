@@ -1,154 +1,114 @@
 package com.dafttech.storage.tuple;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.ListIterator;
 import java.util.RandomAccess;
 
 import com.dafttech.hash.HashUtil;
 
-public class ArrayTuple extends AbstractTuple implements Tuple, RandomAccess, Cloneable, Serializable {
+public class ArrayTuple extends AbstractUnmodifiableTuple implements Tuple, RandomAccess, Cloneable, Serializable {
     /**
      * 
      */
-    private static final long serialVersionUID = -1221937267645102522L;
+    private static final long serialVersionUID = 5291579362104103299L;
 
-    private ArrayList<Object> parent;
-
-    public ArrayTuple(Collection<Object> collection) {
-        parent = new ArrayList<Object>(collection);
-    }
+    private transient Object[] elementData;
 
     public ArrayTuple(Object... array) {
-        this(Arrays.asList(array));
+        elementData = Arrays.copyOf(array, array.length);
     }
 
-    @Override
-    public Tuple subList(int paramInt1, int paramInt2) {
-        return new ArrayTuple(parent.subList(paramInt1, paramInt2));
-    }
-
-    @Override
-    public int size() {
-        return parent.size();
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return parent.isEmpty();
-    }
-
-    @Override
-    public boolean contains(Object paramObject) {
-        return parent.contains(paramObject);
-    }
-
-    @Override
-    public Iterator<Object> iterator() {
-        return parent.iterator();
-    }
-
-    @Override
-    public Object[] toArray() {
-        return parent.toArray();
-    }
-
-    @Override
-    public <T> T[] toArray(T[] paramArrayOfT) {
-        return parent.toArray(paramArrayOfT);
-    }
-
-    @Override
-    public boolean add(Object paramE) {
-        return parent.add(paramE);
-    }
-
-    @Override
-    public boolean remove(Object paramObject) {
-        return parent.remove(paramObject);
-    }
-
-    @Override
-    public boolean containsAll(Collection<?> paramCollection) {
-        return parent.containsAll(paramCollection);
-    }
-
-    @Override
-    public boolean addAll(Collection<? extends Object> paramCollection) {
-        return parent.addAll(paramCollection);
-    }
-
-    @Override
-    public boolean addAll(int paramInt, Collection<? extends Object> paramCollection) {
-        return parent.addAll(paramInt, paramCollection);
-    }
-
-    @Override
-    public boolean removeAll(Collection<?> paramCollection) {
-        return parent.removeAll(paramCollection);
-    }
-
-    @Override
-    public boolean retainAll(Collection<?> paramCollection) {
-        return parent.retainAll(paramCollection);
-    }
-
-    @Override
-    public void clear() {
-        parent.clear();
+    public ArrayTuple(Collection<?> collection) {
+        this(collection.toArray());
     }
 
     @Override
     public Object get(int paramInt) {
-        return parent.get(paramInt);
+        return elementData[paramInt];
     }
 
     @Override
-    public Object set(int paramInt, Object paramE) {
-        return parent.set(paramInt, paramE);
+    public int size() {
+        return elementData.length;
     }
 
     @Override
-    public void add(int paramInt, Object paramE) {
-        parent.add(paramInt, paramE);
+    public Tuple subList(int paramInt1, int paramInt2) {
+        return new ArrayTuple(Arrays.copyOfRange(elementData, paramInt1, paramInt2));
     }
 
     @Override
-    public Object remove(int paramInt) {
-        return parent.remove(paramInt);
+    public boolean contains(Object paramObject) {
+        return indexOf(paramObject) >= 0;
     }
 
     @Override
     public int indexOf(Object paramObject) {
-        return parent.indexOf(paramObject);
+        if (paramObject == null) {
+            for (int i = 0; i < elementData.length; i++)
+                if (elementData[i] == null) return i;
+        } else {
+            for (int i = 0; i < elementData.length; i++)
+                if (paramObject.equals(elementData[i])) return i;
+        }
+        return -1;
     }
 
     @Override
-    public int lastIndexOf(Object paramObject) {
-        return parent.lastIndexOf(paramObject);
+    public boolean isEmpty() {
+        return elementData.length == 0;
     }
 
     @Override
-    public ListIterator<Object> listIterator() {
-        return parent.listIterator();
+    public Object[] toArray() {
+        return Arrays.copyOf(elementData, elementData.length);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T> T[] toArray(T[] paramArrayOfT) {
+        if (paramArrayOfT.length < elementData.length) {
+            return (T[]) Arrays.copyOf(elementData, elementData.length, paramArrayOfT.getClass());
+        }
+        System.arraycopy(elementData, 0, paramArrayOfT, 0, elementData.length);
+        if (paramArrayOfT.length > elementData.length) paramArrayOfT[elementData.length] = null;
+        return paramArrayOfT;
     }
 
     @Override
-    public ListIterator<Object> listIterator(int paramInt) {
-        return parent.listIterator(paramInt);
+    public ArrayTuple clone() throws CloneNotSupportedException {
+        return new ArrayTuple(elementData);
     }
 
-    @Override
-    public Object clone() throws CloneNotSupportedException {
-        return new ArrayTuple(parent);
+    private void writeObject(ObjectOutputStream paramObjectOutputStream) throws IOException {
+        paramObjectOutputStream.defaultWriteObject();
+
+        paramObjectOutputStream.writeInt(elementData.length);
+
+        for (int i = 0; i < elementData.length; i++)
+            paramObjectOutputStream.writeObject(elementData[i]);
+    }
+
+    private void readObject(ObjectInputStream paramObjectInputStream) throws IOException, ClassNotFoundException {
+        elementData = null;
+
+        paramObjectInputStream.defaultReadObject();
+
+        elementData = new Object[paramObjectInputStream.readInt()];
+
+        if (elementData.length <= 0) return;
+
+        for (int i = 0; i < elementData.length; i++)
+            elementData[i] = paramObjectInputStream.readObject();
     }
 
     @Override
     public int hashCode() {
-        return HashUtil.hashCode(parent);
+        return HashUtil.hashCode(elementData);
     }
 
     @Override

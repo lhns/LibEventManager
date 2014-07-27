@@ -8,7 +8,7 @@ import java.util.List;
 import com.dafttech.hash.HashUtil;
 import com.dafttech.storage.tuple.ArrayTuple;
 import com.dafttech.storage.tuple.Tuple;
-import com.dafttech.storage.tuple.UnmodifiableTuple;
+import com.dafttech.storage.tuple.TupleFacade;
 
 public class Event {
     private static enum State {
@@ -41,20 +41,22 @@ public class Event {
     private final EventType type;
 
     public final Tuple in;
-    public final Tuple out = new ArrayTuple();
+    public final Tuple out;
 
     private volatile State state = State.NONE;
 
-    private final List<ListenerContainer> listenerContainers = new LinkedList<ListenerContainer>();
+    private final List<ListenerContainer> listenerContainers;
     private volatile ListenerContainer currListenerContainer;
 
     protected Event(EventManager eventManager, EventType type, Object[] in, List<ListenerContainer> listenerContainers) {
         this.eventManager = eventManager;
         this.type = type;
 
-        if (listenerContainers != null) this.listenerContainers.addAll(listenerContainers);
+        this.in = new ArrayTuple(in);
+        out = new TupleFacade(new ArrayList<Object>());
 
-        this.in = new UnmodifiableTuple(in);
+        this.listenerContainers = new LinkedList<ListenerContainer>();
+        if (listenerContainers != null) this.listenerContainers.addAll(listenerContainers);
     }
 
     protected final void schedule() {
