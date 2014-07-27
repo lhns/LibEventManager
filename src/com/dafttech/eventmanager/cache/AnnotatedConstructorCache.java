@@ -1,4 +1,4 @@
-package com.dafttech.annotation;
+package com.dafttech.eventmanager.cache;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -6,12 +6,12 @@ import java.lang.reflect.Modifier;
 
 import com.dafttech.reflect.ReflectionUtil;
 
-public class AnnotatedConstructorCache<C> extends AnnotatedElementCache<C, Constructor<C>> {
-    protected final Class<C> returnType;
+public class AnnotatedConstructorCache extends AnnotatedElementCache<Object, Constructor<?>> {
+    protected final Class<?> returnType;
     protected final Class<?>[] parameterTypes;
     protected final Object[] nullArgArray;
 
-    public AnnotatedConstructorCache(Constructor<C> element, Object access) {
+    public AnnotatedConstructorCache(Constructor<?> element, Object access) {
         super(Constructor.class, element, Modifier.isStatic(element.getModifiers()), access);
         returnType = element.getDeclaringClass();
         parameterTypes = element.getParameterTypes();
@@ -29,12 +29,12 @@ public class AnnotatedConstructorCache<C> extends AnnotatedElementCache<C, Const
     }
 
     @Override
-    public Class<C> getReturnType() {
+    public Class<?> getReturnType() {
         return returnType;
     }
 
     @Override
-    public C get(Object... args) throws InstantiationException, IllegalAccessException, IllegalArgumentException,
+    public Object getValue(Object... args) throws InstantiationException, IllegalAccessException, IllegalArgumentException,
             InvocationTargetException {
         return element.newInstance(args);
     }

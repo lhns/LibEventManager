@@ -1,9 +1,9 @@
-package com.dafttech.annotation;
+package com.dafttech.eventmanager.cache;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
-public class AnnotatedFieldCache<R> extends AnnotatedElementCache<R, Field> {
+public class AnnotatedFieldCache extends AnnotatedElementCache<Object, Field> {
     protected final Class<?> returnType;
 
     public AnnotatedFieldCache(Field element, Object access) {
@@ -16,9 +16,8 @@ public class AnnotatedFieldCache<R> extends AnnotatedElementCache<R, Field> {
         return returnType;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public R get(Object... args) throws IllegalArgumentException, IllegalAccessException {
-        return (R) element.get(accessInstance);
+    public Object getValue(Object... args) throws IllegalArgumentException, IllegalAccessException {
+        return element.get(accessInstance);
     }
 }

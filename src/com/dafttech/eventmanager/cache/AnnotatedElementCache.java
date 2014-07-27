@@ -1,7 +1,10 @@
-package com.dafttech.annotation;
+package com.dafttech.eventmanager.cache;
 
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 public abstract class AnnotatedElementCache<R, T extends AnnotatedElement> {
     private static final Object[] EMPTY_OBJECT_ARRAY = new Object[0];
@@ -65,6 +68,19 @@ public abstract class AnnotatedElementCache<R, T extends AnnotatedElement> {
         return EMPTY_CLASS_ARRAY;
     }
 
-    public abstract R get(Object... args) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException,
-            InstantiationException;
+    public abstract R getValue(Object... args) throws IllegalArgumentException, IllegalAccessException,
+            InvocationTargetException, InstantiationException;
+
+    public static AnnotatedElementCache<?, ?> getNewInstance(AnnotatedElement element, Object access) {
+        if (element instanceof Field)
+            return new AnnotatedFieldCache((Field) element, access);
+        else if (element instanceof Method)
+            return new AnnotatedMethodCache((Method) element, access);
+        else if (element instanceof Constructor<?>)
+            return new AnnotatedConstructorCache((Constructor<?>) element, access);
+        else if (element instanceof Class<?>)
+            return new AnnotatedClassCache((Class<?>) element, access);
+        else
+            return null;
+    }
 }

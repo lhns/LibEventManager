@@ -1,16 +1,16 @@
-package com.dafttech.annotation;
+package com.dafttech.eventmanager.cache;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.InvocationTargetException;
 
-public class CachedAnnotatedElementContainer<R, T extends AnnotatedElement> {
-    protected final AnnotatedElementCache<R, T> annotatedElementCache;
+public class CachedAnnotatedElementContainer<T extends AnnotatedElement> {
+    protected final AnnotatedElementCache<?, ?> annotatedElementCache;
 
-    public CachedAnnotatedElementContainer(AnnotatedElementCache<R, T> annotatedElementCache) {
-        this.annotatedElementCache = annotatedElementCache;
+    public CachedAnnotatedElementContainer(AnnotatedElement element, Object access) {
+        this.annotatedElementCache = AnnotatedElementCache.getNewInstance(element, access);
     }
 
-    public T getElement() {
+    public Object getElement() {
         return annotatedElementCache.getElement();
     }
 
@@ -42,8 +42,8 @@ public class CachedAnnotatedElementContainer<R, T extends AnnotatedElement> {
         return annotatedElementCache.getParameterTypes();
     }
 
-    public R get(Object... args) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException,
+    public Object getValue(Object... args) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException,
             InstantiationException {
-        return annotatedElementCache.get(args);
+        return annotatedElementCache.getValue(args);
     }
 }

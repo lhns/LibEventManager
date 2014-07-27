@@ -1,4 +1,4 @@
-package com.dafttech.annotation;
+package com.dafttech.eventmanager.cache;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -6,7 +6,7 @@ import java.lang.reflect.Modifier;
 
 import com.dafttech.reflect.ReflectionUtil;
 
-public class AnnotatedMethodCache<R> extends AnnotatedElementCache<R, Method> {
+public class AnnotatedMethodCache extends AnnotatedElementCache<Object, Method> {
     protected final Class<?> returnType;
     protected final Class<?>[] parameterTypes;
     protected final Object[] nullArgArray;
@@ -28,10 +28,9 @@ public class AnnotatedMethodCache<R> extends AnnotatedElementCache<R, Method> {
         return nullArgArray;
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public R get(Object... args) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        return (R) element.invoke(accessInstance, args);
+    public Object getValue(Object... args) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        return element.invoke(accessInstance, args);
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.dafttech.annotation;
+package com.dafttech.eventmanager.cache;
 
 public class AnnotatedClassCache extends AnnotatedElementCache<Class<?>, Class<?>> {
 
@@ -12,7 +12,7 @@ public class AnnotatedClassCache extends AnnotatedElementCache<Class<?>, Class<?
     }
 
     @Override
-    public Class<?> get(Object... args) {
+    public Class<?> getValue(Object... args) {
         return element;
     }
 }
