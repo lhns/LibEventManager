@@ -13,7 +13,7 @@ public class ArrayTuple extends AbstractTuple implements Tuple, RandomAccess, Cl
      */
     private static final long serialVersionUID = 5291579362104103299L;
 
-    protected final transient Object[] elementData;
+    protected final Object[] elementData;
 
     public ArrayTuple(Object... array) {
         elementData = Arrays.copyOf(array, array.length);
