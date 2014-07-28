@@ -15,48 +15,39 @@ class AnnotatedElementContainer {
     protected final Class<?> targetClass;
     protected final Object targetInstance;
     protected final Class<?> type;
-    protected final int typeVal;
     protected final boolean isStatic;
     protected final Class<?> retType;
     protected final Class<?>[] argTypes;
     protected final Object[] nullArgs;
 
     // TODO: make access only be the instance
-    protected AnnotatedElementContainer(AnnotatedElement target, Object access) {
+    protected AnnotatedElementContainer(AnnotatedElement target, Object targetInstance) {
         this.target = target;
-        if (access == null) {
-            throw new NullPointerException();
-        } else if (access.getClass() == Class.class) {
-            targetClass = (Class<?>) access;
-            targetInstance = null;
-        } else {
-            targetClass = access.getClass();
-            targetInstance = access;
-        }
+        this.targetInstance = targetInstance;
 
         type = target.getClass();
-        if (Field.class.isAssignableFrom(type)) {
+        if (type == Field.class) {
             Field field = (Field) target;
+            targetClass = field.getDeclaringClass();
             isStatic = Modifier.isStatic(field.getModifiers());
-            typeVal = 0;
             retType = field.getType();
             argTypes = new Class<?>[0];
-        } else if (Method.class.isAssignableFrom(type)) {
+        } else if (type == Method.class) {
             Method method = (Method) target;
+            targetClass = method.getDeclaringClass();
             isStatic = Modifier.isStatic(method.getModifiers());
-            typeVal = 1;
             retType = method.getReturnType();
             argTypes = method.getParameterTypes();
-
-        } else if (Constructor.class.isAssignableFrom(type)) {
+        } else if (type == Constructor.class) {
             Constructor<?> constructor = (Constructor<?>) target;
+            targetClass = constructor.getDeclaringClass();
             isStatic = true;
-            typeVal = 2;
             retType = constructor.getDeclaringClass();
             argTypes = constructor.getParameterTypes();
         } else if (type == Class.class) {
+            Class<?> clazz = (Class<?>) target;
+            targetClass = clazz;
             isStatic = true;
-            typeVal = 3;
             retType = null;
             argTypes = new Class<?>[0];
         } else {
@@ -69,24 +60,24 @@ class AnnotatedElementContainer {
         nullArgs = ReflectionUtil.buildArgumentArray(argTypes);
     }
 
-    protected AnnotatedElementContainer(AnnotatedElement target, Class<?> targetClass, Object targetInstance) {
-        this(target, targetInstance == null ? targetClass : targetInstance);
+    protected AnnotatedElementContainer(AnnotatedElement target) {
+        this(target, null);
     }
 
     public boolean isField() {
-        return typeVal == 0;
+        return type == Field.class;
     }
 
     public boolean isMethod() {
-        return typeVal == 1;
+        return type == Method.class;
     }
 
     public boolean isConstructor() {
-        return typeVal == 2;
+        return type == Constructor.class;
     }
 
     public boolean isClass() {
-        return typeVal == 3;
+        return type == Class.class;
     }
 
     public AnnotatedElement getTarget() {

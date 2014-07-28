@@ -20,22 +20,21 @@ public final class ListenerContainer extends AnnotatedElementContainer {
     private final AnnotatedElementContainer[] filters;
     private final double priority;
 
-    protected ListenerContainer(AnnotatedElement target, Object access, String[] filters, double priority,
+    protected ListenerContainer(AnnotatedElement target, Object accessInstance, String[] filters, double priority,
             Map<String, String> filterShortcuts) {
-        super(target, access);
+        super(target, accessInstance);
         this.filters = getFilterContainers(filters, filterShortcuts);
         this.priority = priority;
     }
 
     private final AnnotatedElementContainer[] getFilterContainers(String[] filterNames, Map<String, String> filterShortcuts) {
         Set<AnnotatedElementContainer> filterList = new HashSet<AnnotatedElementContainer>();
-        boolean mustBeStatic;
-        Class<?> filterClass;
+
         for (String filterName : filterNames) {
             if (filterName.equals("")) continue;
 
-            mustBeStatic = isStatic;
-            filterClass = targetClass;
+            boolean mustBeStatic = isStatic;
+            Class<?> filterClass = targetClass;
 
             if (filterShortcuts.containsKey(filterName)) filterName = filterShortcuts.get(filterName);
             filterName = resolveClassPath(filterName, targetClass.getName());
@@ -52,22 +51,22 @@ public final class ListenerContainer extends AnnotatedElementContainer {
 
             if (filterClass.isAnnotationPresent(EventListener.Filter.class)
                     && filterClass.getAnnotation(EventListener.Filter.class).value().equals(filterName))
-                filterList.add(new AnnotatedElementContainer(filterClass, targetClass, targetInstance));
+                filterList.add(new AnnotatedElementContainer(filterClass));
 
             for (Field field : ReflectionUtil.getAnnotatedFields(filterClass, EventListener.Filter.class, null))
                 if ((!mustBeStatic || Modifier.isStatic(field.getModifiers()))
                         && field.getAnnotation(EventListener.Filter.class).value().equals(filterName))
-                    filterList.add(new AnnotatedElementContainer(field, targetClass, targetInstance));
+                    filterList.add(new AnnotatedElementContainer(field, targetInstance));
 
             for (Method method : ReflectionUtil.getAnnotatedMethods(filterClass, EventListener.Filter.class, null, null))
                 if ((!mustBeStatic || Modifier.isStatic(method.getModifiers()))
                         && method.getAnnotation(EventListener.Filter.class).value().equals(filterName))
-                    filterList.add(new AnnotatedElementContainer(method, targetClass, targetInstance));
+                    filterList.add(new AnnotatedElementContainer(method, targetInstance));
 
             for (Constructor<?> constructor : ReflectionUtil.getAnnotatedConstructors(filterClass, EventListener.Filter.class,
                     null))
                 if (constructor.getAnnotation(EventListener.Filter.class).value().equals(filterName))
-                    filterList.add(new AnnotatedElementContainer(constructor, targetClass, targetInstance));
+                    filterList.add(new AnnotatedElementContainer(constructor));
         }
         return filterList.toArray(new AnnotatedElementContainer[filterList.size()]);
     }

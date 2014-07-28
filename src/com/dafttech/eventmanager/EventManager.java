@@ -41,8 +41,18 @@ public class EventManager {
     public final void registerEventListener(Object eventListener, Filterlist<EventType> filterlist) {
         if (filterlist == null || !filterlist.isValid()) return;
 
-        boolean isStatic = eventListener.getClass() == Class.class;
-        Class<?> eventListenerClass = isStatic ? (Class<?>) eventListener : eventListener.getClass();
+        boolean isStatic;
+        Class<?> eventListenerClass;
+        Object eventListenerInstance;
+        if (eventListener.getClass() == Class.class) {
+            isStatic = true;
+            eventListenerClass = (Class<?>) eventListener;
+            eventListenerInstance = null;
+        } else {
+            isStatic = false;
+            eventListenerClass = eventListener.getClass();
+            eventListenerInstance = eventListener;
+        }
 
         Set<AnnotatedElement> targets = new HashSet<AnnotatedElement>();
         targets.addAll(ReflectionUtil.getAnnotatedMethods(eventListenerClass,
@@ -76,7 +86,7 @@ public class EventManager {
                     if (!type.isWhitelisted(this)) continue;
                     if (!filterlist.isFiltered(type)) continue;
 
-                    addEventListenerContainer(type, new ListenerContainer(target, eventListener, filters, priority,
+                    addEventListenerContainer(type, new ListenerContainer(target, eventListenerInstance, filters, priority,
                             filterShortcuts));
                 }
             }
