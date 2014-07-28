@@ -167,7 +167,7 @@ public class PrimitiveUtil {
         public ClassType fromByteArray(byte... array) {
             if (array.length < bytes) return null;
             long longVal = 0;
-            for (int i = 0; i < size; i++)
+            for (int i = 0; i < bytes; i++)
                 longVal = longVal | (array[i] & 0xFF) << (bytes - 1 - i) * 8;
             return fromLong(longVal);
         }
