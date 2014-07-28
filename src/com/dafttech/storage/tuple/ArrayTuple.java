@@ -68,9 +68,8 @@ public class ArrayTuple extends AbstractTuple implements Tuple, RandomAccess, Cl
     @SuppressWarnings("unchecked")
     @Override
     public <T> T[] toArray(T[] paramArrayOfT) {
-        if (paramArrayOfT.length < elementData.length) {
+        if (paramArrayOfT.length < elementData.length)
             return (T[]) Arrays.copyOf(elementData, elementData.length, paramArrayOfT.getClass());
-        }
         System.arraycopy(elementData, 0, paramArrayOfT, 0, elementData.length);
         if (paramArrayOfT.length > elementData.length) paramArrayOfT[elementData.length] = null;
         return paramArrayOfT;

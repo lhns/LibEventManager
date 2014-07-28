@@ -5,25 +5,26 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.NoSuchElementException;
 
 import com.dafttech.hash.HashUtil;
 import com.dafttech.reflect.ReflectionUtil;
 
 class AnnotatedElementContainer<Type extends AnnotatedElement> {
-    volatile protected Type target;
-    volatile protected Class<?> targetClass;
-    volatile protected Object targetInstance;
-    volatile protected Class<?> type;
-    volatile protected int typeVal;
-    volatile protected boolean isStatic;
-    volatile protected Class<?> retType;
-    volatile protected Class<?>[] argTypes;
-    volatile protected Object[] nullArgs;
+    protected final Type target;
+    protected final Class<?> targetClass;
+    protected final Object targetInstance;
+    protected final Class<?> type;
+    protected final int typeVal;
+    protected final boolean isStatic;
+    protected final Class<?> retType;
+    protected final Class<?>[] argTypes;
+    protected final Object[] nullArgs;
 
     protected AnnotatedElementContainer(Type target, Object access) {
         this.target = target;
         if (access == null) {
-            return;
+            throw new NullPointerException();
         } else if (access.getClass() == Class.class) {
             targetClass = (Class<?>) access;
             targetInstance = null;
@@ -57,6 +58,8 @@ class AnnotatedElementContainer<Type extends AnnotatedElement> {
             typeVal = 3;
             retType = null;
             argTypes = new Class<?>[0];
+        } else {
+            throw new NoSuchElementException();
         }
 
         if (!isStatic && targetInstance == null)
