@@ -7,7 +7,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 public class AsyncEvent extends Event {
-    volatile private Future<?> future;
+    private volatile Future<?> future;
 
     protected AsyncEvent(EventManager eventManager, EventType type, Object[] in, List<ListenerContainer> listenerContainers) {
         super(eventManager, type, in, listenerContainers);

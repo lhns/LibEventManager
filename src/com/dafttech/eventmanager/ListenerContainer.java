@@ -16,9 +16,9 @@ import com.dafttech.hash.HashUtil;
 import com.dafttech.reflect.ReflectionUtil;
 import com.dafttech.storage.tuple.ArrayTuple;
 
-public class ListenerContainer extends AnnotatedElementContainer<AnnotatedElement> {
-    volatile private AnnotatedElementContainer<AnnotatedElement>[] filters;
-    volatile private double priority;
+public final class ListenerContainer extends AnnotatedElementContainer {
+    private final AnnotatedElementContainer[] filters;
+    private final double priority;
 
     protected ListenerContainer(AnnotatedElement target, Object access, String[] filters, double priority,
             Map<String, String> filterShortcuts) {
@@ -27,10 +27,8 @@ public class ListenerContainer extends AnnotatedElementContainer<AnnotatedElemen
         this.priority = priority;
     }
 
-    @SuppressWarnings("unchecked")
-    private final AnnotatedElementContainer<AnnotatedElement>[] getFilterContainers(String[] filterNames,
-            Map<String, String> filterShortcuts) {
-        Set<AnnotatedElementContainer<AnnotatedElement>> filterList = new HashSet<AnnotatedElementContainer<AnnotatedElement>>();
+    private final AnnotatedElementContainer[] getFilterContainers(String[] filterNames, Map<String, String> filterShortcuts) {
+        Set<AnnotatedElementContainer> filterList = new HashSet<AnnotatedElementContainer>();
         boolean mustBeStatic;
         Class<?> filterClass;
         for (String filterName : filterNames) {
@@ -54,22 +52,22 @@ public class ListenerContainer extends AnnotatedElementContainer<AnnotatedElemen
 
             if (filterClass.isAnnotationPresent(EventListener.Filter.class)
                     && filterClass.getAnnotation(EventListener.Filter.class).value().equals(filterName))
-                filterList.add(new AnnotatedElementContainer<AnnotatedElement>(filterClass, targetClass, targetInstance));
+                filterList.add(new AnnotatedElementContainer(filterClass, targetClass, targetInstance));
 
             for (Field field : ReflectionUtil.getAnnotatedFields(filterClass, EventListener.Filter.class, null))
                 if ((!mustBeStatic || Modifier.isStatic(field.getModifiers()))
                         && field.getAnnotation(EventListener.Filter.class).value().equals(filterName))
-                    filterList.add(new AnnotatedElementContainer<AnnotatedElement>(field, targetClass, targetInstance));
+                    filterList.add(new AnnotatedElementContainer(field, targetClass, targetInstance));
 
             for (Method method : ReflectionUtil.getAnnotatedMethods(filterClass, EventListener.Filter.class, null, null))
                 if ((!mustBeStatic || Modifier.isStatic(method.getModifiers()))
                         && method.getAnnotation(EventListener.Filter.class).value().equals(filterName))
-                    filterList.add(new AnnotatedElementContainer<AnnotatedElement>(method, targetClass, targetInstance));
+                    filterList.add(new AnnotatedElementContainer(method, targetClass, targetInstance));
 
             for (Constructor<?> constructor : ReflectionUtil.getAnnotatedConstructors(filterClass, EventListener.Filter.class,
                     null))
                 if (constructor.getAnnotation(EventListener.Filter.class).value().equals(filterName))
-                    filterList.add(new AnnotatedElementContainer<AnnotatedElement>(constructor, targetClass, targetInstance));
+                    filterList.add(new AnnotatedElementContainer(constructor, targetClass, targetInstance));
         }
         return filterList.toArray(new AnnotatedElementContainer[filterList.size()]);
     }
@@ -127,7 +125,7 @@ public class ListenerContainer extends AnnotatedElementContainer<AnnotatedElemen
 
     private final Object[] getFilters() {
         Object[] returnObjects = new Object[filters.length];
-        AnnotatedElementContainer<AnnotatedElement> filter;
+        AnnotatedElementContainer filter;
         for (int i = 0; i < filters.length; i++) {
             filter = filters[i];
             if (filter == null) continue;

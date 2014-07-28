@@ -10,8 +10,8 @@ import java.util.NoSuchElementException;
 import com.dafttech.hash.HashUtil;
 import com.dafttech.reflect.ReflectionUtil;
 
-class AnnotatedElementContainer<Type extends AnnotatedElement> {
-    protected final Type target;
+class AnnotatedElementContainer {
+    protected final AnnotatedElement target;
     protected final Class<?> targetClass;
     protected final Object targetInstance;
     protected final Class<?> type;
@@ -21,7 +21,8 @@ class AnnotatedElementContainer<Type extends AnnotatedElement> {
     protected final Class<?>[] argTypes;
     protected final Object[] nullArgs;
 
-    protected AnnotatedElementContainer(Type target, Object access) {
+    // TODO: make access only be the instance
+    protected AnnotatedElementContainer(AnnotatedElement target, Object access) {
         this.target = target;
         if (access == null) {
             throw new NullPointerException();
@@ -68,7 +69,7 @@ class AnnotatedElementContainer<Type extends AnnotatedElement> {
         nullArgs = ReflectionUtil.buildArgumentArray(argTypes);
     }
 
-    protected AnnotatedElementContainer(Type target, Class<?> targetClass, Object targetInstance) {
+    protected AnnotatedElementContainer(AnnotatedElement target, Class<?> targetClass, Object targetInstance) {
         this(target, targetInstance == null ? targetClass : targetInstance);
     }
 
@@ -88,7 +89,7 @@ class AnnotatedElementContainer<Type extends AnnotatedElement> {
         return typeVal == 3;
     }
 
-    public Type getTarget() {
+    public AnnotatedElement getTarget() {
         return target;
     }
 

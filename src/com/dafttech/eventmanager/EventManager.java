@@ -21,9 +21,9 @@ import com.dafttech.storage.filterlist.Blacklist;
 import com.dafttech.storage.filterlist.Filterlist;
 
 public class EventManager {
-    volatile protected Map<EventType, List<ListenerContainer>> registeredListeners = new HashMap<EventType, List<ListenerContainer>>();
-    volatile protected Map<String, String> filterShortcuts = new HashMap<String, String>();
-    volatile private ExecutorService asyncEventExecutor = Executors.newCachedThreadPool();
+    protected final Map<EventType, List<ListenerContainer>> registeredListeners = new HashMap<EventType, List<ListenerContainer>>();
+    protected final Map<String, String> filterShortcuts = new HashMap<String, String>();
+    private final ExecutorService asyncEventExecutor = Executors.newCachedThreadPool();
 
     public EventManager() {
     }

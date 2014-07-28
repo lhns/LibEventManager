@@ -8,10 +8,10 @@ import com.dafttech.hash.HashUtil;
 import com.dafttech.storage.tuple.Tuple;
 
 public class EventType {
-    volatile private String name = "";
-    volatile private EventManager[] eventManagerWhitelist;
+    private final String name;
+    private final EventManager[] eventManagerWhitelist;
 
-    protected static Map<String, EventType> types = new HashMap<String, EventType>();
+    protected static final Map<String, EventType> types = new HashMap<String, EventType>();
 
     public static final double PRIORITY_LOW = -1;
     public static final double PRIORITY_NORMAL = 0;
@@ -19,11 +19,9 @@ public class EventType {
 
     public EventType(String name, EventManager... eventManagerWhitelist) {
         this.name = name;
-        types.put(name, this);
         this.eventManagerWhitelist = eventManagerWhitelist;
-    }
 
-    protected EventType() {
+        types.put(name, this);
     }
 
     public final String getName() {
