@@ -6,6 +6,7 @@ import java.util.List;
 
 public class PrimitiveUtil {
     private static final List<Primitive<?>> PRIMITIVES = new ArrayList<Primitive<?>>();
+    private static volatile Primitive<?>[] PRIMITIVE_ARRAY;
 
     public static final Primitive<Byte> BYTE = new Primitive<Byte>("byte", Byte.class, 0) {
         @Override
@@ -97,8 +98,8 @@ public class PrimitiveUtil {
     };
 
     public static Primitive<?> get(Class<?> clazz) {
-        for (Primitive<?> primitive : PRIMITIVES)
-            if (primitive.equals(clazz)) return primitive;
+        for (int i = 0; i < PRIMITIVE_ARRAY.length; i++)
+            if (PRIMITIVE_ARRAY[i].equals(clazz)) return PRIMITIVE_ARRAY[i];
         return null;
     }
 
@@ -150,6 +151,7 @@ public class PrimitiveUtil {
             }
             this.valueField = valueField;
             PRIMITIVES.add(this);
+            PRIMITIVE_ARRAY = PRIMITIVES.toArray(new Primitive[0]);
         }
 
         public abstract long toLong(ClassType value);

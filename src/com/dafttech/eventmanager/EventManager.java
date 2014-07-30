@@ -9,8 +9,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -111,18 +113,20 @@ public class EventManager {
     public final void unregisterEventListener(Object eventListener, Filterlist<EventType> filterlist) {
         if (filterlist == null || !filterlist.isValid()) return;
 
-        List<ListenerContainer> listenerContainers;
-
         synchronized (registeredListeners) {
-            for (EventType type : registeredListeners.keySet()) {
-                if (!filterlist.isFiltered(type)) continue;
+            Iterator<Entry<EventType, List<ListenerContainer>>> iterator = registeredListeners.entrySet().iterator();
 
-                listenerContainers = registeredListeners.get(type);
-                if (listenerContainers == null || listenerContainers.size() == 0) continue;
+            while (iterator.hasNext()) {
+                Entry<EventType, List<ListenerContainer>> entry = iterator.next();
+                List<ListenerContainer> listenerContainers = entry.getValue();
+
+                if (!filterlist.isFiltered(entry.getKey()) || listenerContainers == null) continue;
 
                 synchronized (listenerContainers) {
                     for (int i = listenerContainers.size() - 1; i >= 0; i--)
                         if (listenerContainers.get(i).equals(eventListener)) listenerContainers.remove(i);
+
+                    if (listenerContainers.size() == 0) iterator.remove();
                 }
             }
         }

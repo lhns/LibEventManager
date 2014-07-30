@@ -56,7 +56,11 @@ public class Event {
         out = new TupleFacade(new ArrayList<Object>());
 
         this.listenerContainers = new LinkedList<ListenerContainer>();
-        if (listenerContainers != null) this.listenerContainers.addAll(listenerContainers);
+        if (listenerContainers != null) {
+            synchronized (listenerContainers) {
+                this.listenerContainers.addAll(listenerContainers);
+            }
+        }
     }
 
     protected final void schedule() {
