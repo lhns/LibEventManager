@@ -135,11 +135,17 @@ public class Event {
      * EventListeners.
      */
     public final void cancel() {
-        if (state.isChangable()) state = State.CANCELLED;
+        synchronized (state) {
+            if (state.isChangable()) state = State.CANCELLED;
+        }
     }
 
     public final void setCancelled(boolean cancelled) {
-        if (cancelled && state.isChangable()) state = State.CANCELLED;
+        if (cancelled) {
+            synchronized (state) {
+                if (state.isChangable()) state = State.CANCELLED;
+            }
+        }
     }
 
     /**

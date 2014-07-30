@@ -36,7 +36,9 @@ public final class ListenerContainer extends AnnotatedElementContainer {
             boolean mustBeStatic = isStatic;
             Class<?> filterClass = targetClass;
 
-            if (filterShortcuts.containsKey(filterName)) filterName = filterShortcuts.get(filterName);
+            synchronized (filterShortcuts) {
+                if (filterShortcuts.containsKey(filterName)) filterName = filterShortcuts.get(filterName);
+            }
             filterName = resolveClassPath(filterName, targetClass.getName());
 
             if (filterName.contains(".")) {

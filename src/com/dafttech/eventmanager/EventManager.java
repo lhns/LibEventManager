@@ -21,7 +21,7 @@ import com.dafttech.storage.filterlist.Blacklist;
 import com.dafttech.storage.filterlist.Filterlist;
 
 public class EventManager {
-    protected final Map<EventType, List<ListenerContainer>> registeredListeners = new HashMap<EventType, List<ListenerContainer>>();
+    private final Map<EventType, List<ListenerContainer>> registeredListeners = new HashMap<EventType, List<ListenerContainer>>();
     protected final Map<String, String> filterShortcuts = new HashMap<String, String>();
     private final ExecutorService asyncEventExecutor = Executors.newCachedThreadPool();
 
@@ -112,14 +112,19 @@ public class EventManager {
         if (filterlist == null || !filterlist.isValid()) return;
 
         List<ListenerContainer> listenerContainers;
-        for (EventType type : registeredListeners.keySet()) {
-            if (!filterlist.isFiltered(type)) continue;
 
-            listenerContainers = registeredListeners.get(type);
-            if (listenerContainers == null || listenerContainers.size() == 0) continue;
+        synchronized (registeredListeners) {
+            for (EventType type : registeredListeners.keySet()) {
+                if (!filterlist.isFiltered(type)) continue;
 
-            for (int i = listenerContainers.size() - 1; i >= 0; i--)
-                if (listenerContainers.get(i).equals(eventListener)) listenerContainers.remove(i);
+                listenerContainers = registeredListeners.get(type);
+                if (listenerContainers == null || listenerContainers.size() == 0) continue;
+
+                synchronized (listenerContainers) {
+                    for (int i = listenerContainers.size() - 1; i >= 0; i--)
+                        if (listenerContainers.get(i).equals(eventListener)) listenerContainers.remove(i);
+                }
+            }
         }
     }
 
@@ -128,20 +133,22 @@ public class EventManager {
     }
 
     private final void addEventListenerContainer(EventType type, ListenerContainer newListenerContainer) {
-        if (!registeredListeners.containsKey(type)) registeredListeners.put(type, new ArrayList<ListenerContainer>());
+        synchronized (registeredListeners) {
+            if (!registeredListeners.containsKey(type)) registeredListeners.put(type, new ArrayList<ListenerContainer>());
 
-        List<ListenerContainer> listenerContainers = registeredListeners.get(type);
-        ListenerContainer listenerContainer;
-        for (int i = 0; i < listenerContainers.size(); i++) {
-            listenerContainer = listenerContainers.get(i);
-            if (listenerContainer.equals(newListenerContainer)) return;
+            List<ListenerContainer> listenerContainers = registeredListeners.get(type);
+            ListenerContainer listenerContainer;
+            for (int i = 0; i < listenerContainers.size(); i++) {
+                listenerContainer = listenerContainers.get(i);
+                if (listenerContainer.equals(newListenerContainer)) return;
 
-            if (listenerContainer.getPriority() < newListenerContainer.getPriority()) {
-                listenerContainers.add(i, newListenerContainer);
-                return;
+                if (listenerContainer.getPriority() < newListenerContainer.getPriority()) {
+                    listenerContainers.add(i, newListenerContainer);
+                    return;
+                }
             }
+            listenerContainers.add(newListenerContainer);
         }
-        listenerContainers.add(newListenerContainer);
     }
 
     /**
@@ -158,9 +165,11 @@ public class EventManager {
      */
     public final Event callSync(EventType type, Object... objects) {
         if (type == null) return null;
-        Event event = new Event(this, type, objects, registeredListeners.get(type));
-        event.schedule();
-        return event;
+        synchronized (registeredListeners) {
+            Event event = new Event(this, type, objects, registeredListeners.get(type));
+            event.schedule();
+            return event;
+        }
     }
 
     /**
@@ -179,13 +188,17 @@ public class EventManager {
      */
     public final AsyncEvent callAsync(EventType type, Object... objects) {
         if (type == null) return null;
-        AsyncEvent event = new AsyncEvent(this, type, objects, registeredListeners.get(type));
-        event.setFuture(asyncEventExecutor.submit(new AsyncEventRunnable(event)));
-        return event;
+        synchronized (registeredListeners) {
+            AsyncEvent event = new AsyncEvent(this, type, objects, registeredListeners.get(type));
+            event.setFuture(asyncEventExecutor.submit(new AsyncEventRunnable(event)));
+            return event;
+        }
     }
 
     public final EventManager addFilterShortcut(String shortcutName, String classPath) {
-        filterShortcuts.put(shortcutName, classPath);
+        synchronized (filterShortcuts) {
+            filterShortcuts.put(shortcutName, classPath);
+        }
         return this;
     }
 
