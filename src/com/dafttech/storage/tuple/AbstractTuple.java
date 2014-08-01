@@ -4,7 +4,6 @@ import java.lang.reflect.Array;
 import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
@@ -137,11 +136,6 @@ public abstract class AbstractTuple extends AbstractList<Object> implements Tupl
 
     @Override
     protected void removeRange(int paramInt1, int paramInt2) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void sort(Comparator<? super Object> paramComparator) {
         throw new UnsupportedOperationException();
     }
 
