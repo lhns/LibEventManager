@@ -1,4 +1,4 @@
-package com.dafttech.newnetwork.server;
+package com.dafttech.newnetwork.io;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -8,13 +8,14 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.util.Set;
 
-import com.dafttech.newnetwork.NetworkInterface;
+import com.dafttech.newnetwork.AbstractServer;
 import com.dafttech.newnetwork.packet.Packet;
 import com.dafttech.newnetwork.protocol.Protocol;
 
-public class Server<P extends Packet> extends NetworkInterface<P> {
+public class Server<P extends Packet> extends AbstractServer<P> {
     private final ServerSocketChannel serverSocketChannel;
-    private RunnableSelector first;
+
+    // private RunnableSelector first;
 
     public Server(Protocol<P> protocol, InetSocketAddress socketAddress) throws IOException {
         super(protocol);
@@ -24,10 +25,12 @@ public class Server<P extends Packet> extends NetworkInterface<P> {
         serverSocketChannel.register(null, 0);
     }
 
+    @SuppressWarnings("unused")
     private void register(SelectableChannel channel, int ops, Object attachment) {
         // channel.register(null, ops, attachment);
     }
 
+    @SuppressWarnings("unused")
     private static class RunnableSelector implements Runnable {
         private final Selector selector;
 
@@ -59,4 +62,5 @@ public class Server<P extends Packet> extends NetworkInterface<P> {
             }
         }
     }
+
 }

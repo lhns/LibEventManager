@@ -1,12 +1,11 @@
-package com.dafttech.newnetwork;
+package com.dafttech.newnetwork.protocol;
 
 import com.dafttech.newnetwork.packet.Packet;
-import com.dafttech.newnetwork.protocol.Protocol;
 
-public abstract class NetworkInterface<P extends Packet> {
+public abstract class ProtocolProvider<P extends Packet> {
     protected final Protocol<P> protocol;
 
-    public NetworkInterface(Protocol<P> protocol) {
+    public ProtocolProvider(Protocol<P> protocol) {
         this.protocol = protocol;
     }
 
