@@ -15,7 +15,8 @@ import com.dafttech.newnetwork.protocol.Protocol;
 public class Server<P extends Packet> extends AbstractServer<P> {
     private final ServerSocketChannel serverSocketChannel;
 
-    // private RunnableSelector first;
+    @SuppressWarnings("unused")
+    private final RunnableSelector first;
 
     public Server(Protocol<P> protocol, InetSocketAddress socketAddress) throws IOException {
         super(protocol);
@@ -23,6 +24,8 @@ public class Server<P extends Packet> extends AbstractServer<P> {
         serverSocketChannel.socket().bind(socketAddress);
         serverSocketChannel.configureBlocking(false);
         serverSocketChannel.register(null, 0);
+
+        first = null;
     }
 
     @SuppressWarnings("unused")
@@ -31,10 +34,14 @@ public class Server<P extends Packet> extends AbstractServer<P> {
     }
 
     @SuppressWarnings("unused")
-    private static class RunnableSelector implements Runnable {
+    private class RunnableSelector implements Runnable {
         private final Selector selector;
 
-        private RunnableSelector() {
+        private final RunnableSelector prev;
+        private volatile RunnableSelector next;
+
+        private RunnableSelector(RunnableSelector parent) {
+            prev = parent;
             selector = null;
         }
 
