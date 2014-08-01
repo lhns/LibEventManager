@@ -1,3 +1,3 @@
 ##Welcome to the EventManager by LolHens
 
-Allows to handle events and stuff
+Library for miscellaneous utilities like an event manager, a simple network library and utility classes handling primitives or reflection
