@@ -17,8 +17,9 @@ public class TupleFacade extends AbstractTuple implements Tuple, RandomAccess, C
 
     private List<Object> parent;
 
-    public TupleFacade(List<Object> list) {
-        parent = list;
+    @SuppressWarnings("unchecked")
+    public TupleFacade(List<? extends Object> list) {
+        parent = (List<Object>) list;
     }
 
     @Override
