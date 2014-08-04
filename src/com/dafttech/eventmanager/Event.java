@@ -40,8 +40,8 @@ public class Event {
     private final EventManager eventManager;
     private final EventType type;
 
-    public final Tuple in;
-    public final Tuple out;
+    public volatile Tuple in;
+    public volatile Tuple out;
 
     private volatile State state = State.NONE;
 
