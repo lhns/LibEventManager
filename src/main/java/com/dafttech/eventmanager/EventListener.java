@@ -21,25 +21,25 @@ import java.lang.annotation.Target;
 @Retention(RUNTIME)
 @Documented
 public @interface EventListener {
-    String[] value();
+	String[] value();
 
-    String[] filter() default {};
+	String[] filter() default {};
 
-    double priority() default EventType.PRIORITY_NORMAL;
+	double priority() default EventType.PRIORITY_NORMAL;
 
-    @Target({ METHOD })
-    @Retention(RUNTIME)
-    @Documented
-    public static @interface Group {
-        EventListener[] value();
+	@Target({ METHOD })
+	@Retention(RUNTIME)
+	@Documented
+	public static @interface Group {
+		EventListener[] value();
 
-        String[] filter() default {};
-    }
+		String[] filter() default {};
+	}
 
-    @Target({ METHOD, FIELD, CONSTRUCTOR, TYPE })
-    @Retention(RUNTIME)
-    @Documented
-    public @interface Filter {
-        String value();
-    }
+	@Target({ METHOD, FIELD, CONSTRUCTOR, TYPE })
+	@Retention(RUNTIME)
+	@Documented
+	public @interface Filter {
+		String value();
+	}
 }

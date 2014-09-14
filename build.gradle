@@ -6,7 +6,12 @@ group = "com.dafttech"
 
 sourceSets {
     main {
-        java { srcDirs = ["$projectDir/src"] }
+        java {
+			srcDirs = [
+				"$projectDir/src/main/java",
+				"$projectDir/src/main/example"
+			]
+		}
 	}
 }
 
