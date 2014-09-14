@@ -1,8 +1,12 @@
-bin
+#Eclipse
+.project
+.classpath
+.settings/
+bin/
 
-# Gradle #
-.gradle
-build
+#Gradle
+.gradle/
+build/
 
-# Git #
-.git
+#Git
+.cache
