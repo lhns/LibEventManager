@@ -17,15 +17,6 @@ import com.dafttech.network.protocol.RawProtocol;
 public class RawChat {
     public static NetworkInterface<RawPacket> net = null;
 
-    /**
-     * 
-     * @param args
-     * 
-     * @throws IOException
-     * 
-     * @throws NumberFormatException
-     */
-
     public static void main(String[] args) throws NumberFormatException, IOException {
         BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
         System.out.println("Server? ");

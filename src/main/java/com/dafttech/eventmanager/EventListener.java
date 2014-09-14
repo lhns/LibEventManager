@@ -11,35 +11,34 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * Mark specific Methods for Listening specific Events. The Method has to have
- * the parameters: (EventStream eventStream, Object object)
- * 
- * @param String
- *            []: Namen der Events.
+ * Mark specific Methods for Listening specific Events.
  */
 @Target({ METHOD, CONSTRUCTOR })
 @Retention(RUNTIME)
 @Documented
 public @interface EventListener {
-	String[] value();
+    /**
+     * @return String[] - Eventname
+     */
+    String[] value();
 
-	String[] filter() default {};
+    String[] filter() default {};
 
-	double priority() default EventType.PRIORITY_NORMAL;
+    double priority() default EventType.PRIORITY_NORMAL;
 
-	@Target({ METHOD })
-	@Retention(RUNTIME)
-	@Documented
-	public static @interface Group {
-		EventListener[] value();
+    @Target({ METHOD })
+    @Retention(RUNTIME)
+    @Documented
+    public static @interface Group {
+        EventListener[] value();
 
-		String[] filter() default {};
-	}
+        String[] filter() default {};
+    }
 
-	@Target({ METHOD, FIELD, CONSTRUCTOR, TYPE })
-	@Retention(RUNTIME)
-	@Documented
-	public @interface Filter {
-		String value();
-	}
+    @Target({ METHOD, FIELD, CONSTRUCTOR, TYPE })
+    @Retention(RUNTIME)
+    @Documented
+    public @interface Filter {
+        String value();
+    }
 }

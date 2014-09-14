@@ -163,10 +163,10 @@ public class ReflectionUtil {
      * specific types instead of null.
      * 
      * @param argTypes
-     *            Class<?>[] - the argument Types
+     *            Class&lt;?&gt;[] - the argument Types
      * @param appliedArgs
      *            Object... - The arg types that are replaced with objects
-     *            Example: ([Class<?>[] argTypes], String.class, "test")
+     *            Example: ([Class&lt;?&gt;[] argTypes], String.class, "test")
      * @return Object[] - Array with null or objects (look above)
      */
     public static final Object[] buildArgumentArray(Class<?>[] argTypes, Object... appliedArgs) {
