@@ -9,7 +9,7 @@ sourceSets {
         java {
 			srcDirs = [
 				"$projectDir/src/main/java",
-				"$projectDir/src/main/example"
+				//"$projectDir/src/main/example"
 			]
 		}
 	}
