@@ -10,3 +10,10 @@ build/
 
 #Git
 .cache
+
+#IntelliJ
+*.iml
+*.ipr
+*.iws
+.idea/
+out/
