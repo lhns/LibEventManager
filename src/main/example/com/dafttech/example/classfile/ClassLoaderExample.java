@@ -1,10 +1,10 @@
 package com.dafttech.example.classfile;
 
+import com.dafttech.classfile.URLClassLocation;
+
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-
-import com.dafttech.classfile.URLClassLocation;
 
 public class ClassLoaderExample {
     public static void main(String[] args) {

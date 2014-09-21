@@ -1,13 +1,13 @@
 package com.dafttech.network;
 
-import java.lang.reflect.InvocationTargetException;
-import java.net.ServerSocket;
-import java.net.Socket;
-
 import com.dafttech.network.disconnect.Disconnect;
 import com.dafttech.network.packet.IPacket;
 import com.dafttech.network.protocol.Protocol;
 import com.dafttech.storage.filterlist.Filterlist;
+
+import java.lang.reflect.InvocationTargetException;
+import java.net.ServerSocket;
+import java.net.Socket;
 
 public abstract class NetworkInterface<Packet extends IPacket> {
     private volatile Class<? extends Protocol<Packet>> protocolClass;

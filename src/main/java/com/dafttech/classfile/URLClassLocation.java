@@ -1,5 +1,8 @@
 package com.dafttech.classfile;
 
+import com.dafttech.hash.HashUtil;
+import com.dafttech.nio.file.PathUtil;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -12,9 +15,6 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.HashSet;
 import java.util.Set;
-
-import com.dafttech.hash.HashUtil;
-import com.dafttech.nio.file.PathUtil;
 
 public class URLClassLocation {
     public static final String EXT_CLASS = ".class";
@@ -66,7 +66,7 @@ public class URLClassLocation {
     }
 
     public Class<?> loadClass(ClassLoader parent) throws ClassNotFoundException {
-        return loadClassWithClassLoader(URLClassLoader.newInstance(new URL[] { sourceURL }, parent));
+        return loadClassWithClassLoader(URLClassLoader.newInstance(new URL[]{sourceURL}, parent));
     }
 
     public Class<?> loadClassWithClassLoader(URLClassLoader classLoader) throws ClassNotFoundException {

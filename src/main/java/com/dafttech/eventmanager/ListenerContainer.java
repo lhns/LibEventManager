@@ -1,27 +1,18 @@
 package com.dafttech.eventmanager;
 
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
-
 import com.dafttech.hash.HashUtil;
 import com.dafttech.reflect.ReflectionUtil;
 import com.dafttech.storage.tuple.ArrayTuple;
+
+import java.lang.reflect.*;
+import java.util.*;
 
 public final class ListenerContainer extends AnnotatedElementContainer {
     private final AnnotatedElementContainer[] filters;
     private final double priority;
 
     protected ListenerContainer(AnnotatedElement target, Object accessInstance, String[] filters, double priority,
-            Map<String, String> filterShortcuts) {
+                                Map<String, String> filterShortcuts) {
         super(target, accessInstance);
         this.filters = getFilterContainers(filters, filterShortcuts);
         this.priority = priority;

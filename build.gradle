@@ -7,12 +7,12 @@ group = "com.dafttech"
 sourceSets {
     main {
         java {
-			srcDirs = [
-				"$projectDir/src/main/java",
-				//"$projectDir/src/main/example"
-			]
-		}
-	}
+            srcDirs = [
+                    "$projectDir/src/main/java",
+                    //"$projectDir/src/main/example"
+            ]
+        }
+    }
 }
 
 task sourceJar(type: Jar) {
@@ -21,6 +21,6 @@ task sourceJar(type: Jar) {
 }
 task javadocJar(type: Jar, dependsOn: javadoc) {
     from 'build/docs/javadoc'
-	classifier = 'javadoc'
+    classifier = 'javadoc'
 }
 build.dependsOn sourceJar, javadocJar

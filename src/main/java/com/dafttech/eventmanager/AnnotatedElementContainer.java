@@ -1,14 +1,10 @@
 package com.dafttech.eventmanager;
 
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.NoSuchElementException;
-
 import com.dafttech.hash.HashUtil;
 import com.dafttech.reflect.ReflectionUtil;
+
+import java.lang.reflect.*;
+import java.util.NoSuchElementException;
 
 class AnnotatedElementContainer {
     protected final AnnotatedElement target;

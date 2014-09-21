@@ -1,17 +1,13 @@
 package com.dafttech.storage.tuple;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.RandomAccess;
-
 import com.dafttech.hash.HashUtil;
+
+import java.io.Serializable;
+import java.util.*;
 
 public class TupleFacade extends AbstractTuple implements Tuple, RandomAccess, Cloneable, Serializable {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = -1221937267645102522L;
 

@@ -3,7 +3,7 @@ package com.dafttech.storage.tuple;
 public class GenericTuple {
     public static class _1<T0> extends ArrayTuple {
         /**
-         * 
+         *
          */
         private static final long serialVersionUID = -5260647872308179286L;
 
@@ -32,7 +32,7 @@ public class GenericTuple {
 
     public static class _2<T0, T1> extends _1<T0> {
         /**
-         * 
+         *
          */
         private static final long serialVersionUID = 7232404047664929618L;
 
@@ -56,7 +56,7 @@ public class GenericTuple {
 
     public static class _3<T0, T1, T2> extends _2<T0, T1> {
         /**
-         * 
+         *
          */
         private static final long serialVersionUID = 4778020259519958789L;
 
@@ -75,7 +75,7 @@ public class GenericTuple {
 
     public static class _4<T0, T1, T2, T3> extends _3<T0, T1, T2> {
         /**
-         * 
+         *
          */
         private static final long serialVersionUID = 864480216854675185L;
 

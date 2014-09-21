@@ -1,26 +1,17 @@
 package com.dafttech.eventmanager;
 
+import com.dafttech.reflect.ReflectionUtil;
+import com.dafttech.storage.filterlist.Blacklist;
+import com.dafttech.storage.filterlist.Filterlist;
+
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.NoSuchElementException;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
-import com.dafttech.reflect.ReflectionUtil;
-import com.dafttech.storage.filterlist.Blacklist;
-import com.dafttech.storage.filterlist.Filterlist;
 
 public class EventManager {
     private final Map<EventType, List<ListenerContainer>> registeredListeners = new HashMap<EventType, List<ListenerContainer>>();
@@ -33,12 +24,10 @@ public class EventManager {
     /**
      * Used to register an EventListener created with annotations to call the
      * annotated methods.
-     * 
-     * @param eventListener
-     *            Object - Instance of the listening class
-     * @param filterlist
-     *            Filterlist&lt;EventType&gt; - Sets a filterlist of EventTypes
-     *            that are included/excluded
+     *
+     * @param eventListener Object - Instance of the listening class
+     * @param filterlist    Filterlist&lt;EventType&gt; - Sets a filterlist of EventTypes
+     *                      that are included/excluded
      */
     public final void registerEventListener(Object eventListener, Filterlist<EventType> filterlist) {
         if (filterlist == null || !filterlist.isValid()) return;
@@ -73,7 +62,8 @@ public class EventManager {
 
             List<EventListener> annotations = new ArrayList<EventListener>();
 
-            if (target.isAnnotationPresent(EventListener.class)) annotations.add(target.getAnnotation(EventListener.class));
+            if (target.isAnnotationPresent(EventListener.class))
+                annotations.add(target.getAnnotation(EventListener.class));
             if (target.isAnnotationPresent(EventListener.Group.class))
                 Collections.addAll(annotations, target.getAnnotation(EventListener.Group.class).value());
 
@@ -138,7 +128,8 @@ public class EventManager {
 
     private final void addEventListenerContainer(EventType type, ListenerContainer newListenerContainer) {
         synchronized (registeredListeners) {
-            if (!registeredListeners.containsKey(type)) registeredListeners.put(type, new ArrayList<ListenerContainer>());
+            if (!registeredListeners.containsKey(type))
+                registeredListeners.put(type, new ArrayList<ListenerContainer>());
 
             List<ListenerContainer> listenerContainers = registeredListeners.get(type);
             ListenerContainer listenerContainer;
@@ -158,14 +149,12 @@ public class EventManager {
     /**
      * Calls this event and asks all registered EventListeners and sends the
      * objects to them.
-     * 
-     * @param type
-     *            EventType - The EventType you want to call.
-     * @param objects
-     *            Object... - You can send any objects to the registered
-     *            classes.
+     *
+     * @param type    EventType - The EventType you want to call.
+     * @param objects Object... - You can send any objects to the registered
+     *                classes.
      * @return Event - to manage the called event such as getting the output and
-     *         checking if the event was cancelled
+     * checking if the event was cancelled
      */
     public final Event callSync(EventType type, Object... objects) {
         if (type == null) return null;
@@ -180,15 +169,13 @@ public class EventManager {
      * Calls this event in another thread that has to be started with
      * eventManagerInstance.asyncEventQueue.start(). It asks all registered
      * EventListeners and sends the objects to them.
-     * 
-     * @param type
-     *            EventType - The EventType you want to call.
-     * @param objects
-     *            Object... - You can send any objects to the registered
-     *            classes.
+     *
+     * @param type    EventType - The EventType you want to call.
+     * @param objects Object... - You can send any objects to the registered
+     *                classes.
      * @return Event - to manage the called event such as checking if the event
-     *         is done, getting the output and checking if the event was
-     *         cancelled
+     * is done, getting the output and checking if the event was
+     * cancelled
      */
     public final AsyncEvent callAsync(EventType type, Object... objects) {
         if (type == null) return null;

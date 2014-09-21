@@ -1,10 +1,10 @@
 package com.dafttech.network.protocol;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
 import com.dafttech.network.NetworkInterface;
 import com.dafttech.network.packet.RawPacket;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 public class RawProtocol extends Protocol<RawPacket> {
 

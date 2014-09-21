@@ -1,18 +1,18 @@
 package com.dafttech.network;
 
-import java.io.EOFException;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.Socket;
-import java.net.UnknownHostException;
-import java.nio.ByteBuffer;
-
 import com.dafttech.network.disconnect.Disconnect;
 import com.dafttech.network.disconnect.Quit;
 import com.dafttech.network.disconnect.Unknown;
 import com.dafttech.network.packet.IPacket;
 import com.dafttech.network.protocol.Protocol;
 import com.dafttech.storage.filterlist.Filterlist;
+
+import java.io.EOFException;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
+import java.nio.ByteBuffer;
 
 public class Client<Packet extends IPacket> extends NetworkInterface<Packet> {
     private volatile Socket socket;

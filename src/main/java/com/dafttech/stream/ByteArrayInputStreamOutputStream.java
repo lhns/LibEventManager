@@ -23,13 +23,11 @@ public class ByteArrayInputStreamOutputStream extends OutputStream {
      * Increases the capacity if necessary to ensure that it can hold at least
      * the number of elements specified by the minimum capacity argument.
      *
-     * @param minCapacity
-     *            the desired minimum capacity
-     * @throws OutOfMemoryError
-     *             if {@code minCapacity < 0}. This is interpreted as a request
-     *             for the unsatisfiably large capacity
-     *             {@code (long) Integer.MAX_VALUE + (minCapacity - Integer.MAX_VALUE)}
-     *             .
+     * @param minCapacity the desired minimum capacity
+     * @throws OutOfMemoryError if {@code minCapacity < 0}. This is interpreted as a request
+     *                          for the unsatisfiably large capacity
+     *                          {@code (long) Integer.MAX_VALUE + (minCapacity - Integer.MAX_VALUE)}
+     *                          .
      */
     private void ensureCapacity(int minCapacity) {
         // overflow-conscious code
@@ -42,8 +40,7 @@ public class ByteArrayInputStreamOutputStream extends OutputStream {
      * Increases the capacity to ensure that it can hold at least the number of
      * elements specified by the minimum capacity argument.
      *
-     * @param minCapacity
-     *            the desired minimum capacity
+     * @param minCapacity the desired minimum capacity
      */
     private void grow(int minCapacity) {
         // overflow-conscious code
@@ -73,8 +70,7 @@ public class ByteArrayInputStreamOutputStream extends OutputStream {
     /**
      * Writes the specified byte to this byte array output stream.
      *
-     * @param b
-     *            the byte to be written.
+     * @param b the byte to be written.
      */
     @Override
     public synchronized void write(int b) {
@@ -89,12 +85,9 @@ public class ByteArrayInputStreamOutputStream extends OutputStream {
      * Writes <code>len</code> bytes from the specified byte array starting at
      * offset <code>off</code> to this byte array output stream.
      *
-     * @param b
-     *            the data.
-     * @param off
-     *            the start offset in the data.
-     * @param len
-     *            the number of bytes to write.
+     * @param b   the data.
+     * @param off the start offset in the data.
+     * @param len the number of bytes to write.
      */
     @Override
     public synchronized void write(byte b[], int off, int len) {
@@ -113,10 +106,8 @@ public class ByteArrayInputStreamOutputStream extends OutputStream {
      * specified output stream argument, as if by calling the output stream's
      * write method using <code>out.write(buf, 0, count)</code>.
      *
-     * @param out
-     *            the output stream to which to write the data.
-     * @exception IOException
-     *                if an I/O error occurs.
+     * @param out the output stream to which to write the data.
+     * @throws IOException if an I/O error occurs.
      */
     public synchronized void writeTo(OutputStream out) throws IOException {
         out.write(inputStreamAccess.getBuf(), 0, inputStreamAccess.getCount());
@@ -154,7 +145,7 @@ public class ByteArrayInputStreamOutputStream extends OutputStream {
      * Returns the current size of the buffer.
      *
      * @return the value of the <code>count</code> field, which is the number of
-     *         valid bytes in this output stream.
+     * valid bytes in this output stream.
      * @see java.io.ByteArrayOutputStream#count
      */
     public synchronized int size() {
@@ -166,8 +157,8 @@ public class ByteArrayInputStreamOutputStream extends OutputStream {
      * platform's default character set. The length of the new <tt>String</tt>
      * is a function of the character set, and hence may not be equal to the
      * size of the buffer.
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * This method always replaces malformed-input and unmappable-character
      * sequences with the default replacement string for the platform's default
      * character set. The {@linkplain java.nio.charset.CharsetDecoder} class
@@ -186,19 +177,17 @@ public class ByteArrayInputStreamOutputStream extends OutputStream {
      * the named {@link java.nio.charset.Charset charset}. The length of the new
      * <tt>String</tt> is a function of the charset, and hence may not be equal
      * to the length of the byte array.
-     *
-     * <p>
+     * <p/>
+     * <p/>
      * This method always replaces malformed-input and unmappable-character
      * sequences with this charset's default replacement string. The
      * {@link java.nio.charset.CharsetDecoder} class should be used when more
      * control over the decoding process is required.
      *
-     * @param charsetName
-     *            the name of a supported {@link java.nio.charset.Charset
-     *            charset}
+     * @param charsetName the name of a supported {@link java.nio.charset.Charset
+     *                    charset}
      * @return String decoded from the buffer's contents.
-     * @exception UnsupportedEncodingException
-     *                If the named charset is not supported
+     * @throws UnsupportedEncodingException If the named charset is not supported
      * @since JDK1.1
      */
     public synchronized String toString(String charsetName) throws UnsupportedEncodingException {

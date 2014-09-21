@@ -1,15 +1,15 @@
 package com.dafttech.storage.tuple;
 
+import com.dafttech.hash.HashUtil;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.RandomAccess;
 
-import com.dafttech.hash.HashUtil;
-
 public class ArrayTuple extends AbstractTuple implements Tuple, RandomAccess, Cloneable, Serializable {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 5291579362104103299L;
 

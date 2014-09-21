@@ -1,9 +1,5 @@
 package com.dafttech.example.network.chat;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-
 import com.dafttech.network.Client;
 import com.dafttech.network.NetworkInterface;
 import com.dafttech.network.Server;
@@ -11,6 +7,10 @@ import com.dafttech.network.disconnect.Disconnect;
 import com.dafttech.network.packet.SimplePacket;
 import com.dafttech.network.protocol.SimpleProtocol;
 import com.dafttech.storage.filterlist.Blacklist;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 
 public class Chat {
     public static NetworkInterface<SimplePacket> net = null;

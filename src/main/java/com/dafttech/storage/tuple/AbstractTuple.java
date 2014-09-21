@@ -1,15 +1,9 @@
 package com.dafttech.storage.tuple;
 
-import java.lang.reflect.Array;
-import java.util.AbstractList;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
-import java.util.NoSuchElementException;
-
 import com.dafttech.primitive.PrimitiveUtil;
+
+import java.lang.reflect.Array;
+import java.util.*;
 
 public abstract class AbstractTuple extends AbstractList<Object> implements Tuple {
     @Override
@@ -73,7 +67,8 @@ public abstract class AbstractTuple extends AbstractList<Object> implements Tupl
         Class<?> primitive = type.isPrimitive() ? PrimitiveUtil.get(type).wrapperClass : null;
 
         for (int i = 0; i < elementData.length; i++)
-            if (primitive != null && primitive.isInstance(elementData[i]) || type.isInstance(elementData[i])) return true;
+            if (primitive != null && primitive.isInstance(elementData[i]) || type.isInstance(elementData[i]))
+                return true;
         return false;
     }
 
