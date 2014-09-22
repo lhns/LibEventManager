@@ -4,24 +4,25 @@ package com.dafttech.math;
  * Created by LolHens on 22.09.2014.
  */
 public class TrigonometryCache {
+    private static float cosShift = (float) (Math.PI / 2);
+
     private float[] cache;
+    private float multiplier;
 
     public TrigonometryCache(int resolution) {
         cache = new float[(int) Math.pow(2, resolution)];
-        float multiplier = (float) ((1d / (double) cache.length) * Math.PI * 2);
-        for (int i = 0; i < cache.length; i++) cache[i] = (float) Math.cos((float) i * multiplier);
-    }
-
-    public float cos(float val) {
-        int floor = (int) val;
-        int mod = floor & (cache.length - 1);
-        float val1 = cache[mod];
-        float val2 = cache[mod == cache.length ? 0 : mod];
-        float interpolation = val - floor;
-        return val1 + interpolation * (val2 - val1);
+        multiplier = (float) ((1 / (Math.PI * 2)) * cache.length);
+        for (int i = 0; i < cache.length; i++) cache[i] = (float) Math.sin(i / multiplier);
     }
 
     public float sin(float val) {
-        return cos((float) (val + Math.PI / 2));
+        float index = val * multiplier;
+        int floor = (int) index;
+        int mod = floor & (cache.length - 1);
+        return cache[mod] + (index - floor) * (cache[mod + 1 == cache.length ? 0 : mod + 1] - cache[mod]);
+    }
+
+    public float cos(float val) {
+        return sin(val + cosShift);
     }
 }
