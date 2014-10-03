@@ -33,8 +33,6 @@ public class RawChat {
                         readByteArray(packet.data);
                     }
 
-                    ;
-
                     @Override
                     public void connect(Client<RawPacket> client) {
                         System.out.println(client.getSocket().getRemoteSocketAddress().toString() + ": Connection Requested");

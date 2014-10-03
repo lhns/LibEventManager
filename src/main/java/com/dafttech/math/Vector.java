@@ -3,6 +3,8 @@ package com.dafttech.math;
 import com.dafttech.hash.HashUtil;
 
 public class Vector implements Cloneable {
+    private static TrigonometryCache trigonometryCache = new TrigonometryCache(8);
+
     public float x, y, z;
 
     public Vector(float x, float y, float z) {
@@ -95,13 +97,13 @@ public class Vector implements Cloneable {
         return (int) z;
     }
 
-    public Vector rotate(float x, float y, float z, Vector origin) {
-        float myX = this.x - origin.x, myY = this.y - origin.y, myZ = this.z - origin.z;
-        double sinX = Math.sin(x), sinY = Math.sin(y), sinZ = Math.sin(z);
-        double cosX = Math.cos(x), cosY = Math.cos(y), cosZ = Math.cos(z);
-        set((float) (cosZ * (cosY * myX + sinY * (sinX * myY + cosX * myZ)) - sinZ * (cosX * myY - sinX * myZ)), (float) (sinZ
-                        * (cosY * myX + sinY * (sinX * myY + cosX * myZ)) + cosZ * (cosX * myY - sinX * myZ)),
-                (float) (-sinY * myX + cosY * (sinX * myY + cosX * myZ)));
+    public Vector rotate(float rX, float rY, float rZ, Vector origin) {
+        float x = this.x - origin.x, y = this.y - origin.y, z = this.z - origin.z;
+        double sX = trigonometryCache.sin(rX), sY = trigonometryCache.sin(rY), sZ = trigonometryCache.sin(rZ);
+        double cX = trigonometryCache.cos(rX), cY = trigonometryCache.cos(rY), cZ = trigonometryCache.cos(rZ);
+        set((float) (cZ * (cY * x + sY * (sX * y + cX * z)) - sZ * (cX * y - sX * z)),
+                (float) (sZ * (cY * x + sY * (sX * y + cX * z)) + cZ * (cX * y - sX * z)),
+                (float) (-sY * x + cY * (sX * y + cX * z)));
         return add(origin);
     }
 
