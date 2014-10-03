@@ -1,4 +1,4 @@
-package com.dafttech.example.classfile;
+package com.dafttech.test.classfile;
 
 public class LoadedClass implements IRunnableModule {
 

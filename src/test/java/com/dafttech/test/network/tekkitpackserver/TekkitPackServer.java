@@ -1,12 +1,12 @@
-package com.dafttech.example.network.tekkitpackserver;
-
-import java.io.IOException;
+package com.dafttech.test.network.tekkitpackserver;
 
 import com.dafttech.network.Client;
 import com.dafttech.network.Server;
 import com.dafttech.network.disconnect.Disconnect;
 import com.dafttech.network.packet.RawPacket;
 import com.dafttech.network.protocol.RawProtocol;
+
+import java.io.IOException;
 
 public class TekkitPackServer {
     public static String inHeader = "", outHeader = "", content = "";

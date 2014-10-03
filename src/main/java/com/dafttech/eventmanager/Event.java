@@ -1,14 +1,14 @@
 package com.dafttech.eventmanager;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-
 import com.dafttech.hash.HashUtil;
 import com.dafttech.storage.tuple.ArrayTuple;
 import com.dafttech.storage.tuple.Tuple;
 import com.dafttech.storage.tuple.TupleFacade;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 public class Event {
     private static enum State {
@@ -35,7 +35,9 @@ public class Event {
         public boolean isCancelled() {
             return phase == 3;
         }
-    };
+    }
+
+    ;
 
     private final EventManager eventManager;
     private final EventType type;
@@ -90,7 +92,7 @@ public class Event {
 
     /**
      * Returns the EventManager, that handles this Event
-     * 
+     *
      * @return EventManager - the EventManager which handles this Event.
      */
     public final EventManager getEventManager() {
@@ -99,7 +101,7 @@ public class Event {
 
     /**
      * Returns the EventType of this Event
-     * 
+     *
      * @return EventType - the EventType this event is of.
      */
     public final EventType getEventType() {
@@ -108,9 +110,8 @@ public class Event {
 
     /**
      * Check if the Event is of the given EventType
-     * 
-     * @param eventType
-     *            EventType - EventType to check for.
+     *
+     * @param eventType EventType - EventType to check for.
      * @return boolean - if the EventType was equal to the given one.
      */
     public final boolean isEventType(EventType eventType) {
@@ -127,7 +128,7 @@ public class Event {
 
     /**
      * Check, if all the data of an Async Event is collected.
-     * 
+     *
      * @return boolean - true, if the event is done.
      */
     public final boolean isDone() {
@@ -154,7 +155,7 @@ public class Event {
 
     /**
      * Check if the event is cancelled
-     * 
+     *
      * @return boolean - true, if the event was cancelled.
      */
     public final boolean isCancelled() {

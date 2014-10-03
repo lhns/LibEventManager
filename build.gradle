@@ -1,26 +1,16 @@
 apply plugin: 'java'
 
-archivesBaseName = "EventManager"
 version = "12.0"
 group = "com.dafttech"
-
-sourceSets {
-    main {
-        java {
-			srcDirs = [
-				"$projectDir/src/main/java",
-				//"$projectDir/src/main/example"
-			]
-		}
-	}
-}
 
 task sourceJar(type: Jar) {
     from sourceSets.main.allSource
     classifier = 'sources'
 }
+
 task javadocJar(type: Jar, dependsOn: javadoc) {
     from 'build/docs/javadoc'
-	classifier = 'javadoc'
+    classifier = 'javadoc'
 }
+
 build.dependsOn sourceJar, javadocJar

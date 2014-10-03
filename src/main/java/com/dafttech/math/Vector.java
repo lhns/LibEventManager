@@ -100,7 +100,7 @@ public class Vector implements Cloneable {
         double sinX = Math.sin(x), sinY = Math.sin(y), sinZ = Math.sin(z);
         double cosX = Math.cos(x), cosY = Math.cos(y), cosZ = Math.cos(z);
         set((float) (cosZ * (cosY * myX + sinY * (sinX * myY + cosX * myZ)) - sinZ * (cosX * myY - sinX * myZ)), (float) (sinZ
-                * (cosY * myX + sinY * (sinX * myY + cosX * myZ)) + cosZ * (cosX * myY - sinX * myZ)),
+                        * (cosY * myX + sinY * (sinX * myY + cosX * myZ)) + cosZ * (cosX * myY - sinX * myZ)),
                 (float) (-sinY * myX + cosY * (sinX * myY + cosX * myZ)));
         return add(origin);
     }

@@ -1,11 +1,11 @@
 package com.dafttech.eventmanager;
 
+import com.dafttech.hash.HashUtil;
+import com.dafttech.storage.tuple.Tuple;
+
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-
-import com.dafttech.hash.HashUtil;
-import com.dafttech.storage.tuple.Tuple;
 
 public class EventType {
     private final String name;
@@ -36,14 +36,10 @@ public class EventType {
     /**
      * Used to be overridden in subclasses (use anonymous classes), to filter
      * out the EventListeners
-     * 
-     * @param event
-     *            Event - the called event
-     * @param filter
-     *            Tuple - Is the given filter on registering an EventListener
-     * @param listenerContainer
-     *            ListenerContainer - Is the container of the EventListener
-     * 
+     *
+     * @param event             Event - the called event
+     * @param filter            Tuple - Is the given filter on registering an EventListener
+     * @param listenerContainer ListenerContainer - Is the container of the EventListener
      * @return boolean: true, if the EventListener should be called.
      */
     protected boolean isFiltered(Event event, Tuple filter, ListenerContainer listenerContainer) {
@@ -53,9 +49,8 @@ public class EventType {
     /**
      * Used to be overridden in subclasses (use anonymous classes), to catch the
      * events before all the EventListeners
-     * 
-     * @param event
-     *            Event - Is the called event (can be cancelled)
+     *
+     * @param event Event - Is the called event (can be cancelled)
      */
     protected void onEvent(Event event) {
     }

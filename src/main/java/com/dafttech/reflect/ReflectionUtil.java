@@ -1,8 +1,6 @@
 package com.dafttech.reflect;
 
-import static java.lang.annotation.ElementType.FIELD;
-import static java.lang.annotation.ElementType.METHOD;
-import static java.lang.annotation.RetentionPolicy.RUNTIME;
+import com.dafttech.primitive.PrimitiveUtil;
 
 import java.lang.annotation.Annotation;
 import java.lang.annotation.Documented;
@@ -17,12 +15,14 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.dafttech.primitive.PrimitiveUtil;
+import static java.lang.annotation.ElementType.FIELD;
+import static java.lang.annotation.ElementType.METHOD;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 public class ReflectionUtil {
 
     public static final Set<Field> getAnnotatedFields(Class<?> target, List<Class<? extends Annotation>> annotations,
-            Class<?> reqType) {
+                                                      Class<?> reqType) {
         Set<Field> fields = new HashSet<Field>();
         if (reqType == void.class) return fields;
 
@@ -44,11 +44,11 @@ public class ReflectionUtil {
     }
 
     public static final Set<Field> getAnnotatedFields(Class<?> target, Class<? extends Annotation> annotation, Class<?> reqType) {
-        return getAnnotatedFields(target, Arrays.<Class<? extends Annotation>> asList(annotation), reqType);
+        return getAnnotatedFields(target, Arrays.<Class<? extends Annotation>>asList(annotation), reqType);
     }
 
     public static final Set<Method> getAnnotatedMethods(Class<?> target, List<Class<? extends Annotation>> annotations,
-            Class<?> reqType, List<Class<?>> reqArgs) {
+                                                        Class<?> reqType, List<Class<?>> reqArgs) {
         Set<Method> methods = new HashSet<Method>();
 
         for (Method method : getAllDeclaredMethods(target)) {
@@ -70,12 +70,12 @@ public class ReflectionUtil {
     }
 
     public static final Set<Method> getAnnotatedMethods(Class<?> target, Class<? extends Annotation> annotation,
-            Class<?> reqType, List<Class<?>> reqArgs) {
-        return getAnnotatedMethods(target, Arrays.<Class<? extends Annotation>> asList(annotation), reqType, reqArgs);
+                                                        Class<?> reqType, List<Class<?>> reqArgs) {
+        return getAnnotatedMethods(target, Arrays.<Class<? extends Annotation>>asList(annotation), reqType, reqArgs);
     }
 
     public static final Set<Constructor<?>> getAnnotatedConstructors(Class<?> target,
-            List<Class<? extends Annotation>> annotations, List<Class<?>> reqArgs) {
+                                                                     List<Class<? extends Annotation>> annotations, List<Class<?>> reqArgs) {
         Set<Constructor<?>> constructors = new HashSet<Constructor<?>>();
 
         for (Constructor<?> constructor : getAllDeclaredConstructors(target)) {
@@ -96,8 +96,8 @@ public class ReflectionUtil {
     }
 
     public static final Set<Constructor<?>> getAnnotatedConstructors(Class<?> target, Class<? extends Annotation> annotation,
-            List<Class<?>> reqArgs) {
-        return getAnnotatedConstructors(target, Arrays.<Class<? extends Annotation>> asList(annotation), reqArgs);
+                                                                     List<Class<?>> reqArgs) {
+        return getAnnotatedConstructors(target, Arrays.<Class<? extends Annotation>>asList(annotation), reqArgs);
     }
 
     public static final Set<Field> getAllDeclaredFields(Class<?> target) {
@@ -161,12 +161,10 @@ public class ReflectionUtil {
      * Used to get an array of null objects (or false for boolean, 0 for
      * numbers, etc.) for dynamic instantiation. You can also insert objects for
      * specific types instead of null.
-     * 
-     * @param argTypes
-     *            Class&lt;?&gt;[] - the argument Types
-     * @param appliedArgs
-     *            Object... - The arg types that are replaced with objects
-     *            Example: ([Class&lt;?&gt;[] argTypes], String.class, "test")
+     *
+     * @param argTypes    Class&lt;?&gt;[] - the argument Types
+     * @param appliedArgs Object... - The arg types that are replaced with objects
+     *                    Example: ([Class&lt;?&gt;[] argTypes], String.class, "test")
      * @return Object[] - Array with null or objects (look above)
      */
     public static final Object[] buildArgumentArray(Class<?>[] argTypes, Object... appliedArgs) {
@@ -197,7 +195,7 @@ public class ReflectionUtil {
         return null;
     }
 
-    @Target({ METHOD, FIELD })
+    @Target({METHOD, FIELD})
     @Retention(RUNTIME)
     @Documented
     public static @interface SingletonInstance {

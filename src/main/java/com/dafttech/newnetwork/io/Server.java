@@ -1,5 +1,9 @@
 package com.dafttech.newnetwork.io;
 
+import com.dafttech.newnetwork.AbstractServer;
+import com.dafttech.newnetwork.packet.Packet;
+import com.dafttech.newnetwork.protocol.Protocol;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SelectableChannel;
@@ -7,10 +11,6 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.util.Set;
-
-import com.dafttech.newnetwork.AbstractServer;
-import com.dafttech.newnetwork.packet.Packet;
-import com.dafttech.newnetwork.protocol.Protocol;
 
 public class Server<P extends Packet> extends AbstractServer<P> {
     private final ServerSocketChannel serverSocketChannel;

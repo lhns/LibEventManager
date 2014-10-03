@@ -1,21 +1,16 @@
-package com.dafttech.example.network.soundsend;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.UnknownHostException;
-
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.TargetDataLine;
+package com.dafttech.test.network.soundsend;
 
 import com.dafttech.network.Client;
 import com.dafttech.network.NetworkInterface;
 import com.dafttech.network.disconnect.Disconnect;
 import com.dafttech.network.packet.RawPacket;
 import com.dafttech.network.protocol.RawProtocol;
+
+import javax.sound.sampled.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.UnknownHostException;
 
 public class SoundSend {
     public static NetworkInterface<RawPacket> net;

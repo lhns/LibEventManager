@@ -1,5 +1,7 @@
 package com.dafttech.storage.tree;
 
+import com.dafttech.hash.HashUtil;
+
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -8,11 +10,9 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.dafttech.hash.HashUtil;
-
 public class LinkedTree<Leaf> implements Tree<Leaf>, Cloneable, Serializable {
     /**
-     * 
+     *
      */
     private static final long serialVersionUID = 6857447299766592010L;
     private Tree<Leaf> root;

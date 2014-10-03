@@ -1,4 +1,4 @@
-package com.dafttech.example.eventmanager;
+package com.dafttech.test.eventmanager;
 
 import com.dafttech.eventmanager.Event;
 import com.dafttech.eventmanager.EventListener;

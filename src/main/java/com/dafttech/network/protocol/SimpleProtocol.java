@@ -1,11 +1,11 @@
 package com.dafttech.network.protocol;
 
-import static com.dafttech.primitive.PrimitiveUtil.INTEGER;
+import com.dafttech.network.NetworkInterface;
+import com.dafttech.network.packet.SimplePacket;
 
 import java.nio.ByteBuffer;
 
-import com.dafttech.network.NetworkInterface;
-import com.dafttech.network.packet.SimplePacket;
+import static com.dafttech.primitive.PrimitiveUtil.INTEGER;
 
 public class SimpleProtocol extends Protocol<SimplePacket> {
     public SimpleProtocol(NetworkInterface<SimplePacket> netInterface) {

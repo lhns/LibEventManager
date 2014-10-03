@@ -1,11 +1,4 @@
-package com.dafttech.example.network.rawChat;
-
-import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.ArrayList;
-import java.util.List;
+package com.dafttech.test.network.rawChat;
 
 import com.dafttech.network.Client;
 import com.dafttech.network.NetworkInterface;
@@ -13,6 +6,13 @@ import com.dafttech.network.Server;
 import com.dafttech.network.disconnect.Disconnect;
 import com.dafttech.network.packet.RawPacket;
 import com.dafttech.network.protocol.RawProtocol;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RawChat {
     public static NetworkInterface<RawPacket> net = null;
@@ -31,7 +31,9 @@ public class RawChat {
                     @Override
                     public void receive(Client<RawPacket> client, RawPacket packet) {
                         readByteArray(packet.data);
-                    };
+                    }
+
+                    ;
 
                     @Override
                     public void connect(Client<RawPacket> client) {
@@ -55,7 +57,9 @@ public class RawChat {
                 @Override
                 public void receive(RawPacket packet) {
                     readByteArray(packet.data);
-                };
+                }
+
+                ;
 
                 @Override
                 public void connect() {

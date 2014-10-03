@@ -8,6 +8,7 @@ public class ByteArrayInputStreamAccess {
     public static Field FIELD_POS;
     public static Field FIELD_MARK;
     public static Field FIELD_COUNT;
+
     static {
         try {
             FIELD_BUF = ByteArrayInputStream.class.getDeclaredField("buf");
