@@ -4,7 +4,7 @@ package com.dafttech.math;
  * Created by LolHens on 22.09.2014.
  */
 public class TrigonometryCache {
-    private static float cosShift = (float) (Math.PI / 2);
+    private static final float cosShift = (float) (Math.PI / 2);
 
     private float[] cache;
     private float multiplier;
