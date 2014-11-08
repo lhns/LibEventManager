@@ -3,6 +3,7 @@ package com.dafttech.test.bytearray;
 import com.dafttech.primitive.PrimitiveUtil;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 /**
  * Created by LolHens on 15.10.2014.
@@ -25,7 +26,7 @@ public class ByteArray {
         all = 0;
         for (int i = 0; i < 100; i++) {
             time = System.nanoTime();
-            ByteBuffer buffer = ByteBuffer.wrap(byteArray1);
+            ByteBuffer buffer = ByteBuffer.wrap(byteArray1).order(ByteOrder.nativeOrder());
             buffer.putFloat(4f);
             all += System.nanoTime() - time;
         }

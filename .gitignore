@@ -16,4 +16,5 @@ build/
 *.ipr
 *.iws
 .idea/
+projectFilesBackup/
 out/
