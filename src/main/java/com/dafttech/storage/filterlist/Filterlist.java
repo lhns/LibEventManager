@@ -23,8 +23,8 @@ public abstract class Filterlist<FilterType> {
     }
 
     public boolean isContained(Object object) {
-        for (FilterType obj : filterObjects)
-            if (obj == object || obj.equals(object)) return true;
+        for (int i = 0; i < filterObjects.length; i++)
+            if (filterObjects[i] == object || filterObjects[i].equals(object)) return true;
         return false;
     }
 

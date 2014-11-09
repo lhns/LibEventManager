@@ -4,9 +4,13 @@ import com.dafttech.newnetwork.packet.Packet;
 import com.dafttech.newnetwork.protocol.Protocol;
 import com.dafttech.newnetwork.protocol.ProtocolProvider;
 
-public class AbstractServer<P extends Packet> extends ProtocolProvider<P> {
+import java.util.LinkedList;
+import java.util.List;
 
-    public AbstractServer(Protocol<P> protocol) {
-        super(protocol);
+public abstract class AbstractServer<P extends Packet> extends ProtocolProvider<P> {
+    protected volatile List<AbstractClient<P>> clients = new LinkedList<AbstractClient<P>>();
+
+    public AbstractServer(Class<? extends Protocol<P>> protocolClazz) throws InstantiationException, IllegalAccessException {
+        super(protocolClazz);
     }
 }

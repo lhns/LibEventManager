@@ -18,8 +18,8 @@ public class Server<P extends Packet> extends AbstractServer<P> {
     @SuppressWarnings("unused")
     private final RunnableSelector first;
 
-    public Server(Protocol<P> protocol, InetSocketAddress socketAddress) throws IOException {
-        super(protocol);
+    public Server(Class<? extends Protocol<P>> protocolClazz, InetSocketAddress socketAddress) throws IOException, IllegalAccessException, InstantiationException {
+        super(protocolClazz);
         serverSocketChannel = ServerSocketChannel.open();
         serverSocketChannel.socket().bind(socketAddress);
         serverSocketChannel.configureBlocking(false);

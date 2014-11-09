@@ -6,8 +6,7 @@ import com.dafttech.newnetwork.protocol.Protocol;
 
 public class Client<P extends Packet> extends AbstractClient<P> {
 
-    public Client(Protocol<P> protocol) {
-        super(protocol);
+    public Client(Class<? extends Protocol<P>> protocolClazz) throws IllegalAccessException, InstantiationException {
+        super(protocolClazz);
     }
-
 }
