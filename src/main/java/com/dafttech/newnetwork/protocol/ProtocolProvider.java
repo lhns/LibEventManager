@@ -2,6 +2,8 @@ package com.dafttech.newnetwork.protocol;
 
 import com.dafttech.newnetwork.packet.Packet;
 
+import java.util.function.Consumer;
+
 public abstract class ProtocolProvider<P extends Packet> extends Protocol<P> {
     private boolean closed = false;
 
@@ -17,13 +19,13 @@ public abstract class ProtocolProvider<P extends Packet> extends Protocol<P> {
     }
 
     @Override
-    protected byte[] encode(P packet) {
-        return protocol.encode(packet);
+    protected void encode(P packet, Consumer<byte[]> submitBytes) {
+        protocol.encode(packet, submitBytes);
     }
 
     @Override
-    protected P decode(byte[] bytes) {
-        return protocol.decode(bytes);
+    protected void decode(byte[] bytes, Consumer<P> submitPacket) {
+        protocol.decode(bytes, submitPacket);
     }
 
     @Override
