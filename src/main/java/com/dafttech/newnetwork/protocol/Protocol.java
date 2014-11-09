@@ -3,9 +3,11 @@ package com.dafttech.newnetwork.protocol;
 import com.dafttech.newnetwork.packet.Packet;
 
 public abstract class Protocol<P extends Packet> {
-    protected abstract byte[] encode(P packet, ProtocolProvider<P> protocolProvider);
+    protected ProtocolProvider<P> protocolProvider = null;
 
-    protected abstract P decode(byte[] bytes, ProtocolProvider<P> protocolProvider);
+    protected abstract byte[] encode(P packet);
+
+    protected abstract P decode(byte[] bytes);
 
     public void close() {
     }

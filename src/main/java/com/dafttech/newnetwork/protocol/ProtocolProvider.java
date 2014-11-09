@@ -9,6 +9,7 @@ public abstract class ProtocolProvider<P extends Packet> extends Protocol<P> {
 
     public ProtocolProvider(Class<? extends Protocol<P>> protocolClazz) throws IllegalAccessException, InstantiationException {
         this.protocol = protocolClazz.newInstance();
+        this.protocol.protocolProvider = this;
     }
 
     public Class<? extends Protocol<P>> getProtocolClazz() {
@@ -16,13 +17,13 @@ public abstract class ProtocolProvider<P extends Packet> extends Protocol<P> {
     }
 
     @Override
-    protected byte[] encode(P packet, ProtocolProvider<P> protocolProvider) {
-        return protocol.encode(packet, protocolProvider);
+    protected byte[] encode(P packet) {
+        return protocol.encode(packet);
     }
 
     @Override
-    protected P decode(byte[] bytes, ProtocolProvider<P> protocolProvider) {
-        return protocol.decode(bytes, protocolProvider);
+    protected P decode(byte[] bytes) {
+        return protocol.decode(bytes);
     }
 
     @Override
