@@ -1,6 +1,5 @@
 package com.dafttech.newnetwork;
 
-import com.dafttech.newnetwork.packet.Packet;
 import com.dafttech.newnetwork.protocol.Protocol;
 import com.dafttech.newnetwork.protocol.ProtocolProvider;
 
@@ -8,7 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
-public abstract class AbstractServer<P extends Packet> extends ProtocolProvider<P> {
+public abstract class AbstractServer<P> extends ProtocolProvider<P> {
     protected final Class<? extends AbstractClient<P>> clientClazz;
     protected List<AbstractClient<P>> clients = new LinkedList<AbstractClient<P>>();
 
