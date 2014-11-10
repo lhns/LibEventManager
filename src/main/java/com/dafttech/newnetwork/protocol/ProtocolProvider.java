@@ -2,20 +2,23 @@ package com.dafttech.newnetwork.protocol;
 
 import com.dafttech.newnetwork.packet.Packet;
 
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public abstract class ProtocolProvider<P extends Packet> extends Protocol<P> {
     private boolean closed = false;
 
     protected final Protocol<P> protocol;
+    protected final BiConsumer<ProtocolProvider<P>, P> receive;
 
-    public ProtocolProvider(Class<? extends Protocol<P>> protocolClazz) throws IllegalAccessException, InstantiationException {
-        this.protocol = protocolClazz.newInstance();
+    public final Class<? extends Protocol<P>> protocolClazz;
+
+    public ProtocolProvider(Class<? extends Protocol> protocolClazz, BiConsumer<ProtocolProvider<P>, P> receive) throws IllegalAccessException, InstantiationException {
+        this.protocolClazz = (Class<? extends Protocol<P>>) protocolClazz;
+        this.receive = receive;
+
+        this.protocol = this.protocolClazz.newInstance();
         this.protocol.protocolProvider = this;
-    }
-
-    public Class<? extends Protocol<P>> getProtocolClazz() {
-        return (Class<? extends Protocol<P>>) protocol.getClass();
     }
 
     @Override
