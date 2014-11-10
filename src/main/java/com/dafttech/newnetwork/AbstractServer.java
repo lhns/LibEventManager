@@ -11,8 +11,8 @@ public abstract class AbstractServer<P extends Packet> extends ProtocolProvider<
     protected final Class<? extends AbstractClient<P>> clientClazz;
     protected List<AbstractClient<P>> clients = new LinkedList<AbstractClient<P>>();
 
-    public AbstractServer(Class<? extends AbstractClient<P>> clientClazz, Class<? extends Protocol<P>> protocolClazz) throws InstantiationException, IllegalAccessException {
+    public AbstractServer(Class<? extends AbstractClient> clientClazz, Class<? extends Protocol<P>> protocolClazz) throws InstantiationException, IllegalAccessException {
         super(protocolClazz);
-        this.clientClazz = clientClazz;
+        this.clientClazz = (Class<? extends AbstractClient<P>>) clientClazz;
     }
 }

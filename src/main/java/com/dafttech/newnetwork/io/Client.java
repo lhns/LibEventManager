@@ -9,4 +9,14 @@ public class Client<P extends Packet> extends AbstractClient<P> {
     public Client(Class<? extends Protocol<P>> protocolClazz) throws IllegalAccessException, InstantiationException {
         super(protocolClazz);
     }
+
+    @Override
+    protected void write(byte[] bytes) {
+
+    }
+
+    @Override
+    public void receive(P packet) {
+        // TODO: make abstract
+    }
 }

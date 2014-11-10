@@ -15,7 +15,7 @@ public abstract class ProtocolProvider<P extends Packet> extends Protocol<P> {
     }
 
     public Class<? extends Protocol<P>> getProtocolClazz() {
-        return protocol.getClass();
+        return (Class<? extends Protocol<P>>) protocol.getClass();
     }
 
     @Override

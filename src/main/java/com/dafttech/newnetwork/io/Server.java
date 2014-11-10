@@ -19,7 +19,7 @@ public class Server<P extends Packet> extends AbstractServer<P> {
     private final RunnableSelector first;
 
     public Server(Class<? extends Protocol<P>> protocolClazz, InetSocketAddress socketAddress) throws IOException, IllegalAccessException, InstantiationException {
-        super(protocolClazz);
+        super(Client.class, protocolClazz);
         serverSocketChannel = ServerSocketChannel.open();
         serverSocketChannel.socket().bind(socketAddress);
         serverSocketChannel.configureBlocking(false);
