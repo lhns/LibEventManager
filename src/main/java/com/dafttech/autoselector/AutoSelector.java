@@ -24,12 +24,28 @@ public class AutoSelector {
         executorService = Executors.newFixedThreadPool(selectorContainers.length);
     }
 
-    public SelectionKey register(SelectableChannel channel, int ops, Consumer<SelectionKey> runnable) throws IOException {
+    public SelectionKey register(SelectableChannel channel, int ops, Consumer<SelectionKey> consumer) throws IOException {
+        if (channel.isRegistered()) {
+            SelectionKey selectionKey = null;
+            Selector selector = null;
+            for (int i = 0; i < selectorContainers.length; i++) {
+                selector = selectorContainers[i].selector;
+                selectionKey = channel.keyFor(selector);
+                if (selectionKey != null) break;
+            }
+            if (selectionKey != null) {
+                selectionKey.interestOps(ops);
+                selectionKey.attach(consumer);
+                selector.wakeup();
+            }
+        }
+
+
         if (selectorContainers[next] == null) selectorContainers[next] = new SelectorContainer();
         SelectorContainer selectorContainer = selectorContainers[next++];
         if (next >= selectorContainers.length) next = 0;
 
-        SelectionKey selectionKey = channel.register(selectorContainer.selector, ops, runnable);
+        SelectionKey selectionKey = channel.register(selectorContainer.selector, ops, consumer);
         selectorContainer.selector.wakeup();
 
         return selectionKey;
@@ -45,7 +61,7 @@ public class AutoSelector {
 
         @Override
         public void run() {
-            while (!Thread.interrupted()) {
+            while (!Thread.interrupted() && selector.isOpen()) {
                 try {
                     selector.select();
                     Set<SelectionKey> selected = selector.selectedKeys();
