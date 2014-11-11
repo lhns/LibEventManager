@@ -8,8 +8,6 @@ import java.io.OutputStream;
 import java.util.function.BiConsumer;
 
 public abstract class AbstractClient<P> extends ProtocolProvider<P> {
-    protected AbstractServer<P> server = null;
-
     public AbstractClient(Class<? extends Protocol> protocolClazz, BiConsumer<ProtocolProvider<P>, P> receive) throws InstantiationException, IllegalAccessException {
         super(protocolClazz, receive);
     }
@@ -18,9 +16,13 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
         decode(inputStream, (packet) -> receive.accept(this, packet));
     }
 
-    protected abstract OutputStream getOutputStream();
+    protected abstract OutputStream getOutputStream() throws Exception;
 
     public final void send(P packet) {
-        encode(packet, getOutputStream());
+        try {
+            encode(packet, getOutputStream());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
