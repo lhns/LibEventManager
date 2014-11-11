@@ -15,7 +15,7 @@ import java.util.function.BiConsumer;
 public class Server<P extends Packet> extends AbstractServer<P> {
     private final ServerSocketChannel socketChannel;
 
-    public Server(Class<? extends AbstractProtocol> protocolClazz, InetSocketAddress socketAddress, BiConsumer<ProtocolProvider<P>, P> receive) throws IOException, IllegalAccessException, InstantiationException {
+    public Server(Class<? extends AbstractProtocol> protocolClazz, InetSocketAddress socketAddress, BiConsumer<ProtocolProvider<P>, P> receive) throws IOException {
         super(protocolClazz, receive);
 
         socketChannel = ServerSocketChannel.open();
@@ -25,19 +25,15 @@ public class Server<P extends Packet> extends AbstractServer<P> {
         AutoSelector.instance.register(socketChannel, SelectionKey.OP_ACCEPT, this::accept);
     }
 
-    public Server(Class<? extends AbstractProtocol> protocolClazz, String host, int port, BiConsumer<ProtocolProvider<P>, P> receive) throws IllegalAccessException, IOException, InstantiationException {
-        this(protocolClazz, InetSocketAddress.createUnresolved(host, port), receive);
-    }
-
-    public Server(Class<? extends AbstractProtocol> protocolClazz, String host, BiConsumer<ProtocolProvider<P>, P> receive) throws IllegalAccessException, IOException, InstantiationException {
-        this(protocolClazz, host.split(":")[0], Integer.parseInt(host.split(":")[1]), receive);
+    public Server(Class<? extends AbstractProtocol> protocolClazz, int port, BiConsumer<ProtocolProvider<P>, P> receive) throws IOException {
+        this(protocolClazz, new InetSocketAddress(port), receive);
     }
 
     private void accept(SelectionKey selectionKey) {
         try {
             clients.add(new Client<P>(protocolClazz, socketChannel.accept(), receive));
-        } catch (IllegalAccessException | InstantiationException | IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException e) {
+            ioException(e);
         }
     }
 
@@ -48,7 +44,7 @@ public class Server<P extends Packet> extends AbstractServer<P> {
         try {
             socketChannel.close();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            ioException(e);
         }
     }
 }

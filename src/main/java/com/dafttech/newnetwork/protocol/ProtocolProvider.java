@@ -1,7 +1,8 @@
 package com.dafttech.newnetwork.protocol;
 
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.IOException;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -13,22 +14,38 @@ public abstract class ProtocolProvider<P> extends AbstractProtocol<P> {
 
     public final Class<? extends AbstractProtocol<P>> protocolClazz;
 
-    public ProtocolProvider(Class<? extends AbstractProtocol> protocolClazz, BiConsumer<ProtocolProvider<P>, P> receive) throws IllegalAccessException, InstantiationException {
+    public ProtocolProvider(Class<? extends AbstractProtocol> protocolClazz, BiConsumer<ProtocolProvider<P>, P> receive) {
         this.protocolClazz = (Class<? extends AbstractProtocol<P>>) protocolClazz;
         this.receive = receive;
 
-        this.protocol = this.protocolClazz.newInstance();
-        this.protocol.protocolProvider = this;
+        try {
+            this.protocol = this.protocolClazz.newInstance();
+            this.protocol.protocolProvider = this;
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new IllegalArgumentException("Protocol instantiation failed!", e);
+        }
     }
 
     @Override
-    protected void encode(P packet, OutputStream outputStream) {
-        protocol.encode(packet, outputStream);
+    protected void encode(P packet, WritableByteChannel out) {
+        try {
+            protocol.encode(packet, out);
+        } catch (IOException e) {
+            ioException(e);
+        }
     }
 
     @Override
-    protected void decode(InputStream inputStream, Consumer<P> submitPacket) {
-        protocol.decode(inputStream, submitPacket);
+    protected void decode(ReadableByteChannel in, Consumer<P> submitPacket) {
+        try {
+            protocol.decode(in, submitPacket);
+        } catch (IOException e) {
+            ioException(e);
+        }
+    }
+
+    protected void ioException(IOException e) {
+        throw new RuntimeException(e);
     }
 
     @Override

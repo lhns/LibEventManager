@@ -10,7 +10,7 @@ import java.util.function.BiConsumer;
 public abstract class AbstractServer<P> extends ProtocolProvider<P> {
     protected final List<AbstractClient<P>> clients = new LinkedList<>();
 
-    public AbstractServer(Class<? extends AbstractProtocol> protocolClazz, BiConsumer<ProtocolProvider<P>, P> receive) throws InstantiationException, IllegalAccessException {
+    public AbstractServer(Class<? extends AbstractProtocol> protocolClazz, BiConsumer<ProtocolProvider<P>, P> receive) {
         super(protocolClazz, receive);
     }
 
