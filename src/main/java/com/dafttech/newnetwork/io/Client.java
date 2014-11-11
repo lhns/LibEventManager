@@ -1,6 +1,6 @@
 package com.dafttech.newnetwork.io;
 
-import com.dafttech.autoselector.AutoSelector;
+import com.dafttech.autoselector.SelectorManager;
 import com.dafttech.newnetwork.AbstractClient;
 import com.dafttech.newnetwork.AbstractProtocol;
 import com.dafttech.newnetwork.ProtocolProvider;
@@ -19,7 +19,7 @@ public class Client<P extends Packet> extends AbstractClient<P> {
         super(protocolClazz, receive);
         this.socketChannel = socketChannel;
 
-        AutoSelector.instance.register(socketChannel, SelectionKey.OP_READ | SelectionKey.OP_WRITE, (selectionKey) -> {
+        SelectorManager.instance.register(socketChannel, SelectionKey.OP_READ | SelectionKey.OP_WRITE, (selectionKey) -> {
             if ((selectionKey.interestOps() & SelectionKey.OP_READ) > 0)
                 read(socketChannel);
             if ((selectionKey.interestOps() & SelectionKey.OP_WRITE) > 0)

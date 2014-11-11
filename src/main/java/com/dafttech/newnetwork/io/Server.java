@@ -1,6 +1,6 @@
 package com.dafttech.newnetwork.io;
 
-import com.dafttech.autoselector.AutoSelector;
+import com.dafttech.autoselector.SelectorManager;
 import com.dafttech.newnetwork.AbstractProtocol;
 import com.dafttech.newnetwork.AbstractServer;
 import com.dafttech.newnetwork.ProtocolProvider;
@@ -22,7 +22,7 @@ public class Server<P extends Packet> extends AbstractServer<P> {
         socketChannel.socket().bind(socketAddress);
         socketChannel.configureBlocking(false);
 
-        AutoSelector.instance.register(socketChannel, SelectionKey.OP_ACCEPT, (selectionKey) -> {
+        SelectorManager.instance.register(socketChannel, SelectionKey.OP_ACCEPT, (selectionKey) -> {
             try {
                 clients.add(new Client<P>(protocolClazz, socketChannel.accept(), receive));
             } catch (IOException e) {

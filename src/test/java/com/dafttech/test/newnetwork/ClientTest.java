@@ -14,8 +14,13 @@ public class ClientTest {
     public static void main(String[] args) {
         try {
             Client client = new Client<SimplePacket>(SimpleProtocol.class, "localhost", 1234, (ProtocolProvider<SimplePacket> protocolProvider, SimplePacket packet) -> System.out.println(packet));
+            System.out.println("finish");
             client.send(new SimplePacket(2, "Hallo!".getBytes()));
+            Thread.sleep(1000);
+            client.send(new SimplePacket(2, "Hallo2!".getBytes()));
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
