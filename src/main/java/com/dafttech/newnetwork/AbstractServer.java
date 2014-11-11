@@ -1,8 +1,6 @@
 package com.dafttech.newnetwork;
 
-import com.dafttech.newnetwork.protocol.AbstractProtocol;
-import com.dafttech.newnetwork.protocol.ProtocolProvider;
-
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -19,7 +17,7 @@ public abstract class AbstractServer<P> extends ProtocolProvider<P> {
     }
 
     @Override
-    public void close() {
+    public void close() throws IOException {
         super.close();
         for (AbstractClient<P> client : clients) client.close();
     }
