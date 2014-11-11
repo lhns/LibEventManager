@@ -4,7 +4,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.function.Consumer;
 
-public abstract class Protocol<P> {
+public abstract class AbstractProtocol<P> {
     protected ProtocolProvider<P> protocolProvider = null;
 
     protected abstract void encode(P packet, OutputStream outputStream);
