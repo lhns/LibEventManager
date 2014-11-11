@@ -22,7 +22,7 @@ public class Client<P extends Packet> extends AbstractClient<P> {
         AutoSelector.instance.register(socketChannel, SelectionKey.OP_READ | SelectionKey.OP_WRITE, (selectionKey) -> {
             if ((selectionKey.interestOps() & SelectionKey.OP_READ) > 0)
                 read(socketChannel);
-            else if ((selectionKey.interestOps() & SelectionKey.OP_WRITE) > 0)
+            if ((selectionKey.interestOps() & SelectionKey.OP_WRITE) > 0)
                 write(socketChannel);
         });
     }

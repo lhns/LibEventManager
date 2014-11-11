@@ -23,7 +23,6 @@ public class Server<P extends Packet> extends AbstractServer<P> {
         socketChannel.configureBlocking(false);
 
         AutoSelector.instance.register(socketChannel, SelectionKey.OP_ACCEPT, (selectionKey) -> {
-            System.out.println("ACCEPT!");
             try {
                 clients.add(new Client<P>(protocolClazz, socketChannel.accept(), receive));
             } catch (IOException e) {

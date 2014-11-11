@@ -17,6 +17,7 @@ public class SimpleProtocol extends AbstractProtocol<SimplePacket> {
 
     @Override
     public void send(SimplePacket packet) {
+        System.out.println(packet);
         if (this.packet == null) this.packet = packet;
     }
 
