@@ -26,9 +26,11 @@ public class AutoSelector {
 
     public SelectionKey register(SelectableChannel channel, int ops, Consumer<SelectionKey> consumer) throws IOException {
         if (channel.isRegistered()) {
-            SelectionKey selectionKey = null;
             Selector selector = null;
+            SelectionKey selectionKey = null;
+
             for (int i = 0; i < selectorContainers.length; i++) {
+                if (selectorContainers[i] == null) continue;
                 selector = selectorContainers[i].selector;
                 selectionKey = channel.keyFor(selector);
                 if (selectionKey != null) break;
