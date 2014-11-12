@@ -23,11 +23,13 @@ public class Server<P extends Packet> extends AbstractServer<P> {
         socketChannel.configureBlocking(false);
 
         SelectorManager.instance.register(socketChannel, SelectionKey.OP_ACCEPT, (selectionKey) -> {
-            try {
+            if (selectionKey.isAcceptable()) {
                 System.out.println("ACCEPT");
-                clients.add(new Client<P>(protocolClazz, socketChannel.accept(), receive));
-            } catch (IOException e) {
-                ioException(e);
+                try {
+                    clients.add(new Client<P>(protocolClazz, socketChannel.accept(), receive));
+                } catch (IOException e) {
+                    ioException(e);
+                }
             }
         });
     }

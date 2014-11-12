@@ -14,15 +14,14 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
 
     public final void setProtocol(Class<? extends AbstractProtocol> protocolClazz) {
         super.setProtocol(protocolClazz);
-        AbstractProtocol<P> newProtocol = null;
         try {
-            newProtocol = getProtocol().newInstance();
+            AbstractProtocol<P> newProtocol = getProtocol().newInstance();
             newProtocol.client = this;
+            if (protocol != null) protocol.client = null;
+            protocol = newProtocol;
         } catch (InstantiationException | IllegalAccessException e) {
             throw new IllegalArgumentException("Protocol instantiation failed!", e);
         }
-        if (protocol != null) protocol.client = null;
-        protocol = newProtocol;
     }
 
     public final void send(P packet) {

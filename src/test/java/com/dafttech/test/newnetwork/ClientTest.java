@@ -13,7 +13,7 @@ import java.io.IOException;
 public class ClientTest {
     public static void main(String[] args) {
         try {
-            Client client = new Client<SimplePacket>(SimpleProtocol.class, "localhost", 1234, (ProtocolProvider<SimplePacket> protocolProvider, SimplePacket packet) -> System.out.println(packet));
+            Client client = new Client<SimplePacket>(SimpleProtocol.class, "127.0.0.1", 1234, (ProtocolProvider<SimplePacket> protocolProvider, SimplePacket packet) -> System.out.println(packet));
             System.out.println("finish");
             client.send(new SimplePacket(2, "Hallo!".getBytes()));
             Thread.sleep(1000);

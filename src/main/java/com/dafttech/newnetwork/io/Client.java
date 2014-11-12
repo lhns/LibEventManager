@@ -19,14 +19,16 @@ public class Client<P extends Packet> extends AbstractClient<P> {
         super(protocolClazz, receive);
         this.socketChannel = socketChannel;
 
-        SelectorManager.instance.register(socketChannel, SelectionKey.OP_CONNECT, (selectionKey) -> {
-            int ops = selectionKey.interestOps();
-
-            if ((ops & SelectionKey.OP_READ) > 0)
+        SelectorManager.instance.register(socketChannel, SelectionKey.OP_CONNECT | SelectionKey.OP_READ | SelectionKey.OP_WRITE, (selectionKey) -> {
+            if (selectionKey.isReadable()) {
+                System.out.println("READ");
                 read(socketChannel);
-            if ((ops & SelectionKey.OP_WRITE) > 0)
+            }
+            if (selectionKey.isWritable()) {
+                System.out.println("WRITE");
                 write(socketChannel);
-            if ((ops & SelectionKey.OP_CONNECT) > 0) {
+            }
+            if (selectionKey.isConnectable()) {
                 System.out.println("CONNECT");
                 selectionKey.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
                 selectionKey.selector().wakeup();
