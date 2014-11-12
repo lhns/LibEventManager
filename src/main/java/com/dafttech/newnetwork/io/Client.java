@@ -30,6 +30,11 @@ public class Client<P extends Packet> extends AbstractClient<P> {
             }
             if (selectionKey.isConnectable()) {
                 System.out.println("CONNECT");
+                try {
+                    socketChannel.finishConnect();
+                } catch (IOException e) {
+                    ioException(e);
+                }
                 selectionKey.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
                 selectionKey.selector().wakeup();
             }

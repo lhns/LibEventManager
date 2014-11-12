@@ -3,7 +3,6 @@ package com.dafttech.autoselector;
 import java.io.IOException;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
@@ -25,19 +24,16 @@ public class SelectorManager {
 
     public SelectionKey register(SelectableChannel channel, int ops, Consumer<SelectionKey> consumer) throws IOException {
         if (channel.isRegistered()) {
-            Selector selector = null;
             SelectionKey selectionKey = null;
-
             for (int i = 0; i < autoSelectors.length; i++) {
                 if (autoSelectors[i] == null) continue;
-                selector = autoSelectors[i].selector;
-                selectionKey = channel.keyFor(selector);
+                selectionKey = channel.keyFor(autoSelectors[i].selector);
                 if (selectionKey != null) break;
             }
             if (selectionKey != null) {
                 selectionKey.interestOps(ops);
                 selectionKey.attach(consumer);
-                selector.wakeup();
+                selectionKey.selector().wakeup();
             }
         }
 

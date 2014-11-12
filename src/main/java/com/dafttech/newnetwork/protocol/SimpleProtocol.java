@@ -49,7 +49,7 @@ public class SimpleProtocol extends AbstractProtocol<SimplePacket> {
                 byte[] bytes = new byte[inData.capacity()];
                 inData.get(bytes);
                 receive(new SimplePacket(inHeader.getInt(0), bytes));
-                inHeader.rewind();
+                inHeader.clear();
                 inData = null;
             }
         }
