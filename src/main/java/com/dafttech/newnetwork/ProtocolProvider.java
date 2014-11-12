@@ -6,15 +6,21 @@ import java.util.function.BiConsumer;
 
 public class ProtocolProvider<P> implements Closeable {
     private boolean closed = false;
-
+    private Class<? extends AbstractProtocol<P>> protocolClazz;
 
     protected final BiConsumer<ProtocolProvider<P>, P> receive;
 
-    public final Class<? extends AbstractProtocol<P>> protocolClazz;
-
     public ProtocolProvider(Class<? extends AbstractProtocol> protocolClazz, BiConsumer<ProtocolProvider<P>, P> receive) {
-        this.protocolClazz = (Class<? extends AbstractProtocol<P>>) protocolClazz;
         this.receive = receive;
+        setProtocol(protocolClazz);
+    }
+
+    public final Class<? extends AbstractProtocol<P>> getProtocol() {
+        return protocolClazz;
+    }
+
+    public void setProtocol(Class<? extends AbstractProtocol> protocolClazz) {
+        this.protocolClazz = (Class<? extends AbstractProtocol<P>>) protocolClazz;
     }
 
     protected void ioException(IOException e) {

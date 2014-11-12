@@ -19,11 +19,12 @@ public class Server<P extends Packet> extends AbstractServer<P> {
         super(protocolClazz, receive);
 
         socketChannel = ServerSocketChannel.open();
-        socketChannel.socket().bind(socketAddress);
+        socketChannel.bind(socketAddress);
         socketChannel.configureBlocking(false);
 
         SelectorManager.instance.register(socketChannel, SelectionKey.OP_ACCEPT, (selectionKey) -> {
             try {
+                System.out.println("ACCEPT");
                 clients.add(new Client<P>(protocolClazz, socketChannel.accept(), receive));
             } catch (IOException e) {
                 ioException(e);

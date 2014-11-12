@@ -12,6 +12,10 @@ public abstract class AbstractServer<P> extends ProtocolProvider<P> {
         super(protocolClazz, receive);
     }
 
+    public final void setProtocol(Class<? extends AbstractProtocol> protocolClazz) {
+        super.setProtocol(protocolClazz);
+    }
+
     public void broadcast(P packet) {
         for (AbstractClient<P> client : clients) client.send(packet);
     }

@@ -19,11 +19,18 @@ public class Client<P extends Packet> extends AbstractClient<P> {
         super(protocolClazz, receive);
         this.socketChannel = socketChannel;
 
-        SelectorManager.instance.register(socketChannel, SelectionKey.OP_READ | SelectionKey.OP_WRITE, (selectionKey) -> {
-            if ((selectionKey.interestOps() & SelectionKey.OP_READ) > 0)
+        SelectorManager.instance.register(socketChannel, SelectionKey.OP_CONNECT, (selectionKey) -> {
+            int ops = selectionKey.interestOps();
+
+            if ((ops & SelectionKey.OP_READ) > 0)
                 read(socketChannel);
-            if ((selectionKey.interestOps() & SelectionKey.OP_WRITE) > 0)
+            if ((ops & SelectionKey.OP_WRITE) > 0)
                 write(socketChannel);
+            if ((ops & SelectionKey.OP_CONNECT) > 0) {
+                System.out.println("CONNECT");
+                selectionKey.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+                selectionKey.selector().wakeup();
+            }
         });
     }
 
@@ -32,8 +39,9 @@ public class Client<P extends Packet> extends AbstractClient<P> {
     }
 
     private static SocketChannel toSocketChannel(InetSocketAddress socketAddress) throws IOException {
-        SocketChannel socketChannel = SocketChannel.open(socketAddress);
+        SocketChannel socketChannel = SocketChannel.open();
         socketChannel.configureBlocking(false);
+        socketChannel.connect(socketAddress);
         return socketChannel;
     }
 

@@ -6,14 +6,18 @@ import java.nio.channels.WritableByteChannel;
 import java.util.function.BiConsumer;
 
 public abstract class AbstractClient<P> extends ProtocolProvider<P> {
-    protected final AbstractProtocol<P> protocol;
+    private AbstractProtocol<P> protocol;
 
     public AbstractClient(Class<? extends AbstractProtocol> protocolClazz, BiConsumer<ProtocolProvider<P>, P> receive) {
         super(protocolClazz, receive);
+    }
 
+    public final void setProtocol(Class<? extends AbstractProtocol> protocolClazz) {
+        super.setProtocol(protocolClazz);
         try {
-            this.protocol = this.protocolClazz.newInstance();
-            this.protocol.client = this;
+            if (protocol != null) protocol.client = null;
+            protocol = getProtocol().newInstance();
+            protocol.client = this;
         } catch (InstantiationException | IllegalAccessException e) {
             throw new IllegalArgumentException("Protocol instantiation failed!", e);
         }
