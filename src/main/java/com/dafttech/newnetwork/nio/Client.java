@@ -1,4 +1,4 @@
-package com.dafttech.newnetwork.io;
+package com.dafttech.newnetwork.nio;
 
 import com.dafttech.autoselector.SelectorManager;
 import com.dafttech.newnetwork.AbstractClient;
