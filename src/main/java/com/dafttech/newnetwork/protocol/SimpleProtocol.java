@@ -32,6 +32,7 @@ public class SimpleProtocol extends AbstractProtocol<SimplePacket> {
             packet = null;
         }
         if (outBuffer != null) {
+            outBuffer.rewind();
             out.write(outBuffer);
             if (outBuffer.remaining() == 0) outBuffer = null;
         }
@@ -47,6 +48,7 @@ public class SimpleProtocol extends AbstractProtocol<SimplePacket> {
             in.read(inData);
             if (!inData.hasRemaining()) {
                 byte[] bytes = new byte[inData.capacity()];
+                inData.rewind();
                 inData.get(bytes);
                 receive(new SimplePacket(inHeader.getInt(0), bytes));
                 inHeader.clear();

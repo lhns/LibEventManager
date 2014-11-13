@@ -17,9 +17,10 @@ public class Client<P extends Packet> extends AbstractClient<P> {
 
     public Client(Class<? extends AbstractProtocol> protocolClazz, SocketChannel socketChannel, BiConsumer<ProtocolProvider<P>, P> receive) throws IOException {
         super(protocolClazz, receive);
+
         this.socketChannel = socketChannel;
 
-        SelectorManager.instance.register(socketChannel, SelectionKey.OP_CONNECT | SelectionKey.OP_READ | SelectionKey.OP_WRITE, (selectionKey) -> {
+        SelectorManager.instance.register(socketChannel, SelectionKey.OP_READ | SelectionKey.OP_WRITE | (socketChannel.isConnected() ? 0 : SelectionKey.OP_CONNECT), (selectionKey) -> {
             if (selectionKey.isReadable()) {
                 read(socketChannel);
             }
