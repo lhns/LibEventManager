@@ -21,15 +21,12 @@ public class Client<P extends Packet> extends AbstractClient<P> {
 
         SelectorManager.instance.register(socketChannel, SelectionKey.OP_CONNECT | SelectionKey.OP_READ | SelectionKey.OP_WRITE, (selectionKey) -> {
             if (selectionKey.isReadable()) {
-                System.out.println("READ");
                 read(socketChannel);
             }
             if (selectionKey.isWritable()) {
-                System.out.println("WRITE");
                 write(socketChannel);
             }
             if (selectionKey.isConnectable()) {
-                System.out.println("CONNECT");
                 try {
                     socketChannel.finishConnect();
                 } catch (IOException e) {

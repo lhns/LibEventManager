@@ -34,6 +34,7 @@ public class SelectorManager {
                 selectionKey.interestOps(ops);
                 selectionKey.attach(consumer);
                 selectionKey.selector().wakeup();
+                return selectionKey;
             }
         }
 
@@ -43,9 +44,8 @@ public class SelectorManager {
         if (autoSelectors[current] == null) autoSelectors[current] = new AutoSelector(executorService);
         AutoSelector selectorContainer = autoSelectors[current];
 
-        SelectionKey selectionKey = channel.register(selectorContainer.selector, ops, consumer);
+        SelectionKey selectionKey = selectorContainer.register(channel, ops, consumer);
         selectorContainer.selector.wakeup();
-
         return selectionKey;
     }
 }

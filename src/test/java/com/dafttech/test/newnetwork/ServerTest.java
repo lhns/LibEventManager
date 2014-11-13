@@ -1,8 +1,8 @@
 package com.dafttech.test.newnetwork;
 
+import com.dafttech.newnetwork.ProtocolProvider;
 import com.dafttech.newnetwork.nio.Server;
 import com.dafttech.newnetwork.packet.SimplePacket;
-import com.dafttech.newnetwork.ProtocolProvider;
 import com.dafttech.newnetwork.protocol.SimpleProtocol;
 
 import java.io.IOException;
