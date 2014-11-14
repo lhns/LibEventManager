@@ -3,15 +3,17 @@ package com.dafttech.newnetwork;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class ProtocolProvider<P> implements Closeable {
     private boolean closed = false;
     private Class<? extends AbstractProtocol<P>> protocolClazz;
 
-    protected final BiConsumer<ProtocolProvider<P>, P> receive;
+    protected final BiConsumer<ProtocolProvider<P>, P> receiveHandler;
+    protected Consumer<IOException> exceptionHandler = null;
 
-    public ProtocolProvider(Class<? extends AbstractProtocol> protocolClazz, BiConsumer<ProtocolProvider<P>, P> receive) {
-        this.receive = receive;
+    public ProtocolProvider(Class<? extends AbstractProtocol> protocolClazz, BiConsumer<ProtocolProvider<P>, P> receiveHandler) {
+        this.receiveHandler = receiveHandler;
         setProtocol(protocolClazz);
     }
 
@@ -24,7 +26,15 @@ public class ProtocolProvider<P> implements Closeable {
     }
 
     protected void onException(IOException e) {
-        throw new RuntimeException(e);
+        if (exceptionHandler == null) {
+            throw new RuntimeException(e);
+        } else {
+            exceptionHandler.accept(e);
+        }
+    }
+
+    public final void setExceptionHandler(Consumer<IOException> exceptionHandler) {
+        this.exceptionHandler = exceptionHandler;
     }
 
     @Override

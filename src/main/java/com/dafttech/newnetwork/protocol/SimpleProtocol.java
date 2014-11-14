@@ -17,9 +17,16 @@ public class SimpleProtocol extends AbstractProtocol<SimplePacket> {
 
     @Override
     public void send(SimplePacket packet) {
-        if (this.packet == null) {
-            this.packet = packet;
+        while (this.packet != null) {
+            try {
+                synchronized (this) {
+                    this.wait(100);
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
+        if (this.packet == null) this.packet = packet;
         setWriteEnabled(true);
     }
 
@@ -33,6 +40,9 @@ public class SimpleProtocol extends AbstractProtocol<SimplePacket> {
             outBuffer.putInt(packet.data.length);
             outBuffer.put(packet.data);
             packet = null;
+            synchronized (this) {
+                this.notify();
+            }
         }
         if (outBuffer != null) {
             outBuffer.rewind();

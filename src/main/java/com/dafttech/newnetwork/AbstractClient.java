@@ -8,8 +8,8 @@ import java.util.function.BiConsumer;
 public abstract class AbstractClient<P> extends ProtocolProvider<P> {
     private AbstractProtocol<P> protocol;
 
-    public AbstractClient(Class<? extends AbstractProtocol> protocolClazz, BiConsumer<ProtocolProvider<P>, P> receive) {
-        super(protocolClazz, receive);
+    public AbstractClient(Class<? extends AbstractProtocol> protocolClazz, BiConsumer<ProtocolProvider<P>, P> receiveHandler) {
+        super(protocolClazz, receiveHandler);
     }
 
     public final void setProtocol(Class<? extends AbstractProtocol> protocolClazz) {
@@ -29,7 +29,7 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
     }
 
     protected final void receive(P packet) {
-        receive.accept(this, packet);
+        receiveHandler.accept(this, packet);
     }
 
     protected final void read(ReadableByteChannel in) {
@@ -56,5 +56,10 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
     public void close() throws IOException {
         super.close();
         protocol.close();
+    }
+
+    @Override
+    public void finalize() {
+        System.out.println("FINALIZE CLIENT");
     }
 }

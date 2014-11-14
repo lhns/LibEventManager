@@ -16,15 +16,15 @@ public class Client<P extends Packet> extends AbstractClient<P> {
     protected final SocketChannel socketChannel;
     private final SelectionKey selectionKey;
 
-    public Client(Class<? extends AbstractProtocol> protocolClazz, SocketChannel socketChannel, BiConsumer<ProtocolProvider<P>, P> receive) throws IOException {
-        super(protocolClazz, receive);
+    public Client(Class<? extends AbstractProtocol> protocolClazz, SocketChannel socketChannel, BiConsumer<ProtocolProvider<P>, P> receiveHandler) throws IOException {
+        super(protocolClazz, receiveHandler);
 
         this.socketChannel = socketChannel;
 
-        int ops = SelectionKey.OP_READ;
-
+        int ops = 0;
         if (socketChannel.isConnected()) {
             onConnect();
+            ops |= SelectionKey.OP_READ;
         } else {
             ops |= SelectionKey.OP_CONNECT;
         }
@@ -44,14 +44,14 @@ public class Client<P extends Packet> extends AbstractClient<P> {
                 }
                 onConnect();
 
-                selectionKey.interestOps(selectionKey.interestOps() ^ SelectionKey.OP_CONNECT);
+                selectionKey.interestOps(selectionKey.interestOps() ^ (SelectionKey.OP_CONNECT | SelectionKey.OP_READ));
                 selectionKey.selector().wakeup();
             }
         });
     }
 
-    public Client(Class<? extends AbstractProtocol> protocolClazz, InetSocketAddress socketAddress, BiConsumer<ProtocolProvider<P>, P> receive) throws IOException {
-        this(protocolClazz, toSocketChannel(socketAddress), receive);
+    public Client(Class<? extends AbstractProtocol> protocolClazz, InetSocketAddress socketAddress, BiConsumer<ProtocolProvider<P>, P> receiveHandler) throws IOException {
+        this(protocolClazz, toSocketChannel(socketAddress), receiveHandler);
     }
 
     private static SocketChannel toSocketChannel(InetSocketAddress socketAddress) throws IOException {
@@ -61,16 +61,17 @@ public class Client<P extends Packet> extends AbstractClient<P> {
         return socketChannel;
     }
 
-    public Client(Class<? extends AbstractProtocol> protocolClazz, String host, int port, BiConsumer<ProtocolProvider<P>, P> receive) throws IOException {
-        this(protocolClazz, new InetSocketAddress(host, port), receive);
+    public Client(Class<? extends AbstractProtocol> protocolClazz, String host, int port, BiConsumer<ProtocolProvider<P>, P> receiveHandler) throws IOException {
+        this(protocolClazz, new InetSocketAddress(host, port), receiveHandler);
     }
 
-    public Client(Class<? extends AbstractProtocol> protocolClazz, String host, BiConsumer<ProtocolProvider<P>, P> receive) throws IOException {
-        this(protocolClazz, host.split(":")[0], Integer.parseInt(host.split(":")[1]), receive);
+    public Client(Class<? extends AbstractProtocol> protocolClazz, String host, BiConsumer<ProtocolProvider<P>, P> receiveHandler) throws IOException {
+        this(protocolClazz, host.split(":")[0], Integer.parseInt(host.split(":")[1]), receiveHandler);
     }
 
     @Override
     protected void setWriteEnabled(boolean value) {
+        if (!selectionKey.isValid()) return;
         int ops = selectionKey.interestOps();
         if (((ops & SelectionKey.OP_WRITE) != 0) != value) {
             selectionKey.interestOps(ops ^ SelectionKey.OP_WRITE);

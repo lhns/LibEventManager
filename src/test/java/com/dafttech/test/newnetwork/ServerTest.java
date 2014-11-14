@@ -13,7 +13,8 @@ import java.io.IOException;
 public class ServerTest {
     public static void main(String[] args) {
         try {
-            Server server = new Server<SimplePacket>(SimpleProtocol.class, 1234, (ProtocolProvider<SimplePacket> protocolProvider, SimplePacket packet) -> System.out.println(packet));
+            Server server = new Server<SimplePacket>(SimpleProtocol.class, 12345, (ProtocolProvider<SimplePacket> protocolProvider, SimplePacket packet) -> System.out.println(packet));
+            while (true) server.broadcast(new SimplePacket(2, "Hallo?".getBytes()));
         } catch (IOException e) {
             e.printStackTrace();
         }

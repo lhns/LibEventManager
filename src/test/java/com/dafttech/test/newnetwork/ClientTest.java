@@ -13,9 +13,11 @@ import java.io.IOException;
 public class ClientTest {
     public static void main(String[] args) throws IOException, InterruptedException {
         try {
-            Client client = new Client<SimplePacket>(SimpleProtocol.class, "127.0.0.1", 1234, (ProtocolProvider<SimplePacket> protocolProvider, SimplePacket packet) -> System.out.println(packet));
-            System.out.println("finish");
-            client.send(new SimplePacket(2, "Hallo!".getBytes()));
+            Client client = new Client<SimplePacket>(SimpleProtocol.class, "127.0.0.1", 12345, (ProtocolProvider<SimplePacket> protocolProvider, SimplePacket packet) -> System.out.println(packet));
+            client.send(new SimplePacket(2, "Hallo1!".getBytes()));
+            client.send(new SimplePacket(2, "Hallo2!".getBytes()));
+            client.send(new SimplePacket(2, "Hallo3!".getBytes()));
+            client.send(new SimplePacket(2, "Hallo4!".getBytes()));
         } catch (IOException e) {
             e.printStackTrace();
         }

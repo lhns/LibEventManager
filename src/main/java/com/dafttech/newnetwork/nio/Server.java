@@ -26,8 +26,11 @@ public class Server<P extends Packet> extends AbstractServer<P> {
             if (selectionKey.isAcceptable()) {
                 try {
                     AbstractClient<P> client = new Client<P>(protocolClazz, socketChannel.accept(), receive);
+                    client.setExceptionHandler(exceptionHandler);
                     onAccept(client);
-                    clients.add(client);
+                    synchronized (clients) {
+                        clients.add(client);
+                    }
                 } catch (IOException e) {
                     onException(e);
                 }
@@ -35,8 +38,8 @@ public class Server<P extends Packet> extends AbstractServer<P> {
         });
     }
 
-    public Server(Class<? extends AbstractProtocol> protocolClazz, int port, BiConsumer<ProtocolProvider<P>, P> receive) throws IOException {
-        this(protocolClazz, new InetSocketAddress(port), receive);
+    public Server(Class<? extends AbstractProtocol> protocolClazz, int port, BiConsumer<ProtocolProvider<P>, P> receiveHandler) throws IOException {
+        this(protocolClazz, new InetSocketAddress(port), receiveHandler);
     }
 
     @Override

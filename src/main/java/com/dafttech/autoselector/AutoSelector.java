@@ -17,7 +17,7 @@ class AutoSelector implements Runnable {
 
     public AutoSelector(ExecutorService executorService) throws IOException {
         selector = Selector.open();
-        executorService.submit(this);
+        executorService.execute(this);
     }
 
     public SelectionKey register(SelectableChannel channel, int ops, Object att) throws IOException {
@@ -46,6 +46,7 @@ class AutoSelector implements Runnable {
                 }
             }
         } catch (IOException e) {
+            System.out.println(e);
             throw new RuntimeException(e);
         } finally {
             try {
