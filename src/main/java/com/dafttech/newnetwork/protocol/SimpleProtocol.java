@@ -1,6 +1,5 @@
 package com.dafttech.newnetwork.protocol;
 
-import com.dafttech.newnetwork.AbstractProtocol;
 import com.dafttech.newnetwork.packet.SimplePacket;
 
 import java.io.IOException;
@@ -12,45 +11,25 @@ import java.nio.channels.WritableByteChannel;
 /**
  * Created by LolHens on 11.11.2014.
  */
-public class SimpleProtocol extends AbstractProtocol<SimplePacket> {
-    private SimplePacket packet;
-
-    @Override
-    public void send(SimplePacket packet) {
-        while (this.packet != null) {
-            try {
-                synchronized (this) {
-                    this.wait(100);
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        if (this.packet == null) this.packet = packet;
-        setWriteEnabled(true);
-    }
-
+public class SimpleProtocol extends AbstractBlockingProtocol<SimplePacket> {
     private ByteBuffer outBuffer = null;
 
     @Override
-    protected void write(WritableByteChannel out) throws IOException {
-        if (packet != null && outBuffer == null) {
-            outBuffer = ByteBuffer.allocate(8 + packet.data.length).order(ByteOrder.BIG_ENDIAN);
-            outBuffer.putInt(packet.channel);
-            outBuffer.putInt(packet.data.length);
-            outBuffer.put(packet.data);
-            packet = null;
-            synchronized (this) {
-                this.notify();
-            }
-        }
-        if (outBuffer != null) {
-            outBuffer.rewind();
-            out.write(outBuffer);
-            if (outBuffer.remaining() == 0) {
-                outBuffer = null;
-                if (packet == null) setWriteEnabled(false);
-            }
+    protected void onPacket(SimplePacket packet) throws IOException {
+        outBuffer = ByteBuffer.allocate(8 + packet.data.length).order(ByteOrder.BIG_ENDIAN);
+        outBuffer.putInt(packet.channel);
+        outBuffer.putInt(packet.data.length);
+        outBuffer.put(packet.data);
+        outBuffer.rewind();
+        setWriting(true);
+    }
+
+    @Override
+    protected void onWrite(WritableByteChannel out) throws IOException {
+        out.write(outBuffer);
+        if (outBuffer.remaining() == 0) {
+            outBuffer = null;
+            setWriting(false);
         }
     }
 

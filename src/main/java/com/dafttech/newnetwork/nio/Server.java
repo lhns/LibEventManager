@@ -32,7 +32,7 @@ public class Server<P extends Packet> extends AbstractServer<P> {
                         clients.add(client);
                     }
                 } catch (IOException e) {
-                    onException(e);
+                    handleException(e);
                 }
             }
         });

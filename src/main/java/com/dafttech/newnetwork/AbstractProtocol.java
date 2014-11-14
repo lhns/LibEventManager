@@ -8,7 +8,7 @@ import java.nio.channels.WritableByteChannel;
 public abstract class AbstractProtocol<P> implements Closeable {
     protected AbstractClient<P> client = null;
 
-    public abstract void send(P packet);
+    protected abstract void send(P packet);
 
     protected final void receive(P packet) {
         client.receive(packet);

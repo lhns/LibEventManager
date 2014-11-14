@@ -40,7 +40,7 @@ public class Client<P extends Packet> extends AbstractClient<P> {
                 try {
                     socketChannel.finishConnect();
                 } catch (IOException e) {
-                    onException(e);
+                    handleException(e);
                 }
                 onConnect();
 

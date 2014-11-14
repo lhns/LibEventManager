@@ -36,7 +36,7 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
         try {
             protocol.read(in);
         } catch (IOException e) {
-            onException(e);
+            handleException(e);
         }
     }
 
@@ -44,7 +44,7 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
         try {
             protocol.write(out);
         } catch (IOException e) {
-            onException(e);
+            handleException(e);
         }
     }
 

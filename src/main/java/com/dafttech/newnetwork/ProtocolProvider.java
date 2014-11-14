@@ -25,12 +25,9 @@ public class ProtocolProvider<P> implements Closeable {
         this.protocolClazz = (Class<? extends AbstractProtocol<P>>) protocolClazz;
     }
 
-    protected void onException(IOException e) {
-        if (exceptionHandler == null) {
-            throw new RuntimeException(e);
-        } else {
-            exceptionHandler.accept(e);
-        }
+    protected final void handleException(IOException e) {
+        if (exceptionHandler != null) exceptionHandler.accept(e);
+        else throw new RuntimeException(e);
     }
 
     public final void setExceptionHandler(Consumer<IOException> exceptionHandler) {
