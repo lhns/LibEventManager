@@ -20,6 +20,9 @@ public abstract class AbstractServer<P> extends ProtocolProvider<P> {
         for (AbstractClient<P> client : clients) client.send(packet);
     }
 
+    protected void onAccept(AbstractClient<P> client) {
+    }
+
     @Override
     public void close() throws IOException {
         super.close();

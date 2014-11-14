@@ -23,7 +23,7 @@ public class ProtocolProvider<P> implements Closeable {
         this.protocolClazz = (Class<? extends AbstractProtocol<P>>) protocolClazz;
     }
 
-    protected void ioException(IOException e) {
+    protected void onException(IOException e) {
         throw new RuntimeException(e);
     }
 

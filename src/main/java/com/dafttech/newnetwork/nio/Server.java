@@ -1,6 +1,7 @@
 package com.dafttech.newnetwork.nio;
 
 import com.dafttech.autoselector.SelectorManager;
+import com.dafttech.newnetwork.AbstractClient;
 import com.dafttech.newnetwork.AbstractProtocol;
 import com.dafttech.newnetwork.AbstractServer;
 import com.dafttech.newnetwork.ProtocolProvider;
@@ -13,7 +14,7 @@ import java.nio.channels.ServerSocketChannel;
 import java.util.function.BiConsumer;
 
 public class Server<P extends Packet> extends AbstractServer<P> {
-    private final ServerSocketChannel socketChannel;
+    protected final ServerSocketChannel socketChannel;
 
     public Server(Class<? extends AbstractProtocol> protocolClazz, InetSocketAddress socketAddress, BiConsumer<ProtocolProvider<P>, P> receive) throws IOException {
         super(protocolClazz, receive);
@@ -24,9 +25,11 @@ public class Server<P extends Packet> extends AbstractServer<P> {
         SelectorManager.instance.register(socketChannel, SelectionKey.OP_ACCEPT, (selectionKey) -> {
             if (selectionKey.isAcceptable()) {
                 try {
-                    clients.add(new Client<P>(protocolClazz, socketChannel.accept(), receive));
+                    AbstractClient<P> client = new Client<P>(protocolClazz, socketChannel.accept(), receive);
+                    onAccept(client);
+                    clients.add(client);
                 } catch (IOException e) {
-                    ioException(e);
+                    onException(e);
                 }
             }
         });

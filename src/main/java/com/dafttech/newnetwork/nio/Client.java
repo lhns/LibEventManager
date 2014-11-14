@@ -13,14 +13,22 @@ import java.nio.channels.SocketChannel;
 import java.util.function.BiConsumer;
 
 public class Client<P extends Packet> extends AbstractClient<P> {
-    private final SocketChannel socketChannel;
+    protected final SocketChannel socketChannel;
 
     public Client(Class<? extends AbstractProtocol> protocolClazz, SocketChannel socketChannel, BiConsumer<ProtocolProvider<P>, P> receive) throws IOException {
         super(protocolClazz, receive);
 
         this.socketChannel = socketChannel;
 
-        SelectorManager.instance.register(socketChannel, SelectionKey.OP_READ | SelectionKey.OP_WRITE | (socketChannel.isConnected() ? 0 : SelectionKey.OP_CONNECT), (selectionKey) -> {
+        int ops = SelectionKey.OP_READ | SelectionKey.OP_WRITE;
+
+        if (socketChannel.isConnected()) {
+            onConnect();
+        } else {
+            ops |= SelectionKey.OP_CONNECT;
+        }
+
+        SelectorManager.instance.register(socketChannel, ops, (selectionKey) -> {
             if (selectionKey.isReadable()) {
                 read(socketChannel);
             }
@@ -31,8 +39,10 @@ public class Client<P extends Packet> extends AbstractClient<P> {
                 try {
                     socketChannel.finishConnect();
                 } catch (IOException e) {
-                    ioException(e);
+                    onException(e);
                 }
+                onConnect();
+
                 selectionKey.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
                 selectionKey.selector().wakeup();
             }

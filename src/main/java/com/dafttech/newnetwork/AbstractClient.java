@@ -36,7 +36,7 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
         try {
             protocol.read(in);
         } catch (IOException e) {
-            ioException(e);
+            onException(e);
         }
     }
 
@@ -44,8 +44,11 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
         try {
             protocol.write(out);
         } catch (IOException e) {
-            ioException(e);
+            onException(e);
         }
+    }
+
+    protected void onConnect() {
     }
 
     public void close() throws IOException {
