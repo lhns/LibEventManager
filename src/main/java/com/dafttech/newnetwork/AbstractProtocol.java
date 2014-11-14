@@ -18,6 +18,10 @@ public abstract class AbstractProtocol<P> implements Closeable {
 
     protected abstract void read(ReadableByteChannel in) throws IOException;
 
+    protected final void setWriteEnabled(boolean value) {
+        client.setWriteEnabled(value);
+    }
+
     @Override
     public void close() {
     }

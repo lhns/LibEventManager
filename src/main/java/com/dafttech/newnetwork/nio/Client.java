@@ -14,13 +14,14 @@ import java.util.function.BiConsumer;
 
 public class Client<P extends Packet> extends AbstractClient<P> {
     protected final SocketChannel socketChannel;
+    private final SelectionKey selectionKey;
 
     public Client(Class<? extends AbstractProtocol> protocolClazz, SocketChannel socketChannel, BiConsumer<ProtocolProvider<P>, P> receive) throws IOException {
         super(protocolClazz, receive);
 
         this.socketChannel = socketChannel;
 
-        int ops = SelectionKey.OP_READ | SelectionKey.OP_WRITE;
+        int ops = SelectionKey.OP_READ;
 
         if (socketChannel.isConnected()) {
             onConnect();
@@ -28,7 +29,7 @@ public class Client<P extends Packet> extends AbstractClient<P> {
             ops |= SelectionKey.OP_CONNECT;
         }
 
-        SelectorManager.instance.register(socketChannel, ops, (selectionKey) -> {
+        selectionKey = SelectorManager.instance.register(socketChannel, ops, (selectionKey) -> {
             if (selectionKey.isReadable()) {
                 read(socketChannel);
             }
@@ -43,7 +44,7 @@ public class Client<P extends Packet> extends AbstractClient<P> {
                 }
                 onConnect();
 
-                selectionKey.interestOps(SelectionKey.OP_READ | SelectionKey.OP_WRITE);
+                selectionKey.interestOps(selectionKey.interestOps() ^ SelectionKey.OP_CONNECT);
                 selectionKey.selector().wakeup();
             }
         });
@@ -66,6 +67,15 @@ public class Client<P extends Packet> extends AbstractClient<P> {
 
     public Client(Class<? extends AbstractProtocol> protocolClazz, String host, BiConsumer<ProtocolProvider<P>, P> receive) throws IOException {
         this(protocolClazz, host.split(":")[0], Integer.parseInt(host.split(":")[1]), receive);
+    }
+
+    @Override
+    protected void setWriteEnabled(boolean value) {
+        int ops = selectionKey.interestOps();
+        if (((ops & SelectionKey.OP_WRITE) != 0) != value) {
+            selectionKey.interestOps(ops ^ SelectionKey.OP_WRITE);
+            selectionKey.selector().wakeup();
+        }
     }
 
     @Override

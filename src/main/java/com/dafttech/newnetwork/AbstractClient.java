@@ -48,6 +48,8 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
         }
     }
 
+    protected abstract void setWriteEnabled(boolean value);
+
     protected void onConnect() {
     }
 

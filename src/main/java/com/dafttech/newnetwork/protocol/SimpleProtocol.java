@@ -17,7 +17,10 @@ public class SimpleProtocol extends AbstractProtocol<SimplePacket> {
 
     @Override
     public void send(SimplePacket packet) {
-        if (this.packet == null) this.packet = packet;
+        if (this.packet == null) {
+            this.packet = packet;
+        }
+        setWriteEnabled(true);
     }
 
     private ByteBuffer outBuffer = null;
@@ -34,7 +37,10 @@ public class SimpleProtocol extends AbstractProtocol<SimplePacket> {
         if (outBuffer != null) {
             outBuffer.rewind();
             out.write(outBuffer);
-            if (outBuffer.remaining() == 0) outBuffer = null;
+            if (outBuffer.remaining() == 0) {
+                outBuffer = null;
+                if (packet == null) setWriteEnabled(false);
+            }
         }
     }
 
