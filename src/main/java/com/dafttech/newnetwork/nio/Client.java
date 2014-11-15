@@ -3,7 +3,6 @@ package com.dafttech.newnetwork.nio;
 import com.dafttech.autoselector.SelectorManager;
 import com.dafttech.newnetwork.AbstractClient;
 import com.dafttech.newnetwork.AbstractProtocol;
-import com.dafttech.newnetwork.ProtocolProvider;
 import com.dafttech.newnetwork.packet.Packet;
 
 import java.io.IOException;
@@ -16,18 +15,13 @@ public class Client<P extends Packet> extends AbstractClient<P> {
     protected final SocketChannel socketChannel;
     private final SelectionKey selectionKey;
 
-    public Client(Class<? extends AbstractProtocol> protocolClazz, SocketChannel socketChannel, BiConsumer<ProtocolProvider<P>, P> receiveHandler) throws IOException {
+    public Client(Class<? extends AbstractProtocol> protocolClazz, SocketChannel socketChannel, BiConsumer<AbstractClient<P>, P> receiveHandler) throws IOException {
         super(protocolClazz, receiveHandler);
 
         this.socketChannel = socketChannel;
 
-        int ops = 0;
-        if (socketChannel.isConnected()) {
-            onConnect();
-            ops |= SelectionKey.OP_READ;
-        } else {
-            ops |= SelectionKey.OP_CONNECT;
-        }
+        int ops = SelectionKey.OP_CONNECT;
+        if (socketChannel.isConnected()) ops ^= connect();
 
         selectionKey = SelectorManager.instance.register(socketChannel, ops, (selectionKey) -> {
             if (selectionKey.isReadable()) {
@@ -37,20 +31,13 @@ public class Client<P extends Packet> extends AbstractClient<P> {
                 write(socketChannel);
             }
             if (selectionKey.isConnectable()) {
-                try {
-                    socketChannel.finishConnect();
-                } catch (IOException e) {
-                    handleException(e);
-                }
-                onConnect();
-
-                selectionKey.interestOps(selectionKey.interestOps() ^ (SelectionKey.OP_CONNECT | SelectionKey.OP_READ));
+                selectionKey.interestOps(selectionKey.interestOps() ^ connect());
                 selectionKey.selector().wakeup();
             }
         });
     }
 
-    public Client(Class<? extends AbstractProtocol> protocolClazz, InetSocketAddress socketAddress, BiConsumer<ProtocolProvider<P>, P> receiveHandler) throws IOException {
+    public Client(Class<? extends AbstractProtocol> protocolClazz, InetSocketAddress socketAddress, BiConsumer<AbstractClient<P>, P> receiveHandler) throws IOException {
         this(protocolClazz, toSocketChannel(socketAddress), receiveHandler);
     }
 
@@ -61,12 +48,22 @@ public class Client<P extends Packet> extends AbstractClient<P> {
         return socketChannel;
     }
 
-    public Client(Class<? extends AbstractProtocol> protocolClazz, String host, int port, BiConsumer<ProtocolProvider<P>, P> receiveHandler) throws IOException {
+    public Client(Class<? extends AbstractProtocol> protocolClazz, String host, int port, BiConsumer<AbstractClient<P>, P> receiveHandler) throws IOException {
         this(protocolClazz, new InetSocketAddress(host, port), receiveHandler);
     }
 
-    public Client(Class<? extends AbstractProtocol> protocolClazz, String host, BiConsumer<ProtocolProvider<P>, P> receiveHandler) throws IOException {
+    public Client(Class<? extends AbstractProtocol> protocolClazz, String host, BiConsumer<AbstractClient<P>, P> receiveHandler) throws IOException {
         this(protocolClazz, host.split(":")[0], Integer.parseInt(host.split(":")[1]), receiveHandler);
+    }
+
+    private final int connect() {
+        try {
+            socketChannel.finishConnect();
+        } catch (IOException e) {
+            onException(e);
+        }
+        onConnect();
+        return SelectionKey.OP_CONNECT | SelectionKey.OP_READ;
     }
 
     @Override

@@ -4,7 +4,6 @@ import com.dafttech.autoselector.SelectorManager;
 import com.dafttech.newnetwork.AbstractClient;
 import com.dafttech.newnetwork.AbstractProtocol;
 import com.dafttech.newnetwork.AbstractServer;
-import com.dafttech.newnetwork.ProtocolProvider;
 import com.dafttech.newnetwork.packet.Packet;
 
 import java.io.IOException;
@@ -16,7 +15,7 @@ import java.util.function.BiConsumer;
 public class Server<P extends Packet> extends AbstractServer<P> {
     protected final ServerSocketChannel socketChannel;
 
-    public Server(Class<? extends AbstractProtocol> protocolClazz, InetSocketAddress socketAddress, BiConsumer<ProtocolProvider<P>, P> receive) throws IOException {
+    public Server(Class<? extends AbstractProtocol> protocolClazz, InetSocketAddress socketAddress, BiConsumer<AbstractClient<P>, P> receive) throws IOException {
         super(protocolClazz, receive);
 
         socketChannel = ServerSocketChannel.open();
@@ -26,19 +25,19 @@ public class Server<P extends Packet> extends AbstractServer<P> {
             if (selectionKey.isAcceptable()) {
                 try {
                     AbstractClient<P> client = new Client<P>(protocolClazz, socketChannel.accept(), receive);
-                    client.setExceptionHandler(exceptionHandler);
+                    client.setExceptionHandler(getExceptionHandler());
                     onAccept(client);
                     synchronized (clients) {
                         clients.add(client);
                     }
                 } catch (IOException e) {
-                    handleException(e);
+                    onException(e);
                 }
             }
         });
     }
 
-    public Server(Class<? extends AbstractProtocol> protocolClazz, int port, BiConsumer<ProtocolProvider<P>, P> receiveHandler) throws IOException {
+    public Server(Class<? extends AbstractProtocol> protocolClazz, int port, BiConsumer<AbstractClient<P>, P> receiveHandler) throws IOException {
         this(protocolClazz, new InetSocketAddress(port), receiveHandler);
     }
 

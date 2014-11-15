@@ -4,14 +4,18 @@ import java.io.IOException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public abstract class AbstractClient<P> extends ProtocolProvider<P> {
     private AbstractProtocol<P> protocol;
 
-    public AbstractClient(Class<? extends AbstractProtocol> protocolClazz, BiConsumer<ProtocolProvider<P>, P> receiveHandler) {
+    private Consumer<AbstractClient<P>> connectHandler = null;
+
+    public AbstractClient(Class<? extends AbstractProtocol> protocolClazz, BiConsumer<AbstractClient<P>, P> receiveHandler) {
         super(protocolClazz, receiveHandler);
     }
 
+    @Override
     public final void setProtocol(Class<? extends AbstractProtocol> protocolClazz) {
         super.setProtocol(protocolClazz);
         try {
@@ -24,19 +28,31 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
         }
     }
 
+    public final void setConnectHandler(Consumer<AbstractClient<P>> connectHandler) {
+        this.connectHandler = connectHandler;
+    }
+
+    protected final Consumer<AbstractClient<P>> getConnectHandler() {
+        return connectHandler;
+    }
+
+    protected final void onConnect() {
+        if (connectHandler != null) connectHandler.accept(this);
+    }
+
     public final void send(P packet) {
         protocol.send(packet);
     }
 
     protected final void receive(P packet) {
-        receiveHandler.accept(this, packet);
+        getReceiveHandler().accept(this, packet);
     }
 
     protected final void read(ReadableByteChannel in) {
         try {
             protocol.read(in);
         } catch (IOException e) {
-            handleException(e);
+            onException(e);
         }
     }
 
@@ -44,15 +60,13 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
         try {
             protocol.write(out);
         } catch (IOException e) {
-            handleException(e);
+            onException(e);
         }
     }
 
     protected abstract void setWriteEnabled(boolean value);
 
-    protected void onConnect() {
-    }
-
+    @Override
     public void close() throws IOException {
         super.close();
         protocol.close();
