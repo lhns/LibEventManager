@@ -1,16 +1,18 @@
 package com.dafttech.newnetwork;
 
+import com.dafttech.exception.AbstractExceptionHandler;
+import com.dafttech.exception.DefaultExceptionHandler;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public class ProtocolProvider<P> implements Closeable {
     private boolean closed = false;
     private Class<? extends AbstractProtocol<P>> protocolClazz;
 
     private BiConsumer<AbstractClient<P>, P> receiveHandler = null;
-    private Consumer<IOException> exceptionHandler = null;
+    private AbstractExceptionHandler<? super IOException> exceptionHandler = null;
 
     public ProtocolProvider(Class<? extends AbstractProtocol> protocolClazz, BiConsumer<AbstractClient<P>, P> receiveHandler) {
         this.receiveHandler = receiveHandler;
@@ -34,17 +36,22 @@ public class ProtocolProvider<P> implements Closeable {
         return receiveHandler;
     }
 
-    public final void setExceptionHandler(Consumer<IOException> exceptionHandler) {
+    public final void setExceptionHandler(AbstractExceptionHandler<? super IOException> exceptionHandler) {
         this.exceptionHandler = exceptionHandler;
     }
 
-    protected final Consumer<IOException> getExceptionHandler() {
+    protected final AbstractExceptionHandler<? super IOException> getExceptionHandler() {
         return exceptionHandler;
     }
 
     protected final void onException(IOException e) {
-        if (exceptionHandler != null) exceptionHandler.accept(e);
-        else throw new RuntimeException(e);
+        if (exceptionHandler != null) exceptionHandler.handle(e);
+        else DefaultExceptionHandler.instance.handle(e);
+        try {
+            close();
+        } catch (IOException closeException) {
+            DefaultExceptionHandler.instance.handle(closeException);
+        }
     }
 
     @Override

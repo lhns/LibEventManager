@@ -24,6 +24,8 @@ public class Client<P extends Packet> extends AbstractClient<P> {
         if (socketChannel.isConnected()) ops ^= connect();
 
         selectionKey = SelectorManager.instance.register(socketChannel, ops, (selectionKey) -> {
+            if (!isAlive()) return;
+
             if (selectionKey.isReadable()) {
                 read(socketChannel);
             }
@@ -80,5 +82,7 @@ public class Client<P extends Packet> extends AbstractClient<P> {
     public void close() throws IOException {
         super.close();
         socketChannel.close();
+        selectionKey.cancel();
+        selectionKey.selector().wakeup();
     }
 }

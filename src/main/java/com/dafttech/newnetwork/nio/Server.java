@@ -22,6 +22,8 @@ public class Server<P extends Packet> extends AbstractServer<P> {
         socketChannel.bind(socketAddress);
 
         SelectorManager.instance.register(socketChannel, SelectionKey.OP_ACCEPT, (selectionKey) -> {
+            if (!isAlive()) return;
+
             if (selectionKey.isAcceptable()) {
                 try {
                     AbstractClient<P> client = new Client<P>(protocolClazz, socketChannel.accept(), receive);
