@@ -74,6 +74,6 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
 
     @Override
     public void finalize() {
-        System.out.println("FINALIZE CLIENT");
+
     }
 }

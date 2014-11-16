@@ -29,9 +29,9 @@ public class Server<P extends Packet> extends AbstractServer<P> {
                     AbstractClient<P> client = new Client<P>(protocolClazz, socketChannel.accept(), receive);
                     client.setExceptionHandler(getExceptionHandler());
                     onAccept(client);
-                    synchronized (clients) {
+                    System.out.println("add");
                         clients.add(client);
-                    }
+                    System.out.println("added");
                 } catch (IOException e) {
                     onException(e);
                 }

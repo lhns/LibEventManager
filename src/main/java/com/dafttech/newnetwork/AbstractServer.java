@@ -1,13 +1,14 @@
 package com.dafttech.newnetwork;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public abstract class AbstractServer<P> extends ProtocolProvider<P> {
-    protected final List<AbstractClient<P>> clients = new LinkedList<>();
+    protected final Collection<AbstractClient<P>> clients = Collections.<AbstractClient<P>>synchronizedCollection(new LinkedList<>());
 
     private Consumer<AbstractClient<P>> acceptHandler = null;
 
@@ -33,16 +34,12 @@ public abstract class AbstractServer<P> extends ProtocolProvider<P> {
     }
 
     public void broadcast(P packet) {
-        synchronized (clients) {
-            for (AbstractClient<P> client : clients) client.send(packet);
-        }
+        for (AbstractClient<P> client : clients) client.send(packet);
     }
 
     @Override
     public void close() throws IOException {
         super.close();
-        synchronized (clients) {
-            for (AbstractClient<P> client : clients) client.close();
-        }
+        for (AbstractClient<P> client : clients) client.close();
     }
 }

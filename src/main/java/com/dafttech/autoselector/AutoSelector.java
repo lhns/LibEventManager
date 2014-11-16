@@ -1,6 +1,7 @@
 package com.dafttech.autoselector;
 
 import java.io.IOException;
+import java.nio.channels.CancelledKeyException;
 import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -41,7 +42,10 @@ class AutoSelector implements Runnable {
                     while (readyKeysIterator.hasNext()) {
                         SelectionKey key = readyKeysIterator.next();
                         readyKeysIterator.remove();
-                        if (key.isValid()) ((Consumer<SelectionKey>) key.attachment()).accept(key);
+                        try {
+                            if (key.isValid()) ((Consumer<SelectionKey>) key.attachment()).accept(key);
+                        } catch (CancelledKeyException e) {
+                        }
                     }
                 }
             }

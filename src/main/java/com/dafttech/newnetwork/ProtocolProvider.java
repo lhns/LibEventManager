@@ -15,7 +15,7 @@ public class ProtocolProvider<P> implements Closeable {
     private AbstractExceptionHandler<? super IOException> exceptionHandler = null;
 
     public ProtocolProvider(Class<? extends AbstractProtocol> protocolClazz, BiConsumer<AbstractClient<P>, P> receiveHandler) {
-        this.receiveHandler = receiveHandler;
+        setReceiveHandler(receiveHandler);
         setProtocol(protocolClazz);
     }
 
@@ -45,13 +45,13 @@ public class ProtocolProvider<P> implements Closeable {
     }
 
     protected final void onException(IOException e) {
-        if (exceptionHandler != null) exceptionHandler.handle(e);
-        else DefaultExceptionHandler.instance.handle(e);
         try {
             close();
         } catch (IOException closeException) {
             DefaultExceptionHandler.instance.handle(closeException);
         }
+        if (exceptionHandler != null) exceptionHandler.handle(e);
+//        else DefaultExceptionHandler.instance.handle(e);
     }
 
     @Override
