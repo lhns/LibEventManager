@@ -30,7 +30,7 @@ public class Server<P extends Packet> extends AbstractServer<P> {
                     client.setExceptionHandler(getExceptionHandler());
                     onAccept(client);
                     System.out.println("add");
-                        clients.add(client);
+                    clients.add(client);
                     System.out.println("added");
                 } catch (IOException e) {
                     onException(e);

@@ -1,4 +1,4 @@
-package com.dafttech.newnetwork.disconnect;
+package com.dafttech.newnetwork.exception;
 
 /**
  * Created by LolHens on 15.11.2014.
