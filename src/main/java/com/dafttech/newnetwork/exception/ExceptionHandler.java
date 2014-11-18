@@ -16,6 +16,11 @@ public class ExceptionHandler {
     }
 
     public void handle(ProtocolProvider<?> protocolProvider, IOException exception) {
+        try {
+            protocolProvider.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         exception.printStackTrace();
     }
 }
