@@ -4,7 +4,6 @@ import com.dafttech.autoselector.SelectorManager;
 import com.dafttech.newnetwork.AbstractClient;
 import com.dafttech.newnetwork.AbstractProtocol;
 import com.dafttech.newnetwork.AbstractServer;
-import com.dafttech.newnetwork.packet.Packet;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -12,7 +11,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.ServerSocketChannel;
 import java.util.function.BiConsumer;
 
-public class Server<P extends Packet> extends AbstractServer<P> {
+public class Server<P> extends AbstractServer<P> {
     protected final ServerSocketChannel socketChannel;
 
     public Server(Class<? extends AbstractProtocol> protocolClazz, InetSocketAddress socketAddress, BiConsumer<AbstractClient<P>, P> receive) throws IOException {

@@ -3,7 +3,6 @@ package com.dafttech.newnetwork.nio;
 import com.dafttech.autoselector.SelectorManager;
 import com.dafttech.newnetwork.AbstractClient;
 import com.dafttech.newnetwork.AbstractProtocol;
-import com.dafttech.newnetwork.packet.Packet;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -11,7 +10,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.function.BiConsumer;
 
-public class Client<P extends Packet> extends AbstractClient<P> {
+public class Client<P> extends AbstractClient<P> {
     protected final SocketChannel socketChannel;
     private final SelectionKey selectionKey;
 
