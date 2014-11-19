@@ -21,8 +21,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 public class ReflectionUtil {
 
-    public static final Set<Field> getAnnotatedFields(Class<?> target, List<Class<? extends Annotation>> annotations,
-                                                      Class<?> reqType) {
+    public static final Set<Field> getAnnotatedFields(Class<?> target, List<Class<? extends Annotation>> annotations, Class<?> reqType) {
         Set<Field> fields = new HashSet<Field>();
         if (reqType == void.class) return fields;
 
@@ -47,8 +46,7 @@ public class ReflectionUtil {
         return getAnnotatedFields(target, Arrays.<Class<? extends Annotation>>asList(annotation), reqType);
     }
 
-    public static final Set<Method> getAnnotatedMethods(Class<?> target, List<Class<? extends Annotation>> annotations,
-                                                        Class<?> reqType, List<Class<?>> reqArgs) {
+    public static final Set<Method> getAnnotatedMethods(Class<?> target, List<Class<? extends Annotation>> annotations, Class<?> reqType, List<Class<?>> reqArgs) {
         Set<Method> methods = new HashSet<Method>();
 
         for (Method method : getAllDeclaredMethods(target)) {
@@ -69,13 +67,11 @@ public class ReflectionUtil {
         return methods;
     }
 
-    public static final Set<Method> getAnnotatedMethods(Class<?> target, Class<? extends Annotation> annotation,
-                                                        Class<?> reqType, List<Class<?>> reqArgs) {
+    public static final Set<Method> getAnnotatedMethods(Class<?> target, Class<? extends Annotation> annotation, Class<?> reqType, List<Class<?>> reqArgs) {
         return getAnnotatedMethods(target, Arrays.<Class<? extends Annotation>>asList(annotation), reqType, reqArgs);
     }
 
-    public static final Set<Constructor<?>> getAnnotatedConstructors(Class<?> target,
-                                                                     List<Class<? extends Annotation>> annotations, List<Class<?>> reqArgs) {
+    public static final Set<Constructor<?>> getAnnotatedConstructors(Class<?> target, List<Class<? extends Annotation>> annotations, List<Class<?>> reqArgs) {
         Set<Constructor<?>> constructors = new HashSet<Constructor<?>>();
 
         for (Constructor<?> constructor : getAllDeclaredConstructors(target)) {
@@ -95,8 +91,7 @@ public class ReflectionUtil {
         return constructors;
     }
 
-    public static final Set<Constructor<?>> getAnnotatedConstructors(Class<?> target, Class<? extends Annotation> annotation,
-                                                                     List<Class<?>> reqArgs) {
+    public static final Set<Constructor<?>> getAnnotatedConstructors(Class<?> target, Class<? extends Annotation> annotation, List<Class<?>> reqArgs) {
         return getAnnotatedConstructors(target, Arrays.<Class<? extends Annotation>>asList(annotation), reqArgs);
     }
 

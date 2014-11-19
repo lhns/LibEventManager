@@ -20,7 +20,5 @@ public class Events {
         protected boolean isFiltered(Event event, Tuple filter, ListenerContainer eventListener) {
             return event.in.get(0).equals(filter.get(0));
         }
-
-        ;
     };
 }

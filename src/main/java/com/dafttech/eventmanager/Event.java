@@ -20,7 +20,7 @@ public class Event {
             this.phase = phase;
         }
 
-        public boolean isChangable() {
+        public boolean isChangeable() {
             return phase == 1;
         }
 
@@ -141,14 +141,14 @@ public class Event {
      */
     public final void cancel() {
         synchronized (state) {
-            if (state.isChangable()) state = State.CANCELLED;
+            if (state.isChangeable()) state = State.CANCELLED;
         }
     }
 
     public final void setCancelled(boolean cancelled) {
         if (cancelled) {
             synchronized (state) {
-                if (state.isChangable()) state = State.CANCELLED;
+                if (state.isChangeable()) state = State.CANCELLED;
             }
         }
     }

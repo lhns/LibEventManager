@@ -11,7 +11,7 @@ public class EventType {
     private final String name;
     private final EventManager[] eventManagerWhitelist;
 
-    protected static final Map<String, EventType> types = new HashMap<String, EventType>();
+    protected static final Map<String, EventType> types = new HashMap<>();
 
     public static final double PRIORITY_LOW = -1;
     public static final double PRIORITY_NORMAL = 0;

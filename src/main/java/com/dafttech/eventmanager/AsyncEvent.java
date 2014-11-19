@@ -20,9 +20,7 @@ public class AsyncEvent extends Event {
     public AsyncEvent waitForEvent() {
         try {
             future.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
         return this;
@@ -31,11 +29,7 @@ public class AsyncEvent extends Event {
     public AsyncEvent waitForEvent(long l, TimeUnit timeunit) {
         try {
             future.get(l, timeunit);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        } catch (TimeoutException e) {
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
             e.printStackTrace();
         }
         return this;

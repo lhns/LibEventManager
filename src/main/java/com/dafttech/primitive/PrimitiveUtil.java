@@ -11,14 +11,14 @@ public class PrimitiveUtil {
     private static final List<Primitive<?>> PRIMITIVES = new ArrayList<>();
     private static volatile Primitive<?>[] PRIMITIVE_ARRAY;
 
-    public static final Primitive<Byte> BYTE = new Primitive<Byte>(byte.class, Byte.class, "byte", 1, 0, (byteBuffer, value) -> byteBuffer.put(value), (byteBuffer) -> byteBuffer.get());
-    public static final Primitive<Integer> INTEGER = new Primitive<Integer>(int.class, Integer.class, "int", 4, 0, (byteBuffer, value) -> byteBuffer.putInt(value), (byteBuffer) -> byteBuffer.getInt());
-    public static final Primitive<Long> LONG = new Primitive<Long>(long.class, Long.class, "long", 8, 0, (byteBuffer, value) -> byteBuffer.putLong(value), (byteBuffer) -> byteBuffer.getLong());
-    public static final Primitive<Float> FLOAT = new Primitive<Float>(float.class, Float.class, "float", 4, 0, (byteBuffer, value) -> byteBuffer.putFloat(value), (byteBuffer) -> byteBuffer.getFloat());
-    public static final Primitive<Double> DOUBLE = new Primitive<Double>(double.class, Double.class, "double", 8, 0, (byteBuffer, value) -> byteBuffer.putDouble(value), (byteBuffer) -> byteBuffer.getDouble());
-    public static final Primitive<Short> SHORT = new Primitive<Short>(short.class, Short.class, "short", 2, 0, (byteBuffer, value) -> byteBuffer.putShort(value), (byteBuffer) -> byteBuffer.getShort());
-    public static final Primitive<Character> CHARACTER = new Primitive<Character>(char.class, Character.class, "char", 2, '\u0000', (byteBuffer, value) -> byteBuffer.putChar(value), (byteBuffer) -> byteBuffer.getChar());
-    public static final Primitive<Boolean> BOOLEAN = new Primitive<Boolean>(boolean.class, Boolean.class, "boolean", 1, false, (byteBuffer, value) -> byteBuffer.put((byte) (value ? 1 : 0)), (byteBuffer) -> byteBuffer.get() != 0);
+    public static final Primitive<Byte> BYTE = new Primitive<>(byte.class, Byte.class, "byte", 1, 0, (byteBuffer, value) -> byteBuffer.put(value), (byteBuffer) -> byteBuffer.get());
+    public static final Primitive<Integer> INTEGER = new Primitive<>(int.class, Integer.class, "int", 4, 0, (byteBuffer, value) -> byteBuffer.putInt(value), (byteBuffer) -> byteBuffer.getInt());
+    public static final Primitive<Long> LONG = new Primitive<>(long.class, Long.class, "long", 8, 0, (byteBuffer, value) -> byteBuffer.putLong(value), (byteBuffer) -> byteBuffer.getLong());
+    public static final Primitive<Float> FLOAT = new Primitive<>(float.class, Float.class, "float", 4, 0, (byteBuffer, value) -> byteBuffer.putFloat(value), (byteBuffer) -> byteBuffer.getFloat());
+    public static final Primitive<Double> DOUBLE = new Primitive<>(double.class, Double.class, "double", 8, 0, (byteBuffer, value) -> byteBuffer.putDouble(value), (byteBuffer) -> byteBuffer.getDouble());
+    public static final Primitive<Short> SHORT = new Primitive<>(short.class, Short.class, "short", 2, 0, (byteBuffer, value) -> byteBuffer.putShort(value), (byteBuffer) -> byteBuffer.getShort());
+    public static final Primitive<Character> CHARACTER = new Primitive<>(char.class, Character.class, "char", 2, '\u0000', (byteBuffer, value) -> byteBuffer.putChar(value), (byteBuffer) -> byteBuffer.getChar());
+    public static final Primitive<Boolean> BOOLEAN = new Primitive<>(boolean.class, Boolean.class, "boolean", 1, false, (byteBuffer, value) -> byteBuffer.put((byte) (value ? 1 : 0)), (byteBuffer) -> byteBuffer.get() != 0);
 
     public static Primitive<?> get(Class<?> clazz) {
         for (int i = 0; i < PRIMITIVE_ARRAY.length; i++)

@@ -16,8 +16,8 @@ import java.util.concurrent.Executors;
 import static java.util.Arrays.asList;
 
 public class EventManager {
-    private final Map<EventType, List<ListenerContainer>> registeredListeners = new HashMap<EventType, List<ListenerContainer>>();
-    protected final Map<String, String> filterShortcuts = new HashMap<String, String>();
+    private final Map<EventType, List<ListenerContainer>> registeredListeners = new HashMap<>();
+    protected final Map<String, String> filterShortcuts = new HashMap<>();
     private final ExecutorService asyncEventExecutor = Executors.newCachedThreadPool();
 
     public EventManager() {
