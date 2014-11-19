@@ -12,17 +12,8 @@ public class ByteArray {
     public static void main(String[] args) {
         byte[] byteArray1 = new byte[4];
         byte[] byteArray2 = null;
-        byte[] byteArray3 = null;
 
         long time, all;
-
-        all = 0;
-        for (int i = 0; i < 10; i++) {
-            time = System.nanoTime();
-            byteArray3 = PrimitiveUtil.FLOAT.toByteArray2(4f);
-            all += System.nanoTime() - time;
-        }
-        System.out.println(all / 10);
 
         all = 0;
         for (int i = 0; i < 10; i++) {
@@ -44,7 +35,5 @@ public class ByteArray {
         for (byte b : byteArray1) System.out.print(b + " ");
         System.out.println();
         for (byte b : byteArray2) System.out.print(b + " ");
-        System.out.println();
-        for (byte b : byteArray3) System.out.print(b + " ");
     }
 }
