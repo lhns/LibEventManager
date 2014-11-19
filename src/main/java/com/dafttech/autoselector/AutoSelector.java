@@ -33,7 +33,7 @@ class AutoSelector implements Runnable {
     public void run() {
         try {
             while (!Thread.interrupted() && selector.isOpen()) {
-                synchronized (selector) {
+                synchronized (selector) { // See synchronized block in register(SelectableChannel, int, Object)
                 }
 
                 if (selector.select(100) > 0) {
