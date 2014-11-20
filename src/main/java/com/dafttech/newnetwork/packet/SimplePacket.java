@@ -3,7 +3,7 @@ package com.dafttech.newnetwork.packet;
 /**
  * Created by LolHens on 11.11.2014.
  */
-public class SimplePacket implements Packet {
+public class SimplePacket {
     public int channel;
     public byte[] data;
 
