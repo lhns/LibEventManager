@@ -1,17 +1,20 @@
 package com.dafttech.newnetwork;
 
-import com.dafttech.newnetwork.exception.ExceptionHandler;
+import com.dafttech.newnetwork.exception.AbstractExceptionProcessor;
+import com.dafttech.newnetwork.exception.disconnect.DisconnectReason;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class ProtocolProvider<P> implements Closeable {
     private boolean closed = false;
     private Class<? extends AbstractProtocol<P>> protocolClazz;
 
     private BiConsumer<AbstractClient<P>, P> receiveHandler = null;
-    private ExceptionHandler exceptionHandler = null;
+    private AbstractExceptionProcessor exceptionProcessor = null;
+    private Consumer<DisconnectReason> disconnectHandler = null;
 
     public ProtocolProvider(Class<? extends AbstractProtocol> protocolClazz, BiConsumer<AbstractClient<P>, P> receiveHandler) {
         setReceiveHandler(receiveHandler);
@@ -35,17 +38,33 @@ public class ProtocolProvider<P> implements Closeable {
         return receiveHandler;
     }
 
-    public final void setExceptionHandler(ExceptionHandler exceptionHandler) {
-        this.exceptionHandler = exceptionHandler;
+    public final void setExceptionProcessor(AbstractExceptionProcessor exceptionProcessor) {
+        this.exceptionProcessor = exceptionProcessor;
     }
 
-    protected final ExceptionHandler getExceptionHandler() {
-        return exceptionHandler;
+    protected final AbstractExceptionProcessor getExceptionProcessor() {
+        return exceptionProcessor;
     }
 
-    protected final void onException(IOException e) {
-        if (exceptionHandler != null) exceptionHandler.handle(this, e);
-        else throw new RuntimeException(e);
+    public final void setDisconnectHandler(Consumer<DisconnectReason> disconnectHandler) {
+        this.disconnectHandler = disconnectHandler;
+    }
+
+    protected final Consumer<DisconnectReason> getDisconnectHandler() {
+        return disconnectHandler;
+    }
+
+    protected final void onException(IOException exception) {
+        DisconnectReason reason = null;
+        if (exceptionProcessor != null) reason = exceptionProcessor.process(this, exception);
+        if (disconnectHandler != null && reason != null) disconnectHandler.accept(reason);
+        else {
+            try {
+                close();
+            } catch (IOException e) {
+            }
+            throw new RuntimeException(exception);
+        }
     }
 
     @Override
