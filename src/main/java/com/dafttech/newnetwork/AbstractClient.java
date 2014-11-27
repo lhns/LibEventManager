@@ -30,6 +30,7 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
         }
     }
 
+
     public final void setConnectHandler(Consumer<AbstractClient<P>> connectHandler) {
         this.connectHandler = connectHandler;
     }
@@ -42,12 +43,13 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
         if (connectHandler != null) connectHandler.accept(this);
     }
 
+
     public final void send(P packet) {
         protocol.send(packet);
     }
 
     protected final void receive(P packet) {
-        getReceiveHandler().accept(this, packet);
+        onReceive(this, packet);
     }
 
     protected final void read(ReadableByteChannel in) {

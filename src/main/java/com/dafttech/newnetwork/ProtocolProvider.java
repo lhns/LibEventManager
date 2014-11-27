@@ -39,6 +39,10 @@ public abstract class ProtocolProvider<P> implements Closeable {
         return receiveHandler;
     }
 
+    protected final void onReceive(AbstractClient<P> client, P packet) {
+        if (receiveHandler != null) receiveHandler.accept(client, packet);
+    }
+
 
     public final void setDisconnectHandler(BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler) {
         this.disconnectHandler = disconnectHandler;

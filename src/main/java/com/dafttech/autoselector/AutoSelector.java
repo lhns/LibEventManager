@@ -50,13 +50,11 @@ class AutoSelector implements Runnable {
                 }
             }
         } catch (IOException e) {
-            System.out.println(e);
             throw new RuntimeException(e);
         } finally {
             try {
                 selector.close();
             } catch (IOException e) {
-                e.printStackTrace();
                 throw new RuntimeException(e);
             }
         }

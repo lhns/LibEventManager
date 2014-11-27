@@ -35,9 +35,7 @@ public class Server<P> extends AbstractServer<P> {
                     AbstractClient<P> client = new Client<P>(protocolClazz, socketChannel.accept(), receiveHandler, disconnectHandler);
                     client.setDisconnectHandler(getDisconnectHandler());
                     onAccept(client);
-                    System.out.println("add");
                     clients.add(client);
-                    System.out.println("added");
                 } catch (IOException e) {
                     onException(e);
                 }

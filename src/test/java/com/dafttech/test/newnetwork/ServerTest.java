@@ -12,7 +12,7 @@ import java.io.IOException;
 public class ServerTest {
     public static void main(String[] args) {
         try {
-            Server server = new Server<SimplePacket>(SimpleProtocol.class, 12345, (abstractClient, packet) -> System.out.println(packet), (r, pp) -> System.out.println(r));
+            Server server = new Server<SimplePacket>(SimpleProtocol.class, 12345, (abstractClient, packet) -> System.out.println(packet), (pp, r) -> System.out.println(r));
             int num = 0;
             while (true) {
                 server.broadcast(new SimplePacket(2, ("Hallo?" + num).getBytes()));

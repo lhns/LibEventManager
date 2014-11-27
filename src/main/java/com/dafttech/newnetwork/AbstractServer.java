@@ -21,6 +21,7 @@ public abstract class AbstractServer<P> extends ProtocolProvider<P> {
         super.setProtocol(protocolClazz);
     }
 
+
     public final void setAcceptHandler(Consumer<AbstractClient<P>> acceptHandler) {
         this.acceptHandler = acceptHandler;
     }
@@ -32,6 +33,7 @@ public abstract class AbstractServer<P> extends ProtocolProvider<P> {
     protected final void onAccept(AbstractClient<P> client) {
         if (acceptHandler != null) acceptHandler.accept(client);
     }
+
 
     public void broadcast(P packet) {
         for (AbstractClient<P> client : clients) client.send(packet);
