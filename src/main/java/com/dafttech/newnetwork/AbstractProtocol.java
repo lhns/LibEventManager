@@ -25,6 +25,6 @@ public abstract class AbstractProtocol<P> {
         return client.isAlive();
     }
 
-    public void close() {
+    protected void onClose() {
     }
 }

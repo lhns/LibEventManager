@@ -60,6 +60,6 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
     @Override
     protected void onClose() throws IOException {
         super.onClose();
-        protocol.close();
+        protocol.onClose();
     }
 }
