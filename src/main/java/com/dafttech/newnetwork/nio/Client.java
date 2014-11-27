@@ -17,6 +17,8 @@ public class Client<P> extends AbstractClient<P> {
     public Client(Class<? extends AbstractProtocol> protocolClazz, SocketChannel socketChannel, BiConsumer<AbstractClient<P>, P> receiveHandler) throws IOException {
         super(protocolClazz, receiveHandler);
 
+        setExceptionProcessor(new ExceptionProcessor());
+
         this.socketChannel = socketChannel;
 
         int ops = SelectionKey.OP_CONNECT;

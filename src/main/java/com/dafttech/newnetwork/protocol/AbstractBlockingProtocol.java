@@ -14,13 +14,12 @@ public abstract class AbstractBlockingProtocol<P> extends AbstractProtocol<P> {
 
     @Override
     protected final void send(P packet) {
-        while (this.packet != null) {
+        while (this.packet != null && isAlive()) {
             try {
                 synchronized (this) {
                     this.wait(100);
                 }
             } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }
         if (this.packet == null) this.packet = packet;

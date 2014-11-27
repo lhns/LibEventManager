@@ -13,6 +13,7 @@ public class ClientTest {
     public static void main(String[] args) throws IOException, InterruptedException {
         try {
             Client client = new Client<SimplePacket>(SimpleProtocol.class, "127.0.0.1", 12345, (abstractClient, packet) -> System.out.println(packet));
+            client.setDisconnectHandler((r) -> System.out.println(r));
             client.send(new SimplePacket(2, "Hallo1!".getBytes()));
             client.send(new SimplePacket(2, "Hallo2!".getBytes()));
             client.send(new SimplePacket(2, "Hallo3!".getBytes()));

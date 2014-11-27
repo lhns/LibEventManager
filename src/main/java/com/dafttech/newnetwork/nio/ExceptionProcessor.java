@@ -1,14 +1,12 @@
-package com.dafttech.newnetwork.exception;
+package com.dafttech.newnetwork.nio;
 
 import com.dafttech.newnetwork.ProtocolProvider;
-import com.dafttech.newnetwork.exception.disconnect.DisconnectReason;
-import com.dafttech.newnetwork.exception.disconnect.EOF;
-import com.dafttech.newnetwork.exception.disconnect.Reset;
-import com.dafttech.newnetwork.exception.disconnect.Timeout;
+import com.dafttech.newnetwork.exception.AbstractExceptionProcessor;
+import com.dafttech.newnetwork.exception.disconnect.*;
 
 import java.io.EOFException;
 import java.io.IOException;
-import java.net.SocketException;
+import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 
 /**
@@ -19,11 +17,11 @@ public class ExceptionProcessor extends AbstractExceptionProcessor {
     public DisconnectReason process(ProtocolProvider<?> protocolProvider, IOException exception) {
         if (exception instanceof EOFException) {
             return new EOF(protocolProvider, exception);
-        } else if (exception instanceof SocketException && exception.getMessage().startsWith("Connection reset")) {
-            return new Reset(protocolProvider, exception);
         } else if (exception instanceof SocketTimeoutException) {
             return new Timeout(protocolProvider, exception);
+        } else if (exception instanceof ConnectException) {
+            return new Refused(protocolProvider, exception);
         }
-        return null;
+        return new Reset(protocolProvider, exception);
     }
 }

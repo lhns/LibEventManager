@@ -22,6 +22,10 @@ public abstract class AbstractProtocol<P> implements Closeable {
         client.setWriteEnabled(value);
     }
 
+    protected final boolean isAlive() {
+        return client.isAlive();
+    }
+
     @Override
     public void close() {
     }

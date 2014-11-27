@@ -1,14 +1,12 @@
 package com.dafttech.newnetwork;
 
 import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
+import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public abstract class AbstractServer<P> extends ProtocolProvider<P> {
-    protected final Collection<AbstractClient<P>> clients = Collections.<AbstractClient<P>>synchronizedCollection(new LinkedList<>());
+    protected List<AbstractClient<P>> clients;
 
     private Consumer<AbstractClient<P>> acceptHandler = null;
 

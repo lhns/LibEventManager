@@ -13,7 +13,12 @@ public class ServerTest {
     public static void main(String[] args) {
         try {
             Server server = new Server<SimplePacket>(SimpleProtocol.class, 12345, (abstractClient, packet) -> System.out.println(packet));
-            while (true) server.broadcast(new SimplePacket(2, "Hallo?".getBytes()));
+            server.setDisconnectHandler((r) -> System.out.println(r));
+            int num = 0;
+            while (true) {
+                server.broadcast(new SimplePacket(2, ("Hallo?" + num).getBytes()));
+                num++;
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

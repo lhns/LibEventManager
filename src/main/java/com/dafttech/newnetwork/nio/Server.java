@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.ServerSocketChannel;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.BiConsumer;
 
 public class Server<P> extends AbstractServer<P> {
@@ -16,6 +17,10 @@ public class Server<P> extends AbstractServer<P> {
 
     public Server(Class<? extends AbstractProtocol> protocolClazz, InetSocketAddress socketAddress, BiConsumer<AbstractClient<P>, P> receive) throws IOException {
         super(protocolClazz, receive);
+
+        clients = new CopyOnWriteArrayList<>();
+
+        setExceptionProcessor(new ExceptionProcessor());
 
         socketChannel = ServerSocketChannel.open();
         socketChannel.bind(socketAddress);
@@ -26,7 +31,6 @@ public class Server<P> extends AbstractServer<P> {
             if (selectionKey.isAcceptable()) {
                 try {
                     AbstractClient<P> client = new Client<P>(protocolClazz, socketChannel.accept(), receive);
-                    client.setExceptionProcessor(getExceptionProcessor());
                     client.setDisconnectHandler(getDisconnectHandler());
                     onAccept(client);
                     System.out.println("add");

@@ -38,7 +38,7 @@ public class ProtocolProvider<P> implements Closeable {
         return receiveHandler;
     }
 
-    public final void setExceptionProcessor(AbstractExceptionProcessor exceptionProcessor) {
+    protected final void setExceptionProcessor(AbstractExceptionProcessor exceptionProcessor) {
         this.exceptionProcessor = exceptionProcessor;
     }
 
