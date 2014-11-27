@@ -40,8 +40,8 @@ public abstract class AbstractServer<P> extends ProtocolProvider<P> {
     }
 
     @Override
-    public void close() throws IOException {
-        super.close();
+    protected void onClose() throws IOException {
+        super.onClose();
         for (AbstractClient<P> client : clients) client.close();
     }
 }

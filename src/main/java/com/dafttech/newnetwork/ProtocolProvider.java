@@ -88,9 +88,14 @@ public abstract class ProtocolProvider<P> implements Closeable {
     }
 
 
-    @Override
-    public void close() throws IOException {
+    protected void onClose() throws IOException {
         closed = true;
+    }
+
+
+    @Override
+    public final void close() throws IOException {
+        onClose();
         onDisconnect(new Quit(this, null));
     }
 

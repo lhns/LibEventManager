@@ -58,8 +58,8 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
     protected abstract void setWriteEnabled(boolean value);
 
     @Override
-    public void close() throws IOException {
-        super.close();
+    protected void onClose() throws IOException {
+        super.onClose();
         protocol.close();
     }
 }

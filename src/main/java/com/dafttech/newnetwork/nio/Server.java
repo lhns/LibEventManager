@@ -48,8 +48,8 @@ public class Server<P> extends AbstractServer<P> {
     }
 
     @Override
-    public void close() throws IOException {
-        super.close();
+    protected void onClose() throws IOException {
+        super.onClose();
         socketChannel.close();
     }
 }

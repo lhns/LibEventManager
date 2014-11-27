@@ -17,11 +17,7 @@ import java.net.SocketTimeoutException;
 public class ExceptionHandler extends AbstractExceptionHandler {
     @Override
     public void handle(IOException exception) {
-        try {
-            protocolProvider.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        close();
         if (exception instanceof EOFException) {
             onDisconnect(new EOF(protocolProvider, exception));
         } else if (exception instanceof SocketTimeoutException) {
