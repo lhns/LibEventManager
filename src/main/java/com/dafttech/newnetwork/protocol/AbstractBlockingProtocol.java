@@ -22,8 +22,10 @@ public abstract class AbstractBlockingProtocol<P> extends AbstractProtocol<P> {
             } catch (InterruptedException e) {
             }
         }
-        if (this.packet == null) this.packet = packet;
-        setWriteEnabled(true);
+        synchronized (this) {
+            this.packet = packet;
+            setWriteEnabled(true);
+        }
     }
 
     private final P popPacket() {
@@ -54,7 +56,9 @@ public abstract class AbstractBlockingProtocol<P> extends AbstractProtocol<P> {
         if (value != writing) {
             if (value) {
             } else {
-                if (packet == null) setWriteEnabled(false);
+                synchronized (this) {
+                    if (packet == null) setWriteEnabled(false);
+                }
             }
         }
         writing = value;

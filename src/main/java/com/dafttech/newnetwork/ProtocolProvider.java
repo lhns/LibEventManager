@@ -17,6 +17,7 @@ public abstract class ProtocolProvider<P> implements Closeable {
 
     public ProtocolProvider(Class<? extends AbstractProtocol> protocolClazz, BiConsumer<AbstractClient<P>, P> receiveHandler, BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler) {
         setReceiveHandler(receiveHandler);
+        setDisconnectHandler(disconnectHandler);
         setProtocol(protocolClazz);
     }
 
@@ -64,6 +65,7 @@ public abstract class ProtocolProvider<P> implements Closeable {
 
     protected final void onException(IOException exception) {
         if (exceptionHandler != null) exceptionHandler.handle(exception);
+        else throw new RuntimeException(exception);
     }
 
 
