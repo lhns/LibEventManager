@@ -7,7 +7,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.function.BiConsumer;
 
-public class ProtocolProvider<P> implements Closeable {
+public abstract class ProtocolProvider<P> implements Closeable {
     private boolean closed = false;
     private Class<? extends AbstractProtocol<P>> protocolClazz;
 
