@@ -3,6 +3,12 @@ apply plugin: 'java'
 version = "12.0"
 group = "com.dafttech"
 
+task testJar(type: Jar, dependsOn: javadoc) {
+    from sourceSets.main.output
+    from sourceSets.test.output
+    classifier = 'test'
+}
+
 task sourceJar(type: Jar) {
     from sourceSets.main.allSource
     classifier = 'sources'
@@ -13,4 +19,4 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
 }
 
-build.dependsOn sourceJar, javadocJar
+build.dependsOn testJar, sourceJar, javadocJar

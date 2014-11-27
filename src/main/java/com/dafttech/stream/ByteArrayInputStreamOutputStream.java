@@ -157,8 +157,6 @@ public class ByteArrayInputStreamOutputStream extends OutputStream {
      * platform's default character set. The length of the new <tt>String</tt>
      * is a function of the character set, and hence may not be equal to the
      * size of the buffer.
-     * <p>
-     * <p>
      * This method always replaces malformed-input and unmappable-character
      * sequences with the default replacement string for the platform's default
      * character set. The {@linkplain java.nio.charset.CharsetDecoder} class
@@ -177,8 +175,6 @@ public class ByteArrayInputStreamOutputStream extends OutputStream {
      * the named {@link java.nio.charset.Charset charset}. The length of the new
      * <tt>String</tt> is a function of the charset, and hence may not be equal
      * to the length of the byte array.
-     * <p>
-     * <p>
      * This method always replaces malformed-input and unmappable-character
      * sequences with this charset's default replacement string. The
      * {@link java.nio.charset.CharsetDecoder} class should be used when more

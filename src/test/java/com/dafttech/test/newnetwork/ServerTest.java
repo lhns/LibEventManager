@@ -13,14 +13,15 @@ import java.io.InputStreamReader;
  */
 public class ServerTest {
     public static void main(String[] args) throws IOException {
+        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
+
         Server<SimplePacket> server = null;
         try {
-            server = new Server<>(SimpleProtocol.class, 12345, (c, packet) -> System.out.println(packet), (pp, r) -> System.out.println(pp + ": " + r));
+            server = new Server<>(SimpleProtocol.class, input.readLine(), (c, packet) -> System.out.println(packet), (pp, r) -> System.out.println(pp + ": " + r));
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
         while (input != null) {
             String in = input.readLine();
             if (in != null) server.broadcast(new SimplePacket(1, in.getBytes()));

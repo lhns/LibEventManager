@@ -47,6 +47,10 @@ public class Server<P> extends AbstractServer<P> {
         this(protocolClazz, new InetSocketAddress(port), receiveHandler, disconnectHandler);
     }
 
+    public Server(Class<? extends AbstractProtocol> protocolClazz, String port, BiConsumer<AbstractClient<P>, P> receiveHandler, BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler) throws IOException {
+        this(protocolClazz, new InetSocketAddress(Integer.valueOf(port)), receiveHandler, disconnectHandler);
+    }
+
     @Override
     protected void onClose() throws IOException {
         super.onClose();
