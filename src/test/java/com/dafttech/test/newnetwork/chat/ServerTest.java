@@ -1,4 +1,4 @@
-package com.dafttech.test.newnetwork;
+package com.dafttech.test.newnetwork.chat;
 
 import com.dafttech.newnetwork.nio.Server;
 import com.dafttech.newnetwork.packet.SimplePacket;
