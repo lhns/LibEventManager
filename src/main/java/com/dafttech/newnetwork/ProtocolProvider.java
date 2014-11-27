@@ -6,12 +6,14 @@ import com.dafttech.newnetwork.disconnect.Quit;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public abstract class ProtocolProvider<P> implements Closeable {
     private boolean closed = false;
     private Class<? extends AbstractProtocol<P>> protocolClazz;
 
     private BiConsumer<AbstractClient<P>, P> receiveHandler = null;
+    private Consumer<AbstractClient<P>> connectHandler = null;
     private BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler = null;
     private AbstractExceptionHandler exceptionHandler = null;
 
@@ -39,8 +41,21 @@ public abstract class ProtocolProvider<P> implements Closeable {
         return receiveHandler;
     }
 
-    protected final void onReceive(AbstractClient<P> client, P packet) {
+    final void onReceive(AbstractClient<P> client, P packet) {
         if (receiveHandler != null) receiveHandler.accept(client, packet);
+    }
+
+
+    public final void setConnectHandler(Consumer<AbstractClient<P>> connectHandler) {
+        this.connectHandler = connectHandler;
+    }
+
+    protected final Consumer<AbstractClient<P>> getConnectHandler() {
+        return connectHandler;
+    }
+
+    final void onConnect(AbstractClient<P> client) {
+        if (connectHandler != null) connectHandler.accept(client);
     }
 
 

@@ -33,7 +33,7 @@ public class Server<P> extends AbstractServer<P> {
             if (selectionKey.isAcceptable()) {
                 try {
                     AbstractClient<P> client = new Client<P>(protocolClazz, socketChannel.accept(), receiveHandler, disconnectHandler);
-                    client.setDisconnectHandler(getDisconnectHandler());
+                    client.setConnectHandler(getConnectHandler());
                     onAccept(client);
                     clients.add(client);
                 } catch (IOException e) {
