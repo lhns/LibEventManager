@@ -3,6 +3,8 @@ package com.dafttech.newnetwork.nio;
 import com.dafttech.autoselector.SelectorManager;
 import com.dafttech.newnetwork.AbstractClient;
 import com.dafttech.newnetwork.AbstractProtocol;
+import com.dafttech.newnetwork.ProtocolProvider;
+import com.dafttech.newnetwork.disconnect.DisconnectReason;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -14,10 +16,10 @@ public class Client<P> extends AbstractClient<P> {
     protected final SocketChannel socketChannel;
     private final SelectionKey selectionKey;
 
-    public Client(Class<? extends AbstractProtocol> protocolClazz, SocketChannel socketChannel, BiConsumer<AbstractClient<P>, P> receiveHandler) throws IOException {
-        super(protocolClazz, receiveHandler);
+    public Client(Class<? extends AbstractProtocol> protocolClazz, SocketChannel socketChannel, BiConsumer<AbstractClient<P>, P> receiveHandler, BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler) throws IOException {
+        super(protocolClazz, receiveHandler, disconnectHandler);
 
-        setExceptionProcessor(new ExceptionProcessor());
+        setExceptionHandler(new ExceptionHandler());
 
         this.socketChannel = socketChannel;
 
@@ -40,8 +42,8 @@ public class Client<P> extends AbstractClient<P> {
         });
     }
 
-    public Client(Class<? extends AbstractProtocol> protocolClazz, InetSocketAddress socketAddress, BiConsumer<AbstractClient<P>, P> receiveHandler) throws IOException {
-        this(protocolClazz, toSocketChannel(socketAddress), receiveHandler);
+    public Client(Class<? extends AbstractProtocol> protocolClazz, InetSocketAddress socketAddress, BiConsumer<AbstractClient<P>, P> receiveHandler, BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler) throws IOException {
+        this(protocolClazz, toSocketChannel(socketAddress), receiveHandler, disconnectHandler);
     }
 
     private static SocketChannel toSocketChannel(InetSocketAddress socketAddress) throws IOException {
@@ -51,12 +53,12 @@ public class Client<P> extends AbstractClient<P> {
         return socketChannel;
     }
 
-    public Client(Class<? extends AbstractProtocol> protocolClazz, String host, int port, BiConsumer<AbstractClient<P>, P> receiveHandler) throws IOException {
-        this(protocolClazz, new InetSocketAddress(host, port), receiveHandler);
+    public Client(Class<? extends AbstractProtocol> protocolClazz, String host, int port, BiConsumer<AbstractClient<P>, P> receiveHandler, BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler) throws IOException {
+        this(protocolClazz, new InetSocketAddress(host, port), receiveHandler, disconnectHandler);
     }
 
-    public Client(Class<? extends AbstractProtocol> protocolClazz, String host, BiConsumer<AbstractClient<P>, P> receiveHandler) throws IOException {
-        this(protocolClazz, host.split(":")[0], Integer.parseInt(host.split(":")[1]), receiveHandler);
+    public Client(Class<? extends AbstractProtocol> protocolClazz, String host, BiConsumer<AbstractClient<P>, P> receiveHandler, BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler) throws IOException {
+        this(protocolClazz, host.split(":")[0], Integer.parseInt(host.split(":")[1]), receiveHandler, disconnectHandler);
     }
 
     private final int connect() {

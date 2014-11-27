@@ -4,6 +4,8 @@ import com.dafttech.autoselector.SelectorManager;
 import com.dafttech.newnetwork.AbstractClient;
 import com.dafttech.newnetwork.AbstractProtocol;
 import com.dafttech.newnetwork.AbstractServer;
+import com.dafttech.newnetwork.ProtocolProvider;
+import com.dafttech.newnetwork.disconnect.DisconnectReason;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -15,12 +17,12 @@ import java.util.function.BiConsumer;
 public class Server<P> extends AbstractServer<P> {
     protected final ServerSocketChannel socketChannel;
 
-    public Server(Class<? extends AbstractProtocol> protocolClazz, InetSocketAddress socketAddress, BiConsumer<AbstractClient<P>, P> receive) throws IOException {
-        super(protocolClazz, receive);
+    public Server(Class<? extends AbstractProtocol> protocolClazz, InetSocketAddress socketAddress, BiConsumer<AbstractClient<P>, P> receive, BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler) throws IOException {
+        super(protocolClazz, receive, disconnectHandler);
 
         clients = new CopyOnWriteArrayList<>();
 
-        setExceptionProcessor(new ExceptionProcessor());
+        setExceptionHandler(new ExceptionHandler());
 
         socketChannel = ServerSocketChannel.open();
         socketChannel.bind(socketAddress);
@@ -30,7 +32,7 @@ public class Server<P> extends AbstractServer<P> {
 
             if (selectionKey.isAcceptable()) {
                 try {
-                    AbstractClient<P> client = new Client<P>(protocolClazz, socketChannel.accept(), receive);
+                    AbstractClient<P> client = new Client<P>(protocolClazz, socketChannel.accept(), receive, disconnectHandler);
                     client.setDisconnectHandler(getDisconnectHandler());
                     onAccept(client);
                     System.out.println("add");
@@ -43,8 +45,8 @@ public class Server<P> extends AbstractServer<P> {
         });
     }
 
-    public Server(Class<? extends AbstractProtocol> protocolClazz, int port, BiConsumer<AbstractClient<P>, P> receiveHandler) throws IOException {
-        this(protocolClazz, new InetSocketAddress(port), receiveHandler);
+    public Server(Class<? extends AbstractProtocol> protocolClazz, int port, BiConsumer<AbstractClient<P>, P> receiveHandler, BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler) throws IOException {
+        this(protocolClazz, new InetSocketAddress(port), receiveHandler, disconnectHandler);
     }
 
     @Override

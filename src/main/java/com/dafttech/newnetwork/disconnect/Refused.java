@@ -1,4 +1,4 @@
-package com.dafttech.newnetwork.exception.disconnect;
+package com.dafttech.newnetwork.disconnect;
 
 import com.dafttech.newnetwork.ProtocolProvider;
 
@@ -9,6 +9,6 @@ import java.io.IOException;
  */
 public class Refused extends DisconnectReason {
     public Refused(ProtocolProvider<?> protocolProvider, IOException exception) {
-        super(protocolProvider, exception, "Connection Refused");
+        super(protocolProvider, exception, false, "Connection Refused");
     }
 }

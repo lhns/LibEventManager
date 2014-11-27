@@ -1,11 +1,10 @@
 package com.dafttech.newnetwork;
 
-import java.io.Closeable;
 import java.io.IOException;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
-public abstract class AbstractProtocol<P> implements Closeable {
+public abstract class AbstractProtocol<P> {
     protected AbstractClient<P> client = null;
 
     protected abstract void send(P packet);
@@ -26,7 +25,6 @@ public abstract class AbstractProtocol<P> implements Closeable {
         return client.isAlive();
     }
 
-    @Override
     public void close() {
     }
 }

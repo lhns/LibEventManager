@@ -1,5 +1,7 @@
 package com.dafttech.newnetwork;
 
+import com.dafttech.newnetwork.disconnect.DisconnectReason;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.function.BiConsumer;
@@ -10,8 +12,8 @@ public abstract class AbstractServer<P> extends ProtocolProvider<P> {
 
     private Consumer<AbstractClient<P>> acceptHandler = null;
 
-    public AbstractServer(Class<? extends AbstractProtocol> protocolClazz, BiConsumer<AbstractClient<P>, P> receiveHandler) {
-        super(protocolClazz, receiveHandler);
+    public AbstractServer(Class<? extends AbstractProtocol> protocolClazz, BiConsumer<AbstractClient<P>, P> receiveHandler, BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler) {
+        super(protocolClazz, receiveHandler, disconnectHandler);
     }
 
     @Override
