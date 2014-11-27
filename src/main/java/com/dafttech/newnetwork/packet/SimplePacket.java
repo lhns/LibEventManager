@@ -12,6 +12,11 @@ public class SimplePacket {
         this.data = data;
     }
 
+    public final int size() {
+        if (data == null) return 0;
+        return data.length;
+    }
+
     @Override
     public String toString() {
         return new String(data);
