@@ -8,6 +8,7 @@ import com.dafttech.newnetwork.disconnect.DisconnectReason;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.StandardSocketOptions;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.function.BiConsumer;
@@ -22,6 +23,8 @@ public class Client<P> extends AbstractClient<P> {
         setExceptionHandler(new ExceptionHandler());
 
         this.socketChannel = socketChannel;
+
+        this.socketChannel.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
 
         int ops = SelectionKey.OP_CONNECT;
         if (socketChannel.isConnected()) ops ^= connect();
