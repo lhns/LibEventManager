@@ -3,7 +3,9 @@ package com.dafttech.newnetwork;
 import com.dafttech.newnetwork.disconnect.DisconnectReason;
 
 import java.io.IOException;
+import java.net.SocketAddress;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.function.BiConsumer;
 
@@ -13,6 +15,8 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
     public AbstractClient(Class<? extends AbstractProtocol> protocolClazz, BiConsumer<AbstractClient<P>, P> receiveHandler, BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler) {
         super(protocolClazz, receiveHandler, disconnectHandler);
     }
+
+    public abstract void connect(SocketAddress socketAddress);
 
     @Override
     public final void setProtocol(Class<? extends AbstractProtocol> protocolClazz) {

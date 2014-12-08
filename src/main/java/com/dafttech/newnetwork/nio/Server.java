@@ -9,6 +9,7 @@ import com.dafttech.newnetwork.disconnect.DisconnectReason;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.ServerSocketChannel;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -25,7 +26,6 @@ public class Server<P> extends AbstractServer<P> {
         setExceptionHandler(new ExceptionHandler());
 
         socketChannel = ServerSocketChannel.open();
-        socketChannel.bind(socketAddress);
 
         SelectorManager.instance.register(socketChannel, SelectionKey.OP_ACCEPT, (selectionKey) -> {
             if (!isAlive()) return;
@@ -49,6 +49,15 @@ public class Server<P> extends AbstractServer<P> {
 
     public Server(Class<? extends AbstractProtocol> protocolClazz, String port, BiConsumer<AbstractClient<P>, P> receiveHandler, BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler) throws IOException {
         this(protocolClazz, new InetSocketAddress(Integer.valueOf(port)), receiveHandler, disconnectHandler);
+    }
+
+    @Override
+    public void bind(SocketAddress socketAddress) {
+        try {
+            socketChannel.bind(socketAddress);
+        } catch (IOException e) {
+            onException(e);
+        }
     }
 
     @Override

@@ -8,6 +8,7 @@ import com.dafttech.newnetwork.disconnect.DisconnectReason;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.net.StandardSocketOptions;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
@@ -17,21 +18,18 @@ public class Client<P> extends AbstractClient<P> {
     protected final SocketChannel socketChannel;
     private final SelectionKey selectionKey;
 
-    public Client(Class<? extends AbstractProtocol> protocolClazz, SocketChannel socketChannel, BiConsumer<AbstractClient<P>, P> receiveHandler, BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler) throws IOException {
+    protected Client(Class<? extends AbstractProtocol> protocolClazz, SocketChannel socketChannel, BiConsumer<AbstractClient<P>, P> receiveHandler, BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler) throws IOException {
         super(protocolClazz, receiveHandler, disconnectHandler);
 
         setExceptionHandler(new ExceptionHandler());
 
         this.socketChannel = socketChannel;
 
-        this.socketChannel.setOption(StandardSocketOptions.SO_KEEPALIVE, true);
-
         int ops = SelectionKey.OP_CONNECT;
-        if (socketChannel.isConnected()) ops ^= connect();
+        if (socketChannel.isConnected()) ops ^= finishConnect();
 
         selectionKey = SelectorManager.instance.register(socketChannel, ops, (selectionKey) -> {
             if (!isAlive()) return;
-
             if (selectionKey.isReadable()) {
                 read(socketChannel);
             }
@@ -39,32 +37,23 @@ public class Client<P> extends AbstractClient<P> {
                 write(socketChannel);
             }
             if (selectionKey.isConnectable()) {
-                selectionKey.interestOps(selectionKey.interestOps() ^ connect());
+                selectionKey.interestOps(selectionKey.interestOps() ^ finishConnect());
                 selectionKey.selector().wakeup();
             }
         });
     }
 
-    public Client(Class<? extends AbstractProtocol> protocolClazz, InetSocketAddress socketAddress, BiConsumer<AbstractClient<P>, P> receiveHandler, BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler) throws IOException {
-        this(protocolClazz, toSocketChannel(socketAddress), receiveHandler, disconnectHandler);
+    public Client(Class<? extends AbstractProtocol> protocolClazz, BiConsumer<AbstractClient<P>, P> receiveHandler, BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler) throws IOException {
+        this(protocolClazz, toSocketChannel(), receiveHandler, disconnectHandler);
     }
 
-    private static SocketChannel toSocketChannel(InetSocketAddress socketAddress) throws IOException {
+    private static SocketChannel toSocketChannel() throws IOException {
         SocketChannel socketChannel = SocketChannel.open();
         socketChannel.configureBlocking(false);
-        socketChannel.connect(socketAddress);
         return socketChannel;
     }
 
-    public Client(Class<? extends AbstractProtocol> protocolClazz, String host, int port, BiConsumer<AbstractClient<P>, P> receiveHandler, BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler) throws IOException {
-        this(protocolClazz, new InetSocketAddress(host, port), receiveHandler, disconnectHandler);
-    }
-
-    public Client(Class<? extends AbstractProtocol> protocolClazz, String host, BiConsumer<AbstractClient<P>, P> receiveHandler, BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler) throws IOException {
-        this(protocolClazz, host.split(":")[0], Integer.parseInt(host.split(":")[1]), receiveHandler, disconnectHandler);
-    }
-
-    private final int connect() {
+    private final int finishConnect() {
         try {
             socketChannel.finishConnect();
         } catch (IOException e) {
@@ -72,6 +61,15 @@ public class Client<P> extends AbstractClient<P> {
         }
         onConnect();
         return SelectionKey.OP_CONNECT | SelectionKey.OP_READ;
+    }
+
+    @Override
+    public void connect(SocketAddress socketAddress) {
+        try {
+            socketChannel.connect(socketAddress);
+        } catch (IOException e) {
+            onException(e);
+        }
     }
 
     @Override
