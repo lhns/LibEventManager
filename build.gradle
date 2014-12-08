@@ -1,7 +1,22 @@
 apply plugin: 'java'
+apply plugin: 'idea'
+apply plugin: 'eclipse'
 
-version = "12.0"
-group = "com.dafttech"
+file('build.properties').withReader {
+    def prop = new Properties()
+    prop.load it
+    project.ext.config = new ConfigSlurper().parse prop
+}
+
+version = config.version
+group = 'com.dafttech'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+}
 
 task testJar(type: Jar, dependsOn: javadoc) {
     from sourceSets.main.output

@@ -1,8 +1,20 @@
+#Scala
+.scala_dependencies
+.worksheet
+
 #Eclipse
 .project
 .classpath
 .settings/
 bin/
+
+#IntelliJ
+*.iml
+*.ipr
+*.iws
+.idea/
+out/
+projectFilesBackup/
 
 #Gradle
 .gradle/
@@ -11,10 +23,16 @@ build/
 #Git
 .cache
 
-#IntelliJ
-*.iml
-*.ipr
-*.iws
-.idea/
-projectFilesBackup/
-out/
+#Other
+run/
+
+#SBT
+.cache/
+.history/
+.lib/
+dist/*
+target/
+lib_managed/
+src_managed/
+project/boot/
+project/plugins/project/
