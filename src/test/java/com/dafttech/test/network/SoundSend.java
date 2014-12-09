@@ -1,19 +1,8 @@
-package com.dafttech.test.network.soundsend;
-
-import com.dafttech.network.Client;
-import com.dafttech.network.NetworkInterface;
-import com.dafttech.network.disconnect.Disconnect;
-import com.dafttech.network.packet.RawPacket;
-import com.dafttech.network.protocol.RawProtocol;
-
-import javax.sound.sampled.*;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.UnknownHostException;
+package com.dafttech.test.network;
 
 public class SoundSend {
-    public static NetworkInterface<RawPacket> net;
+    // NOT PORTED FOR THE NEW NETWORK LIBRARY!
+/*    public static NetworkInterface<RawPacket> net;
     public static TargetDataLine line;
 
     public static void main(String[] args) throws UnknownHostException, IOException, LineUnavailableException {
@@ -48,5 +37,5 @@ public class SoundSend {
             line.read(buffer, 0, buffer.length);
             net.send(new RawPacket(buffer));
         }
-    }
+    }*/
 }

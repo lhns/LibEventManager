@@ -1,6 +1,6 @@
-package com.dafttech.newnetwork.disconnect;
+package com.dafttech.network.disconnect;
 
-import com.dafttech.newnetwork.ProtocolProvider;
+import com.dafttech.network.ProtocolProvider;
 
 import java.io.IOException;
 

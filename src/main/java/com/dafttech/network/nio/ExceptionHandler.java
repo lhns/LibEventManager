@@ -1,10 +1,10 @@
-package com.dafttech.newnetwork.nio;
+package com.dafttech.network.nio;
 
-import com.dafttech.newnetwork.AbstractExceptionHandler;
-import com.dafttech.newnetwork.disconnect.EOF;
-import com.dafttech.newnetwork.disconnect.Refused;
-import com.dafttech.newnetwork.disconnect.Reset;
-import com.dafttech.newnetwork.disconnect.Timeout;
+import com.dafttech.network.AbstractExceptionHandler;
+import com.dafttech.network.disconnect.EOF;
+import com.dafttech.network.disconnect.Refused;
+import com.dafttech.network.disconnect.Reset;
+import com.dafttech.network.disconnect.Timeout;
 
 import java.io.EOFException;
 import java.io.IOException;

@@ -1,6 +1,6 @@
-package com.dafttech.newnetwork.protocol;
+package com.dafttech.network.protocol;
 
-import com.dafttech.newnetwork.AbstractProtocol;
+import com.dafttech.network.AbstractProtocol;
 
 import java.io.IOException;
 import java.nio.channels.WritableByteChannel;

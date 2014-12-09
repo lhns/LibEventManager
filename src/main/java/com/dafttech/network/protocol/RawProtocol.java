@@ -1,32 +1,51 @@
 package com.dafttech.network.protocol;
 
-import com.dafttech.network.NetworkInterface;
-import com.dafttech.network.packet.RawPacket;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
-public class RawProtocol extends Protocol<RawPacket> {
+/**
+ * Created by LolHens on 27.11.2014.
+ */
+public class RawProtocol extends AbstractBlockingProtocol<byte[]> {
+    private ByteBuffer outData;
 
-    public RawProtocol(NetworkInterface<RawPacket> netInterface) {
-        super(netInterface);
+    @Override
+    protected void onPacket(byte[] packet) throws IOException {
+        outData = ByteBuffer.allocate(packet.length).order(ByteOrder.BIG_ENDIAN);
+        outData.put(packet);
+        outData.rewind();
+        setWriting(true);
     }
 
     @Override
-    public RawPacket receive() {
-        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
-        byteStream.write(read());
-        try {
-            byteStream.write(read(new byte[available()]));
-        } catch (IOException e) {
-            e.printStackTrace();
+    protected void onWrite(WritableByteChannel out) throws IOException {
+        out.write(outData);
+        if (outData.remaining() == 0) {
+            outData = null;
+            setWriting(false);
         }
-        return new RawPacket(byteStream.toByteArray());
     }
+
+    private static final int bufferSize = 32;
+    private ByteBuffer byteBuffer = ByteBuffer.allocate(bufferSize).order(ByteOrder.BIG_ENDIAN);
+    private byte[] byteArray = new byte[bufferSize];
 
     @Override
-    public void send(RawPacket packet) {
-        write(packet.data);
+    protected void read(ReadableByteChannel in) throws IOException {
+        ByteArrayOutputStream byteStream = new ByteArrayOutputStream();
+        int bytes;
+        do {
+            bytes = in.read(byteBuffer);
+            if (bytes < 0) return;
+            byteBuffer.rewind();
+            byteBuffer.get(byteArray, 0, bytes);
+            byteStream.write(byteArray, 0, bytes);
+            byteBuffer.clear();
+        } while (bytes == bufferSize);
+        receive(byteStream.toByteArray());
     }
-
 }

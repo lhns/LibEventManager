@@ -1,10 +1,11 @@
 package com.dafttech.network.disconnect;
 
-public class Quit extends Disconnect {
+import com.dafttech.network.ProtocolProvider;
 
-    @Override
-    public String toString() {
-        return "Quit";
+import java.io.IOException;
+
+public class Quit extends DisconnectReason {
+    public Quit(ProtocolProvider<?> protocolProvider, IOException exception) {
+        super(protocolProvider, exception, false, "Quit");
     }
-
 }

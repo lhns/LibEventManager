@@ -1,10 +1,11 @@
 package com.dafttech.network.disconnect;
 
-public class EOF extends Disconnect {
+import com.dafttech.network.ProtocolProvider;
 
-    @Override
-    public String toString() {
-        return "End of Stream";
+import java.io.IOException;
+
+public class EOF extends DisconnectReason {
+    public EOF(ProtocolProvider<?> protocolProvider, IOException exception) {
+        super(protocolProvider, exception, false, "End of Stream");
     }
-
 }

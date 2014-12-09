@@ -1,7 +1,7 @@
-package com.dafttech.test.newnetwork.raw;
+package com.dafttech.test.network.raw;
 
-import com.dafttech.newnetwork.nio.Server;
-import com.dafttech.newnetwork.protocol.RawProtocol;
+import com.dafttech.network.nio.Server;
+import com.dafttech.network.protocol.RawProtocol;
 
 import java.io.BufferedReader;
 import java.io.IOException;

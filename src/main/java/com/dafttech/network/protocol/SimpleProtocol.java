@@ -1,30 +1,54 @@
 package com.dafttech.network.protocol;
 
-import com.dafttech.network.NetworkInterface;
 import com.dafttech.network.packet.SimplePacket;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.WritableByteChannel;
 
-import static com.dafttech.primitive.PrimitiveUtil.INTEGER;
+/**
+ * Created by LolHens on 11.11.2014.
+ */
+public class SimpleProtocol extends AbstractBlockingProtocol<SimplePacket> {
+    private ByteBuffer outBuffer = null;
 
-public class SimpleProtocol extends Protocol<SimplePacket> {
-    public SimpleProtocol(NetworkInterface<SimplePacket> netInterface) {
-        super(netInterface);
+    @Override
+    protected void onPacket(SimplePacket packet) throws IOException {
+        outBuffer = ByteBuffer.allocate(8 + packet.data.length).order(ByteOrder.BIG_ENDIAN);
+        outBuffer.putInt(packet.channel);
+        outBuffer.putInt(packet.data.length);
+        outBuffer.put(packet.data);
+        outBuffer.rewind();
+        setWriting(true);
     }
 
     @Override
-    public SimplePacket receive() {
-        byte[] integer = new byte[4];
-        return new SimplePacket(INTEGER.fromByteArray(read(integer), ByteOrder.BIG_ENDIAN), read(new byte[INTEGER.fromByteArray(read(integer), ByteOrder.BIG_ENDIAN)]));
+    protected void onWrite(WritableByteChannel out) throws IOException {
+        out.write(outBuffer);
+        if (outBuffer.remaining() == 0) {
+            outBuffer = null;
+            setWriting(false);
+        }
     }
 
+    private ByteBuffer inHeader = ByteBuffer.allocate(8).order(ByteOrder.BIG_ENDIAN), inData;
+
     @Override
-    public void send(SimplePacket packet) {
-        ByteBuffer packetBuffer = ByteBuffer.allocate(8 + packet.data.length);
-        packetBuffer.put(INTEGER.toByteArray(packet.channel, ByteOrder.BIG_ENDIAN));
-        packetBuffer.put(INTEGER.toByteArray(packet.data.length, ByteOrder.BIG_ENDIAN));
-        packetBuffer.put(packet.data);
-        write(packetBuffer.array());
+    protected void read(ReadableByteChannel in) throws IOException {
+        in.read(inHeader);
+        if (!inHeader.hasRemaining()) {
+            if (inData == null) inData = ByteBuffer.allocate(inHeader.getInt(4)).order(ByteOrder.BIG_ENDIAN);
+            in.read(inData);
+            if (!inData.hasRemaining()) {
+                byte[] bytes = new byte[inData.capacity()];
+                inData.rewind();
+                inData.get(bytes);
+                receive(new SimplePacket(inHeader.getInt(0), bytes));
+                inHeader.clear();
+                inData = null;
+            }
+        }
     }
 }

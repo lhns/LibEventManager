@@ -1,8 +1,8 @@
-package com.dafttech.test.newnetwork.chat;
+package com.dafttech.test.network.chat;
 
-import com.dafttech.newnetwork.nio.Server;
-import com.dafttech.newnetwork.packet.SimplePacket;
-import com.dafttech.newnetwork.protocol.SimpleProtocol;
+import com.dafttech.network.nio.Server;
+import com.dafttech.network.packet.SimplePacket;
+import com.dafttech.network.protocol.SimpleProtocol;
 
 import java.io.BufferedReader;
 import java.io.IOException;

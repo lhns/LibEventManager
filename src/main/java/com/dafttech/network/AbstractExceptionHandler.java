@@ -1,6 +1,6 @@
-package com.dafttech.newnetwork;
+package com.dafttech.network;
 
-import com.dafttech.newnetwork.disconnect.DisconnectReason;
+import com.dafttech.network.disconnect.DisconnectReason;
 
 import java.io.Closeable;
 import java.io.IOException;

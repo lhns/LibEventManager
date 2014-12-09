@@ -1,10 +1,11 @@
 package com.dafttech.network.disconnect;
 
-public class Reset extends Disconnect {
+import com.dafttech.network.ProtocolProvider;
 
-    @Override
-    public String toString() {
-        return "Connection Reset";
+import java.io.IOException;
+
+public class Reset extends DisconnectReason {
+    public Reset(ProtocolProvider<?> protocolProvider, IOException exception) {
+        super(protocolProvider, exception, true, "Connection Reset");
     }
-
 }

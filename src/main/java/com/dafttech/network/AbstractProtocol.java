@@ -1,4 +1,4 @@
-package com.dafttech.newnetwork;
+package com.dafttech.network;
 
 import java.io.IOException;
 import java.nio.channels.ReadableByteChannel;

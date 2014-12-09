@@ -1,10 +1,10 @@
-package com.dafttech.newnetwork.nio;
+package com.dafttech.network.nio;
 
 import com.dafttech.autoselector.SelectorManager;
-import com.dafttech.newnetwork.AbstractClient;
-import com.dafttech.newnetwork.AbstractProtocol;
-import com.dafttech.newnetwork.ProtocolProvider;
-import com.dafttech.newnetwork.disconnect.DisconnectReason;
+import com.dafttech.network.AbstractClient;
+import com.dafttech.network.AbstractProtocol;
+import com.dafttech.network.ProtocolProvider;
+import com.dafttech.network.disconnect.DisconnectReason;
 
 import java.io.IOException;
 import java.net.SocketAddress;
