@@ -20,6 +20,14 @@ public abstract class AbstractServer<P> extends ProtocolProvider<P> {
 
     public abstract void bind(SocketAddress socketAddress);
 
+    public void bind(int port) {
+        bind(new InetSocketAddress(port));
+    }
+
+    public void bind(String port) {
+        bind(Integer.valueOf(port));
+    }
+
     @Override
     public final void setProtocol(Class<? extends AbstractProtocol> protocolClazz) {
         super.setProtocol(protocolClazz);

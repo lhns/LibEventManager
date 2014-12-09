@@ -1,6 +1,7 @@
 apply plugin: 'java'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
+apply plugin: 'maven'
 
 file('build.properties').withReader {
     def prop = new Properties()
@@ -12,6 +13,7 @@ version = config.version
 group = 'com.dafttech'
 
 repositories {
+    mavenLocal()
     mavenCentral()
 }
 

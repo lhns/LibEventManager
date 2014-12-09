@@ -7,9 +7,7 @@ import com.dafttech.newnetwork.ProtocolProvider;
 import com.dafttech.newnetwork.disconnect.DisconnectReason;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.net.StandardSocketOptions;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 import java.util.function.BiConsumer;

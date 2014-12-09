@@ -17,7 +17,8 @@ public class ServerTest {
 
         Server<SimplePacket> server = null;
         try {
-            server = new Server<>(SimpleProtocol.class, input.readLine(), (c, packet) -> System.out.println(packet), (pp, r) -> System.out.println(pp + ": " + r));
+            server = new Server<>(SimpleProtocol.class, (c, packet) -> System.out.println(packet), (pp, r) -> System.out.println(pp + ": " + r));
+            server.bind(input.readLine());
         } catch (IOException e) {
             e.printStackTrace();
         }

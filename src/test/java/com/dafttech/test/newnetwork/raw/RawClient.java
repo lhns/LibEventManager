@@ -16,11 +16,12 @@ public class RawClient {
 
         Client<byte[]> client = null;
         try {
-            client = new Client<>(RawProtocol.class, input.readLine(), (c, packet) -> {
+            client = new Client<>(RawProtocol.class, (c, packet) -> {
                 for (byte b : packet) System.out.print(b + " ");
                 System.out.println();
                 System.out.println(new String(packet));
             }, (pp, r) -> System.out.println(pp + ": " + r));
+            client.connect(input.readLine());
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -3,9 +3,9 @@ package com.dafttech.newnetwork;
 import com.dafttech.newnetwork.disconnect.DisconnectReason;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.channels.ReadableByteChannel;
-import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.function.BiConsumer;
 
@@ -17,6 +17,16 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
     }
 
     public abstract void connect(SocketAddress socketAddress);
+
+    public void connect(String hostname, int port) {
+        connect(new InetSocketAddress(hostname, port));
+    }
+
+    public void connect(String hostname) {
+        String[] split = hostname.split(":");
+        if (split.length != 2) throw new RuntimeException("Wrong Hostname format!");
+        connect(split[0], Integer.valueOf(split[1]));
+    }
 
     @Override
     public final void setProtocol(Class<? extends AbstractProtocol> protocolClazz) {

@@ -8,7 +8,6 @@ import com.dafttech.newnetwork.ProtocolProvider;
 import com.dafttech.newnetwork.disconnect.DisconnectReason;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.ServerSocketChannel;
@@ -18,7 +17,7 @@ import java.util.function.BiConsumer;
 public class Server<P> extends AbstractServer<P> {
     protected final ServerSocketChannel socketChannel;
 
-    public Server(Class<? extends AbstractProtocol> protocolClazz, InetSocketAddress socketAddress, BiConsumer<AbstractClient<P>, P> receiveHandler, BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler) throws IOException {
+    public Server(Class<? extends AbstractProtocol> protocolClazz, BiConsumer<AbstractClient<P>, P> receiveHandler, BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler) throws IOException {
         super(protocolClazz, receiveHandler, disconnectHandler);
 
         clients = new CopyOnWriteArrayList<>();
@@ -41,14 +40,6 @@ public class Server<P> extends AbstractServer<P> {
                 }
             }
         });
-    }
-
-    public Server(Class<? extends AbstractProtocol> protocolClazz, int port, BiConsumer<AbstractClient<P>, P> receiveHandler, BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler) throws IOException {
-        this(protocolClazz, new InetSocketAddress(port), receiveHandler, disconnectHandler);
-    }
-
-    public Server(Class<? extends AbstractProtocol> protocolClazz, String port, BiConsumer<AbstractClient<P>, P> receiveHandler, BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler) throws IOException {
-        this(protocolClazz, new InetSocketAddress(Integer.valueOf(port)), receiveHandler, disconnectHandler);
     }
 
     @Override
