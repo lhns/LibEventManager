@@ -20,6 +20,12 @@ repositories {
 dependencies {
 }
 
+jar {
+    manifest {
+        if (!config.mainClass.isEmpty()) attributes "Main-Class": config.mainClass
+    }
+}
+
 task testJar(type: Jar, dependsOn: javadoc) {
     from sourceSets.main.output
     from sourceSets.test.output
