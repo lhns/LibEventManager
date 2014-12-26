@@ -20,7 +20,7 @@ repositories {
 dependencies {
 }
 
-/*jar {
+jar {
     manifest {
         if (!config.mainClass.isEmpty()) attributes "Main-Class": config.mainClass
     }
@@ -42,4 +42,4 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
 }
 
-build.dependsOn testJar, sourceJar, javadocJar*/
+build.dependsOn testJar, sourceJar, javadocJar
