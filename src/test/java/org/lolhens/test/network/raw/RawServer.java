@@ -14,15 +14,16 @@ public class RawServer {
     public static void main(String[] args) throws IOException {
         BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 
-        Server<byte[]> server = null;
+        Server<byte[]> server = new Server<>(RawProtocol.class);
+
+        server.setReceiveHandler((c, packet) -> {
+            for (byte b : packet) System.out.print(b + " ");
+            System.out.println();
+            System.out.println(new String(packet));
+        });
+        server.setDisconnectHandler((pp, r) -> System.out.println(pp + ": " + r));
+
         try {
-            server = new Server<>(RawProtocol.class);
-            server.setReceiveHandler((c, packet) -> {
-                for (byte b : packet) System.out.print(b + " ");
-                System.out.println();
-                System.out.println(new String(packet));
-            });
-            server.setDisconnectHandler((pp, r) -> System.out.println(pp + ": " + r));
             server.bind(input.readLine());
         } catch (IOException e) {
             e.printStackTrace();

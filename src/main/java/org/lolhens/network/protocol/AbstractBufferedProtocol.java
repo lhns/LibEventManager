@@ -2,11 +2,8 @@ package org.lolhens.network.protocol;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
-
-import org.lolhens.network.packet.SimplePacket;
 
 public abstract class AbstractBufferedProtocol<P> extends AbstractBlockingProtocol<P> {
     private ByteBuffer outBuffer = null;
@@ -15,10 +12,10 @@ public abstract class AbstractBufferedProtocol<P> extends AbstractBlockingProtoc
     protected final void onPacket(P packet) throws IOException {
         //Wrap packet into ByteBuffer
         outBuffer = this.wrapPacket(packet);
-        
+
         //Insert size of Buffer into itself
         outBuffer.putInt(0, outBuffer.position());
-        
+
         //Rewind Buffer for writing and block any new packets
         outBuffer.rewind();
         setWriting(true);
@@ -32,36 +29,35 @@ public abstract class AbstractBufferedProtocol<P> extends AbstractBlockingProtoc
             setWriting(false);
         }
     }
-    
+
     ByteBuffer sizeBuf = ByteBuffer.allocate(4);
     ByteBuffer packetBuf;
-    
+
     @Override
     protected final void read(ReadableByteChannel in) throws IOException {
         //Read size buffer first
         in.read(sizeBuf);
-        
+
         //Start reading packet buffer if size buffer was filled
-        if(!sizeBuf.hasRemaining()) {
+        if (!sizeBuf.hasRemaining()) {
             //Allocate Packet Buffer if necessary
-            if(packetBuf == null) {
+            if (packetBuf == null) {
                 int size = sizeBuf.getInt(0);
                 packetBuf = ByteBuffer.allocate(size);
             }
-            
-            if(packetBuf.hasRemaining()) {
+
+            if (packetBuf.hasRemaining()) {
                 in.read(packetBuf);
-            }
-            else
-            {
+            } else {
                 receive(readPacket(packetBuf));
                 sizeBuf.clear();
-                
+
                 packetBuf = null;
             }
         }
     }
 
     protected abstract ByteBuffer wrapPacket(P packet);
+
     protected abstract P readPacket(ByteBuffer input);
 }

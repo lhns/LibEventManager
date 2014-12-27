@@ -14,15 +14,16 @@ public class RawClient {
     public static void main(String[] args) throws IOException, InterruptedException {
         BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 
-        Client<byte[]> client = null;
+        Client<byte[]> client = new Client<>(RawProtocol.class);
+
+        client.setReceiveHandler((c, packet) -> {
+            for (byte b : packet) System.out.print(b + " ");
+            System.out.println();
+            System.out.println(new String(packet));
+        });
+        client.setDisconnectHandler((pp, r) -> System.out.println(pp + ": " + r));
+
         try {
-            client = new Client<>(RawProtocol.class);
-            client.setReceiveHandler((c, packet) -> {
-                for (byte b : packet) System.out.print(b + " ");
-                System.out.println();
-                System.out.println(new String(packet));
-            });
-            client.setDisconnectHandler((pp, r) -> System.out.println(pp + ": " + r));
             client.connect(input.readLine());
         } catch (IOException e) {
             e.printStackTrace();

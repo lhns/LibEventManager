@@ -15,11 +15,12 @@ public class ServerTest {
     public static void main(String[] args) throws IOException {
         BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 
-        Server<SimplePacket> server = null;
+        Server<SimplePacket> server = new Server<>(SimpleProtocol.class);
+
+        server.setReceiveHandler((c, packet) -> System.out.println(packet));
+        server.setDisconnectHandler((pp, r) -> System.out.println(pp + ": " + r));
+
         try {
-            server = new Server<>(SimpleProtocol.class);
-            server.setReceiveHandler((c, packet) -> System.out.println(packet));
-            server.setDisconnectHandler((pp, r) -> System.out.println(pp + ": " + r));
             server.bind(input.readLine());
         } catch (IOException e) {
             e.printStackTrace();

@@ -1,13 +1,11 @@
 package org.lolhens.network;
 
-import org.lolhens.network.disconnect.DisconnectReason;
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
-import java.util.function.BiConsumer;
 
 public abstract class AbstractClient<P> extends ProtocolProvider<P> {
     private AbstractProtocol<P> protocol;
@@ -16,13 +14,15 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
         super(protocolClazz);
     }
 
-    public abstract void connect(SocketAddress socketAddress);
+    public abstract void setSocketChannel(SocketChannel socketChannel) throws IOException;
 
-    public void connect(String hostname, int port) {
+    public abstract void connect(SocketAddress socketAddress) throws IOException;
+
+    public void connect(String hostname, int port) throws IOException {
         connect(new InetSocketAddress(hostname, port));
     }
 
-    public void connect(String hostname) {
+    public void connect(String hostname) throws IOException {
         String[] split = hostname.split(":");
         if (split.length != 2) throw new RuntimeException("Wrong Hostname format!");
         connect(split[0], Integer.valueOf(split[1]));

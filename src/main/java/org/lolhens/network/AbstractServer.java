@@ -1,12 +1,10 @@
 package org.lolhens.network;
 
-import org.lolhens.network.disconnect.DisconnectReason;
-
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.nio.channels.ServerSocketChannel;
 import java.util.List;
-import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 public abstract class AbstractServer<P> extends ProtocolProvider<P> {
@@ -18,13 +16,15 @@ public abstract class AbstractServer<P> extends ProtocolProvider<P> {
         super(protocolClazz);
     }
 
-    public abstract void bind(SocketAddress socketAddress);
+    public abstract void setSocketChannel(ServerSocketChannel socketChannel) throws IOException;
 
-    public void bind(int port) {
+    public abstract void bind(SocketAddress socketAddress) throws IOException;
+
+    public void bind(int port) throws IOException {
         bind(new InetSocketAddress(port));
     }
 
-    public void bind(String port) {
+    public void bind(String port) throws IOException {
         bind(Integer.valueOf(port));
     }
 

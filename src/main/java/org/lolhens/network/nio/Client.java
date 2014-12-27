@@ -3,24 +3,23 @@ package org.lolhens.network.nio;
 import org.lolhens.autoselector.SelectorManager;
 import org.lolhens.network.AbstractClient;
 import org.lolhens.network.AbstractProtocol;
-import org.lolhens.network.ProtocolProvider;
-import org.lolhens.network.disconnect.DisconnectReason;
 
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
-import java.util.function.BiConsumer;
 
 public class Client<P> extends AbstractClient<P> {
-    protected final SocketChannel socketChannel;
-    private final SelectionKey selectionKey;
+    private SocketChannel socketChannel;
+    private SelectionKey selectionKey;
 
-    protected Client(Class<? extends AbstractProtocol> protocolClazz, SocketChannel socketChannel) throws IOException {
+    public Client(Class<? extends AbstractProtocol> protocolClazz) {
         super(protocolClazz);
 
         setExceptionHandler(new ExceptionHandler());
+    }
 
+    public void setSocketChannel(SocketChannel socketChannel) throws IOException {
         this.socketChannel = socketChannel;
 
         int ops = SelectionKey.OP_CONNECT;
@@ -41,16 +40,6 @@ public class Client<P> extends AbstractClient<P> {
         });
     }
 
-    public Client(Class<? extends AbstractProtocol> protocolClazz) throws IOException {
-        this(protocolClazz, toSocketChannel());
-    }
-
-    private static SocketChannel toSocketChannel() throws IOException {
-        SocketChannel socketChannel = SocketChannel.open();
-        socketChannel.configureBlocking(false);
-        return socketChannel;
-    }
-
     private final int finishConnect() {
         try {
             socketChannel.finishConnect();
@@ -62,7 +51,11 @@ public class Client<P> extends AbstractClient<P> {
     }
 
     @Override
-    public void connect(SocketAddress socketAddress) {
+    public void connect(SocketAddress socketAddress) throws IOException {
+        SocketChannel socketChannel = SocketChannel.open();
+        socketChannel.configureBlocking(false);
+        setSocketChannel(socketChannel);
+
         try {
             socketChannel.connect(socketAddress);
         } catch (IOException e) {

@@ -15,11 +15,12 @@ public class ClientTest {
     public static void main(String[] args) throws IOException, InterruptedException {
         BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 
-        Client<SimplePacket> client = null;
+        Client<SimplePacket> client = new Client<>(SimpleProtocol.class);
+
+        client.setReceiveHandler((c, packet) -> System.out.println(packet));
+        client.setDisconnectHandler((pp, r) -> System.out.println(pp + ": " + r));
+
         try {
-            client = new Client<>(SimpleProtocol.class);
-            client.setReceiveHandler((c, packet) -> System.out.println(packet));
-            client.setDisconnectHandler((pp, r) -> System.out.println(pp + ": " + r));
             client.connect(input.readLine());
         } catch (IOException e) {
             e.printStackTrace();

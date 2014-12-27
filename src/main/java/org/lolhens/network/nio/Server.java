@@ -4,34 +4,34 @@ import org.lolhens.autoselector.SelectorManager;
 import org.lolhens.network.AbstractClient;
 import org.lolhens.network.AbstractProtocol;
 import org.lolhens.network.AbstractServer;
-import org.lolhens.network.ProtocolProvider;
-import org.lolhens.network.disconnect.DisconnectReason;
 
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.ServerSocketChannel;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.BiConsumer;
 
 public class Server<P> extends AbstractServer<P> {
-    protected final ServerSocketChannel socketChannel;
+    private ServerSocketChannel socketChannel;
 
-    public Server(Class<? extends AbstractProtocol> protocolClazz) throws IOException {
+    public Server(Class<? extends AbstractProtocol> protocolClazz) {
         super(protocolClazz);
 
         clients = new CopyOnWriteArrayList<>();
 
         setExceptionHandler(new ExceptionHandler());
+    }
 
-        socketChannel = ServerSocketChannel.open();
+    public void setSocketChannel(ServerSocketChannel socketChannel) throws IOException {
+        this.socketChannel = socketChannel;
 
         SelectorManager.instance.register(socketChannel, SelectionKey.OP_ACCEPT, (selectionKey) -> {
             if (!isAlive()) return;
 
             if (selectionKey.isAcceptable()) {
                 try {
-                    AbstractClient<P> client = new Client<P>(protocolClazz, socketChannel.accept());
+                    AbstractClient<P> client = new Client<P>(getProtocol());
+                    client.setSocketChannel(Server.this.socketChannel.accept());
                     client.setReceiveHandler(getReceiveHandler());
                     client.setDisconnectHandler(getDisconnectHandler());
                     client.setConnectHandler(getConnectHandler());
@@ -45,7 +45,10 @@ public class Server<P> extends AbstractServer<P> {
     }
 
     @Override
-    public void bind(SocketAddress socketAddress) {
+    public void bind(SocketAddress socketAddress) throws IOException {
+        ServerSocketChannel socketChannel = ServerSocketChannel.open();
+        setSocketChannel(socketChannel);
+
         try {
             socketChannel.bind(socketAddress);
         } catch (IOException e) {
