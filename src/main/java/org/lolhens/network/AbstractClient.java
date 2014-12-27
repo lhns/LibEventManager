@@ -9,7 +9,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.function.BiConsumer;
 
-public abstract class AbstractClient<P> extends ProtocolProvider<P> {
+public abstract class aAbstractClient<P> extends ProtocolProvider<P> {
     private AbstractProtocol<P> protocol;
 
     public AbstractClient(Class<? extends AbstractProtocol> protocolClazz, BiConsumer<AbstractClient<P>, P> receiveHandler, BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler) {
