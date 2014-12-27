@@ -31,6 +31,7 @@ class AutoSelector implements Runnable {
 
     @Override
     public void run() {
+        Thread.currentThread().setDaemon(true);
         try {
             while (!Thread.interrupted() && selector.isOpen()) {
                 synchronized (selector) { // See synchronized block in register(SelectableChannel, int, Object)
