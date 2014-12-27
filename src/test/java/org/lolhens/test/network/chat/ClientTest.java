@@ -17,7 +17,9 @@ public class ClientTest {
 
         Client<SimplePacket> client = null;
         try {
-            client = new Client<>(SimpleProtocol.class, (c, packet) -> System.out.println(packet), (pp, r) -> System.out.println(pp + ": " + r));
+            client = new Client<>(SimpleProtocol.class);
+            client.setReceiveHandler((c, packet) -> System.out.println(packet));
+            client.setDisconnectHandler((pp, r) -> System.out.println(pp + ": " + r));
             client.connect(input.readLine());
         } catch (IOException e) {
             e.printStackTrace();

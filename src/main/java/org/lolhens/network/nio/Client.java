@@ -16,8 +16,8 @@ public class Client<P> extends AbstractClient<P> {
     protected final SocketChannel socketChannel;
     private final SelectionKey selectionKey;
 
-    protected Client(Class<? extends AbstractProtocol> protocolClazz, SocketChannel socketChannel, BiConsumer<AbstractClient<P>, P> receiveHandler, BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler) throws IOException {
-        super(protocolClazz, receiveHandler, disconnectHandler);
+    protected Client(Class<? extends AbstractProtocol> protocolClazz, SocketChannel socketChannel) throws IOException {
+        super(protocolClazz);
 
         setExceptionHandler(new ExceptionHandler());
 
@@ -41,8 +41,8 @@ public class Client<P> extends AbstractClient<P> {
         });
     }
 
-    public Client(Class<? extends AbstractProtocol> protocolClazz, BiConsumer<AbstractClient<P>, P> receiveHandler, BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler) throws IOException {
-        this(protocolClazz, toSocketChannel(), receiveHandler, disconnectHandler);
+    public Client(Class<? extends AbstractProtocol> protocolClazz) throws IOException {
+        this(protocolClazz, toSocketChannel());
     }
 
     private static SocketChannel toSocketChannel() throws IOException {

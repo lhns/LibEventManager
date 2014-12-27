@@ -17,8 +17,8 @@ import java.util.function.BiConsumer;
 public class Server<P> extends AbstractServer<P> {
     protected final ServerSocketChannel socketChannel;
 
-    public Server(Class<? extends AbstractProtocol> protocolClazz, BiConsumer<AbstractClient<P>, P> receiveHandler, BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler) throws IOException {
-        super(protocolClazz, receiveHandler, disconnectHandler);
+    public Server(Class<? extends AbstractProtocol> protocolClazz) throws IOException {
+        super(protocolClazz);
 
         clients = new CopyOnWriteArrayList<>();
 
@@ -31,7 +31,9 @@ public class Server<P> extends AbstractServer<P> {
 
             if (selectionKey.isAcceptable()) {
                 try {
-                    AbstractClient<P> client = new Client<P>(protocolClazz, socketChannel.accept(), receiveHandler, disconnectHandler);
+                    AbstractClient<P> client = new Client<P>(protocolClazz, socketChannel.accept());
+                    client.setReceiveHandler(getReceiveHandler());
+                    client.setDisconnectHandler(getDisconnectHandler());
                     client.setConnectHandler(getConnectHandler());
                     onAccept(client);
                     clients.add(client);

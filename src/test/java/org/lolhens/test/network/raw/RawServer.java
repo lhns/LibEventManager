@@ -16,11 +16,13 @@ public class RawServer {
 
         Server<byte[]> server = null;
         try {
-            server = new Server<>(RawProtocol.class, (c, packet) -> {
+            server = new Server<>(RawProtocol.class);
+            server.setReceiveHandler((c, packet) -> {
                 for (byte b : packet) System.out.print(b + " ");
                 System.out.println();
                 System.out.println(new String(packet));
-            }, (pp, r) -> System.out.println(pp + ": " + r));
+            });
+            server.setDisconnectHandler((pp, r) -> System.out.println(pp + ": " + r));
             server.bind(input.readLine());
         } catch (IOException e) {
             e.printStackTrace();

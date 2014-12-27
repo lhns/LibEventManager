@@ -14,8 +14,8 @@ public abstract class AbstractServer<P> extends ProtocolProvider<P> {
 
     private Consumer<AbstractClient<P>> acceptHandler = null;
 
-    public AbstractServer(Class<? extends AbstractProtocol> protocolClazz, BiConsumer<AbstractClient<P>, P> receiveHandler, BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler) {
-        super(protocolClazz, receiveHandler, disconnectHandler);
+    public AbstractServer(Class<? extends AbstractProtocol> protocolClazz) {
+        super(protocolClazz);
     }
 
     public abstract void bind(SocketAddress socketAddress);

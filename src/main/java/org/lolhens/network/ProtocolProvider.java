@@ -17,7 +17,7 @@ public abstract class ProtocolProvider<P> implements Closeable {
     private BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler = null;
     private AbstractExceptionHandler exceptionHandler = null;
 
-    public ProtocolProvider(Class<? extends AbstractProtocol> protocolClazz, BiConsumer<AbstractClient<P>, P> receiveHandler, BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler) {
+    public ProtocolProvider(Class<? extends AbstractProtocol> protocolClazz) {
         setReceiveHandler(receiveHandler);
         setDisconnectHandler(disconnectHandler);
         setProtocol(protocolClazz);

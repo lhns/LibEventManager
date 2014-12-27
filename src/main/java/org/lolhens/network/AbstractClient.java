@@ -12,8 +12,8 @@ import java.util.function.BiConsumer;
 public abstract class AbstractClient<P> extends ProtocolProvider<P> {
     private AbstractProtocol<P> protocol;
 
-    public AbstractClient(Class<? extends AbstractProtocol> protocolClazz, BiConsumer<AbstractClient<P>, P> receiveHandler, BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler) {
-        super(protocolClazz, receiveHandler, disconnectHandler);
+    public AbstractClient(Class<? extends AbstractProtocol> protocolClazz) {
+        super(protocolClazz);
     }
 
     public abstract void connect(SocketAddress socketAddress);
