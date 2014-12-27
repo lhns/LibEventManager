@@ -20,6 +20,7 @@ public class Client<P> extends AbstractClient<P> {
 
     public void setSocketChannel(SocketChannel socketChannel) throws IOException {
         this.socketChannel = socketChannel;
+        socketChannel.configureBlocking(false);
 
         int ops = SelectionKey.OP_CONNECT;
         if (socketChannel.isConnected()) ops ^= finishConnect();
@@ -51,9 +52,7 @@ public class Client<P> extends AbstractClient<P> {
 
     @Override
     public void connect(SocketAddress socketAddress) throws IOException {
-        SocketChannel socketChannel = SocketChannel.open();
-        socketChannel.configureBlocking(false);
-        setSocketChannel(socketChannel);
+        setSocketChannel(SocketChannel.open());
 
         try {
             socketChannel.connect(socketAddress);

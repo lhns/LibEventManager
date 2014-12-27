@@ -44,8 +44,7 @@ public class Server<P> extends AbstractServer<P> {
 
     @Override
     public void bind(SocketAddress socketAddress) throws IOException {
-        ServerSocketChannel socketChannel = ServerSocketChannel.open();
-        setSocketChannel(socketChannel);
+        setSocketChannel(ServerSocketChannel.open());
 
         try {
             socketChannel.bind(socketAddress);
