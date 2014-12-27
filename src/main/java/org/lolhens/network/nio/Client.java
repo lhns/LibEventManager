@@ -15,7 +15,6 @@ public class Client<P> extends AbstractClient<P> {
 
     public Client(Class<? extends AbstractProtocol> protocolClazz) {
         super(protocolClazz);
-
         setExceptionHandler(new ExceptionHandler());
     }
 

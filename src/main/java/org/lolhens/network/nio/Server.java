@@ -16,9 +16,7 @@ public class Server<P> extends AbstractServer<P> {
 
     public Server(Class<? extends AbstractProtocol> protocolClazz) {
         super(protocolClazz);
-
         clients = new CopyOnWriteArrayList<>();
-
         setExceptionHandler(new ExceptionHandler());
     }
 
