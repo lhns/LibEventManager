@@ -31,9 +31,6 @@ public class Server<P> extends AbstractServer<P> {
                 try {
                     AbstractClient<P> client = newClient(getProtocol());
                     client.setSocketChannel(Server.this.socketChannel.accept());
-                    client.setReceiveHandler(getReceiveHandler());
-                    client.setDisconnectHandler(getDisconnectHandler());
-                    client.setConnectHandler(getConnectHandler());
                     onAccept(client);
                     clients.add(client);
                 } catch (IOException e) {

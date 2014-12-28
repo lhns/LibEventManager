@@ -6,6 +6,6 @@ import java.io.IOException;
 
 public class Timeout extends DisconnectReason {
     public Timeout(ProtocolProvider<?> protocolProvider, IOException exception) {
-        super(protocolProvider, exception, false, "Timeout");
+        super(protocolProvider, exception, true, "Timeout");
     }
 }

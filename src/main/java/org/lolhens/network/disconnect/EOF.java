@@ -6,6 +6,6 @@ import java.io.IOException;
 
 public class EOF extends DisconnectReason {
     public EOF(ProtocolProvider<?> protocolProvider, IOException exception) {
-        super(protocolProvider, exception, false, "End of Stream");
+        super(protocolProvider, exception, true, "End of Stream");
     }
 }

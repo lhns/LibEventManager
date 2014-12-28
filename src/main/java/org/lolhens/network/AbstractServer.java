@@ -5,12 +5,11 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.channels.ServerSocketChannel;
 import java.util.List;
-import java.util.function.Consumer;
 
 public abstract class AbstractServer<P> extends ProtocolProvider<P> {
     protected List<AbstractClient<P>> clients;
 
-    private Consumer<AbstractClient<P>> acceptHandler = null;
+    private IAcceptHandler<P> acceptHandler = null;
     private IClientFactory<P> clientFactory = null;
 
     public AbstractServer(Class<? extends AbstractProtocol> protocolClazz) {
@@ -35,16 +34,16 @@ public abstract class AbstractServer<P> extends ProtocolProvider<P> {
     }
 
 
-    public final void setAcceptHandler(Consumer<AbstractClient<P>> acceptHandler) {
+    public final void setAcceptHandler(IAcceptHandler<P> acceptHandler) {
         this.acceptHandler = acceptHandler;
     }
 
-    protected final Consumer<AbstractClient<P>> getAcceptHandler() {
+    protected final IAcceptHandler<P> getAcceptHandler() {
         return acceptHandler;
     }
 
     protected final void onAccept(AbstractClient<P> client) {
-        if (acceptHandler != null) acceptHandler.accept(client);
+        if (acceptHandler != null) acceptHandler.onAccept(client);
     }
 
 
@@ -53,7 +52,13 @@ public abstract class AbstractServer<P> extends ProtocolProvider<P> {
     }
 
     protected final AbstractClient<P> newClient(Class<? extends AbstractProtocol<P>> protocol) {
-        if (clientFactory != null) return clientFactory.newClient(protocol);
+        if (clientFactory != null) {
+            AbstractClient<P> client = clientFactory.newClient(protocol);
+            client.setReceiveHandler(getReceiveHandler());
+            client.setConnectHandler(getConnectHandler());
+            client.setDisconnectHandler(getDisconnectHandler());
+            return client;
+        }
         return null;
     }
 

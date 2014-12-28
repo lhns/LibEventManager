@@ -5,16 +5,14 @@ import org.lolhens.network.disconnect.Quit;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 
 public abstract class ProtocolProvider<P> implements Closeable {
     private boolean closed = false;
     private Class<? extends AbstractProtocol<P>> protocolClazz;
 
-    private BiConsumer<AbstractClient<P>, P> receiveHandler = null;
-    private Consumer<AbstractClient<P>> connectHandler = null;
-    private BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler = null;
+    private IReceiveHandler<P> receiveHandler = null;
+    private IConnectHandler<P> connectHandler = null;
+    private IDisconnectHandler<P> disconnectHandler = null;
     private AbstractExceptionHandler exceptionHandler = null;
 
     public ProtocolProvider(Class<? extends AbstractProtocol> protocolClazz) {
@@ -33,42 +31,42 @@ public abstract class ProtocolProvider<P> implements Closeable {
     }
 
 
-    public final void setReceiveHandler(BiConsumer<AbstractClient<P>, P> receiveHandler) {
+    public final void setReceiveHandler(IReceiveHandler<P> receiveHandler) {
         this.receiveHandler = receiveHandler;
     }
 
-    protected final BiConsumer<AbstractClient<P>, P> getReceiveHandler() {
+    protected final IReceiveHandler<P> getReceiveHandler() {
         return receiveHandler;
     }
 
     final void onReceive(AbstractClient<P> client, P packet) {
-        if (receiveHandler != null) receiveHandler.accept(client, packet);
+        if (receiveHandler != null) receiveHandler.onReceive(client, packet);
     }
 
 
-    public final void setConnectHandler(Consumer<AbstractClient<P>> connectHandler) {
+    public final void setConnectHandler(IConnectHandler<P> connectHandler) {
         this.connectHandler = connectHandler;
     }
 
-    protected final Consumer<AbstractClient<P>> getConnectHandler() {
+    protected final IConnectHandler<P> getConnectHandler() {
         return connectHandler;
     }
 
     final void onConnect(AbstractClient<P> client) {
-        if (connectHandler != null) connectHandler.accept(client);
+        if (connectHandler != null) connectHandler.onConnect(client);
     }
 
 
-    public final void setDisconnectHandler(BiConsumer<ProtocolProvider<P>, DisconnectReason> disconnectHandler) {
+    public final void setDisconnectHandler(IDisconnectHandler<P> disconnectHandler) {
         this.disconnectHandler = disconnectHandler;
     }
 
-    protected BiConsumer<ProtocolProvider<P>, DisconnectReason> getDisconnectHandler() {
+    protected IDisconnectHandler<P> getDisconnectHandler() {
         return disconnectHandler;
     }
 
     protected final void onDisconnect(DisconnectReason reason) {
-        if (disconnectHandler != null) disconnectHandler.accept(this, reason);
+        if (disconnectHandler != null) disconnectHandler.onDisconnect(this, reason);
     }
 
 

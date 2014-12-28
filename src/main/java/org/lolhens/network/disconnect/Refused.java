@@ -9,6 +9,6 @@ import java.io.IOException;
  */
 public class Refused extends DisconnectReason {
     public Refused(ProtocolProvider<?> protocolProvider, IOException exception) {
-        super(protocolProvider, exception, false, "Connection Refused");
+        super(protocolProvider, exception, true, "Connection Refused");
     }
 }
