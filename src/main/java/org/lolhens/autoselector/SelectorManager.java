@@ -27,6 +27,7 @@ public class SelectorManager {
     }
 
     public SelectionKey register(SelectableChannel channel, int ops, Consumer<SelectionKey> consumer) throws IOException {
+        // Check if the channel is already registered in this manager
         if (channel.isRegistered()) {
             SelectionKey selectionKey = null;
             for (AutoSelector autoSelector : autoSelectors) {
@@ -42,8 +43,9 @@ public class SelectorManager {
             }
         }
 
-        int current = next++;
-        if (next >= autoSelectors.length) next = 0;
+        // Register the channel
+        int current = next;
+        next = (next + 1) % autoSelectors.length;
 
         if (autoSelectors[current] == null) autoSelectors[current] = new AutoSelector(executorService);
         AutoSelector selectorContainer = autoSelectors[current];

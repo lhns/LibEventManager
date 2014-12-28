@@ -9,6 +9,7 @@ import java.nio.channels.WritableByteChannel;
 
 public abstract class AbstractClient<P> extends ProtocolProvider<P> {
     private AbstractProtocol<P> protocol;
+    private AbstractServer<P> server;
 
     public AbstractClient(Class<? extends AbstractProtocol> protocolClazz) {
         super(protocolClazz);
@@ -41,12 +42,24 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
         }
     }
 
+    protected final void setServer(AbstractServer<P> server) {
+        this.server = server;
+    }
+
+    public final AbstractServer<P> getServer() {
+        return server;
+    }
+
     protected final void onConnect() {
         onConnect(this);
     }
 
     protected final void receive(P packet) {
         onReceive(this, packet);
+    }
+
+    public final boolean isWriting() {
+        return protocol.isWriteEnabled();
     }
 
     public final void send(P packet) {
@@ -75,5 +88,6 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
     protected void onClose() throws IOException {
         super.onClose();
         protocol.onClose();
+        if (server != null) server.removeClient(this);
     }
 }

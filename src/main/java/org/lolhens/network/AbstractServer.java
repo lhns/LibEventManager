@@ -62,6 +62,10 @@ public abstract class AbstractServer<P> extends ProtocolProvider<P> {
         return null;
     }
 
+    protected final void removeClient(AbstractClient<P> client) {
+        clients.remove(client);
+    }
+
 
     public void broadcast(P packet) {
         for (AbstractClient<P> client : clients) client.send(packet);

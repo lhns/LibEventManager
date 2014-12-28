@@ -6,6 +6,7 @@ import java.nio.channels.WritableByteChannel;
 
 public abstract class AbstractProtocol<P> {
     private AbstractClient<P> client = null;
+    private boolean writeEnabled = false;
 
     protected void setClient(AbstractClient<P> client) {
         this.client = client;
@@ -25,8 +26,18 @@ public abstract class AbstractProtocol<P> {
 
     protected abstract void read(ReadableByteChannel in) throws IOException;
 
-    protected final void setWriteEnabled(boolean value) {
-        client.setWriteEnabled(value);
+    protected final void setWriteEnabled(boolean writeEnabled) {
+        this.writeEnabled = writeEnabled;
+        client.setWriteEnabled(writeEnabled);
+        if (!writeEnabled && !client.isAlive()) {
+            synchronized (client) {
+                client.notify();
+            }
+        }
+    }
+
+    protected boolean isWriteEnabled() {
+        return writeEnabled;
     }
 
     protected final boolean isAlive() {

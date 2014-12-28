@@ -74,6 +74,14 @@ public class Client<P> extends AbstractClient<P> {
     @Override
     protected void onClose() throws IOException {
         super.onClose();
+        while (isWriting()) {
+            try {
+                synchronized (this) {
+                    this.wait(100);
+                }
+            } catch (InterruptedException e) {
+            }
+        }
         socketChannel.close();
         selectionKey.cancel();
         selectionKey.selector().wakeup();
