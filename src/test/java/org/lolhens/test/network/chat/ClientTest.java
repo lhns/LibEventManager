@@ -1,9 +1,7 @@
 package org.lolhens.test.network.chat;
 
 import org.lolhens.network.nio.Client;
-import org.lolhens.network.packet.SimplePacket;
 import org.lolhens.network.protocol.AbstractBufferedProtocol;
-import org.lolhens.network.protocol.SimpleProtocol;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -39,9 +37,10 @@ public class ClientTest {
     public static class Testprotocol extends AbstractBufferedProtocol<String> {
         @Override
         protected ByteBuffer wrapPacket(String packet) {
-            ByteBuffer bb = ByteBuffer.allocate(packet.length()).order(ByteOrder.BIG_ENDIAN);
-            bb.put(packet.getBytes());
-            return null;
+            byte[] data = packet.getBytes();
+            ByteBuffer bb = ByteBuffer.allocate(data.length).order(ByteOrder.BIG_ENDIAN);
+            bb.put(data);
+            return bb;
         }
 
         @Override

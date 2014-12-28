@@ -12,10 +12,14 @@ public abstract class AbstractBufferedProtocol<P> extends AbstractBlockingProtoc
     @Override
     protected final void onPacket(P packet) throws IOException {
         //Wrap packet into ByteBuffer
-        outBuffer = this.wrapPacket(packet);
+        ByteBuffer data = this.wrapPacket(packet);
+        data.rewind();
+        int size = data.remaining();
 
+        outBuffer = ByteBuffer.allocate(4 + size).order(ByteOrder.BIG_ENDIAN);
         //Insert size of Buffer into itself
-        outBuffer.putInt(0, outBuffer.position());
+        outBuffer.putInt(size);
+        outBuffer.put(data);
 
         //Rewind Buffer for writing and block any new packets
         outBuffer.rewind();
@@ -46,10 +50,9 @@ public abstract class AbstractBufferedProtocol<P> extends AbstractBlockingProtoc
                 int size = sizeBuf.getInt(0);
                 packetBuf = ByteBuffer.allocate(size).order(ByteOrder.BIG_ENDIAN);
             }
-
-            if (packetBuf.hasRemaining()) {
-                in.read(packetBuf);
-            } else {
+            in.read(packetBuf);
+            if (!packetBuf.hasRemaining()) {
+                packetBuf.rewind();
                 receive(readPacket(packetBuf));
                 sizeBuf.clear();
 

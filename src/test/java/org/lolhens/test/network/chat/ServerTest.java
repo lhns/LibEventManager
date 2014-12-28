@@ -1,8 +1,6 @@
 package org.lolhens.test.network.chat;
 
 import org.lolhens.network.nio.Server;
-import org.lolhens.network.packet.SimplePacket;
-import org.lolhens.network.protocol.SimpleProtocol;
 
 import java.io.BufferedReader;
 import java.io.IOException;
