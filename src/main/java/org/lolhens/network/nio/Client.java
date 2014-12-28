@@ -26,7 +26,8 @@ public class Client<P> extends AbstractClient<P> {
         if (socketChannel.isConnected()) ops ^= finishConnect();
 
         selectionKey = SelectorManager.instance.register(socketChannel, ops, (selectionKey) -> {
-            if (!isAlive()) return;
+            if (!isAlive() || selectionKey != Client.this.selectionKey) return;
+
             if (selectionKey.isReadable()) {
                 read(socketChannel);
             }
