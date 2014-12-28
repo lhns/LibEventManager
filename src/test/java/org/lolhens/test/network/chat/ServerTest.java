@@ -15,7 +15,7 @@ public class ServerTest {
     public static void main(String[] args) throws IOException {
         BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 
-        Server<SimplePacket> server = new Server<>(SimpleProtocol.class);
+        Server<String> server = new Server<>(ClientTest.Testprotocol.class);
 
         server.setReceiveHandler((c, packet) -> System.out.println(packet));
         server.setDisconnectHandler((pp, r) -> System.out.println(pp + ": " + r));
@@ -28,7 +28,7 @@ public class ServerTest {
 
         while (input != null) {
             String in = input.readLine();
-            if (in != null) server.broadcast(new SimplePacket(1, in.getBytes()));
+            if (in != null) server.broadcast(in);
         }
     }
 }
