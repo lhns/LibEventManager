@@ -31,8 +31,8 @@ public class RawProtocol extends AbstractBlockingProtocol<byte[]> {
     }
 
     private static final int bufferSize = 32;
-    private ByteBuffer byteBuffer = ByteBuffer.allocate(bufferSize).order(ByteOrder.BIG_ENDIAN);
-    private byte[] byteArray = new byte[bufferSize];
+    private final ByteBuffer byteBuffer = ByteBuffer.allocate(bufferSize).order(ByteOrder.BIG_ENDIAN);
+    private final byte[] byteArray = new byte[bufferSize];
 
     @Override
     protected void read(ReadableByteChannel in) throws IOException {

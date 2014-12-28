@@ -19,8 +19,8 @@ import java.util.Set;
 public class URLClassLocation {
     public static final String EXT_CLASS = ".class";
 
-    private URL sourceURL;
-    private String qualifiedName;
+    private final URL sourceURL;
+    private final String qualifiedName;
 
     public URLClassLocation(URL sourceURL, String qualifiedName) {
         this.sourceURL = sourceURL;
@@ -95,7 +95,7 @@ public class URLClassLocation {
     }
 
     public static Set<URLClassLocation> discoverSourceURL(final URL sourceURL) throws IOException {
-        final Set<URLClassLocation> discovered = new HashSet<URLClassLocation>();
+        final Set<URLClassLocation> discovered = new HashSet<>();
         final Path sourcePath = PathUtil.get(sourceURL);
         Files.walkFileTree(sourcePath, new SimpleFileVisitor<Path>() {
             @Override

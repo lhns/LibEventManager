@@ -28,7 +28,7 @@ public class Server<P> extends AbstractServer<P> {
 
             if (selectionKey.isAcceptable()) {
                 try {
-                    AbstractClient<P> client = new Client<P>(getProtocol());
+                    AbstractClient<P> client = new Client<>(getProtocol());
                     client.setSocketChannel(Server.this.socketChannel.accept());
                     client.setReceiveHandler(getReceiveHandler());
                     client.setDisconnectHandler(getDisconnectHandler());

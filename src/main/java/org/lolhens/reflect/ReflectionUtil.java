@@ -22,7 +22,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 public class ReflectionUtil {
 
     public static final Set<Field> getAnnotatedFields(Class<?> target, List<Class<? extends Annotation>> annotations, Class<?> reqType) {
-        Set<Field> fields = new HashSet<Field>();
+        Set<Field> fields = new HashSet<>();
         if (reqType == void.class) return fields;
 
         for (Field field : getAllDeclaredFields(target)) {
@@ -47,7 +47,7 @@ public class ReflectionUtil {
     }
 
     public static final Set<Method> getAnnotatedMethods(Class<?> target, List<Class<? extends Annotation>> annotations, Class<?> reqType, List<Class<?>> reqArgs) {
-        Set<Method> methods = new HashSet<Method>();
+        Set<Method> methods = new HashSet<>();
 
         for (Method method : getAllDeclaredMethods(target)) {
             if (annotations != null) {
@@ -72,7 +72,7 @@ public class ReflectionUtil {
     }
 
     public static final Set<Constructor<?>> getAnnotatedConstructors(Class<?> target, List<Class<? extends Annotation>> annotations, List<Class<?>> reqArgs) {
-        Set<Constructor<?>> constructors = new HashSet<Constructor<?>>();
+        Set<Constructor<?>> constructors = new HashSet<>();
 
         for (Constructor<?> constructor : getAllDeclaredConstructors(target)) {
             if (annotations != null) {
@@ -96,7 +96,7 @@ public class ReflectionUtil {
     }
 
     public static final Set<Field> getAllDeclaredFields(Class<?> target) {
-        Set<Field> fields = new HashSet<Field>();
+        Set<Field> fields = new HashSet<>();
         getAllDeclaredFields(target, fields);
         return fields;
     }
@@ -115,7 +115,7 @@ public class ReflectionUtil {
     }
 
     public static final Set<Method> getAllDeclaredMethods(Class<?> target) {
-        Set<Method> methods = new HashSet<Method>();
+        Set<Method> methods = new HashSet<>();
         getAllDeclaredMethods(target, methods);
         return methods;
     }
@@ -134,7 +134,7 @@ public class ReflectionUtil {
     }
 
     public static final Set<Constructor<?>> getAllDeclaredConstructors(Class<?> target) {
-        Set<Constructor<?>> constructors = new HashSet<Constructor<?>>();
+        Set<Constructor<?>> constructors = new HashSet<>();
         getAllDeclaredConstructors(target, constructors);
         return constructors;
     }
@@ -182,12 +182,9 @@ public class ReflectionUtil {
             Constructor<?> constructor = target.getDeclaredConstructor();
             constructor.setAccessible(true);
             return constructor;
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (SecurityException e) {
-            e.printStackTrace();
+        } catch (NoSuchMethodException | SecurityException e) {
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
     @Target({METHOD, FIELD})

@@ -30,8 +30,8 @@ public abstract class AbstractBufferedProtocol<P> extends AbstractBlockingProtoc
         }
     }
 
-    ByteBuffer sizeBuf = ByteBuffer.allocate(4);
-    ByteBuffer packetBuf;
+    private final ByteBuffer sizeBuf = ByteBuffer.allocate(4);
+    private ByteBuffer packetBuf;
 
     @Override
     protected final void read(ReadableByteChannel in) throws IOException {

@@ -14,7 +14,7 @@ public class Event {
     private static enum State {
         NONE(0), STARTED(1), DONE(2), CANCELLED(3);
 
-        int phase;
+        private final int phase;
 
         State(int phase) {
             this.phase = phase;
@@ -37,13 +37,11 @@ public class Event {
         }
     }
 
-    ;
-
     private final EventManager eventManager;
     private final EventType type;
 
-    public volatile Tuple in;
-    public volatile Tuple out;
+    public final Tuple in;
+    public final Tuple out;
 
     private volatile State state = State.NONE;
 
@@ -55,9 +53,9 @@ public class Event {
         this.type = type;
 
         this.in = new ArrayTuple(in);
-        out = new TupleFacade(new ArrayList<Object>());
+        out = new TupleFacade(new ArrayList<>());
 
-        this.listenerContainers = new LinkedList<ListenerContainer>();
+        this.listenerContainers = new LinkedList<>();
         if (listenerContainers != null) {
             synchronized (listenerContainers) {
                 this.listenerContainers.addAll(listenerContainers);
@@ -119,7 +117,7 @@ public class Event {
     }
 
     public final List<ListenerContainer> getListenerContainers() {
-        return new ArrayList<ListenerContainer>(listenerContainers);
+        return new ArrayList<>(listenerContainers);
     }
 
     public final ListenerContainer getCurrentListenerContainer() {

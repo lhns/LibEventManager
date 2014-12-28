@@ -40,8 +40,7 @@ class AnnotatedElementContainer {
             retType = constructor.getDeclaringClass();
             argTypes = constructor.getParameterTypes();
         } else if (type == Class.class) {
-            Class<?> clazz = (Class<?>) target;
-            targetClass = clazz;
+            targetClass = (Class<?>) target;
             isStatic = true;
             retType = null;
             argTypes = new Class<?>[0];

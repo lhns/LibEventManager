@@ -3,7 +3,7 @@ package org.lolhens.math;
 import org.lolhens.hash.HashUtil;
 
 public class Vector implements Cloneable {
-    private static TrigonometryCache trigonometryCache = new TrigonometryCache(8);
+    private static final TrigonometryCache trigonometryCache = new TrigonometryCache(8);
 
     public float x, y, z;
 

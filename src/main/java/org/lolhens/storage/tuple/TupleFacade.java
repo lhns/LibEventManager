@@ -11,10 +11,10 @@ public class TupleFacade extends AbstractTuple implements Tuple, RandomAccess, C
      */
     private static final long serialVersionUID = -1221937267645102522L;
 
-    private List<Object> parent;
+    private final List<Object> parent;
 
     @SuppressWarnings("unchecked")
-    public TupleFacade(List<? extends Object> list) {
+    public TupleFacade(List<?> list) {
         parent = (List<Object>) list;
     }
 
@@ -69,12 +69,12 @@ public class TupleFacade extends AbstractTuple implements Tuple, RandomAccess, C
     }
 
     @Override
-    public boolean addAll(Collection<? extends Object> paramCollection) {
+    public boolean addAll(Collection<?> paramCollection) {
         return parent.addAll(paramCollection);
     }
 
     @Override
-    public boolean addAll(int paramInt, Collection<? extends Object> paramCollection) {
+    public boolean addAll(int paramInt, Collection<?> paramCollection) {
         return parent.addAll(paramInt, paramCollection);
     }
 

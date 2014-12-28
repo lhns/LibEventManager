@@ -13,8 +13,8 @@ import java.util.function.Consumer;
 public class SelectorManager {
     public static final SelectorManager instance = new SelectorManager();
 
-    private AutoSelector[] autoSelectors;
-    private ExecutorService executorService;
+    private final AutoSelector[] autoSelectors;
+    private final ExecutorService executorService;
     private int next = 0;
 
     public SelectorManager() {
@@ -25,9 +25,9 @@ public class SelectorManager {
     public SelectionKey register(SelectableChannel channel, int ops, Consumer<SelectionKey> consumer) throws IOException {
         if (channel.isRegistered()) {
             SelectionKey selectionKey = null;
-            for (int i = 0; i < autoSelectors.length; i++) {
-                if (autoSelectors[i] == null) continue;
-                selectionKey = channel.keyFor(autoSelectors[i].selector);
+            for (AutoSelector autoSelector : autoSelectors) {
+                if (autoSelector == null) continue;
+                selectionKey = channel.keyFor(autoSelector.selector);
                 if (selectionKey != null) break;
             }
             if (selectionKey != null) {

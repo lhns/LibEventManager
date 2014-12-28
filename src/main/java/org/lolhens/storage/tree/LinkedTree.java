@@ -17,7 +17,7 @@ public class LinkedTree<Leaf> implements Tree<Leaf>, Cloneable, Serializable {
     private static final long serialVersionUID = 6857447299766592010L;
     private Tree<Leaf> root;
     private Leaf leaf;
-    private List<Tree<Leaf>> branches = new LinkedList<Tree<Leaf>>();
+    private final List<Tree<Leaf>> branches = new LinkedList<>();
 
     public LinkedTree(Tree<Leaf> root, Leaf leaf, Collection<? extends Tree<Leaf>> branches) {
         this.root = root;
@@ -180,7 +180,7 @@ public class LinkedTree<Leaf> implements Tree<Leaf>, Cloneable, Serializable {
 
     @Override
     public List<Leaf> getTreeLeaves() {
-        List<Leaf> leaves = new LinkedList<Leaf>();
+        List<Leaf> leaves = new LinkedList<>();
         leaves.add(leaf);
         for (Tree<Leaf> branch : branches)
             leaves.addAll(branch.getTreeLeaves());
@@ -189,7 +189,7 @@ public class LinkedTree<Leaf> implements Tree<Leaf>, Cloneable, Serializable {
 
     @Override
     public Object clone() {
-        return new LinkedTree<Leaf>(this);
+        return new LinkedTree<>(this);
     }
 
     private void writeObject(ObjectOutputStream objectoutputstream) throws IOException {

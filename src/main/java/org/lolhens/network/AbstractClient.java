@@ -33,8 +33,8 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
         super.setProtocol(protocolClazz);
         try {
             AbstractProtocol<P> newProtocol = getProtocol().newInstance();
-            newProtocol.client = this;
-            if (protocol != null) protocol.client = null;
+            newProtocol.setClient(this);
+            if (protocol != null) protocol.setClient(null);
             protocol = newProtocol;
         } catch (InstantiationException | IllegalAccessException e) {
             throw new IllegalArgumentException("Protocol instantiation failed!", e);

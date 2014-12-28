@@ -19,7 +19,7 @@ public final class ListenerContainer extends AnnotatedElementContainer {
     }
 
     private final AnnotatedElementContainer[] getFilterContainers(String[] filterNames, Map<String, String> filterShortcuts) {
-        Set<AnnotatedElementContainer> filterList = new HashSet<AnnotatedElementContainer>();
+        Set<AnnotatedElementContainer> filterList = new HashSet<>();
 
         for (String filterName : filterNames) {
             if (filterName.equals("")) continue;
@@ -90,16 +90,12 @@ public final class ListenerContainer extends AnnotatedElementContainer {
             } else if (isConstructor()) {
                 ((Constructor<?>) target).newInstance(args);
             }
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            e.printStackTrace();
+        } catch (IllegalAccessException | IllegalArgumentException e) {
+            throw new RuntimeException(e);
         } catch (InvocationTargetException e) {
-            e.printStackTrace();
-            System.out.println("at " + targetClass.getName() + " at method " + target.toString());
+            throw new RuntimeException("at " + targetClass.getName() + " at method " + target.toString(), e);
         } catch (InstantiationException e) {
-            e.printStackTrace();
-            System.out.println("at " + targetClass.getName() + " at constructor " + target.toString());
+            throw new RuntimeException("at " + targetClass.getName() + " at constructor " + target.toString(), e);
         }
     }
 
@@ -107,10 +103,7 @@ public final class ListenerContainer extends AnnotatedElementContainer {
         if (filters.length == 0) return true;
         try {
             return event.getEventType().isFiltered(event, new ArrayTuple(getFilters()), this);
-        } catch (IndexOutOfBoundsException e) {
-        } catch (NoSuchElementException e) {
-        } catch (ClassCastException e) {
-        } catch (NullPointerException e) {
+        } catch (IndexOutOfBoundsException | NoSuchElementException | NullPointerException | ClassCastException e) {
         }
         return false;
     }
@@ -131,13 +124,7 @@ public final class ListenerContainer extends AnnotatedElementContainer {
                 } else if (filter.isConstructor()) {
                     returnObjects[i] = ((Constructor<?>) filter.target).newInstance(filter.nullArgs);
                 }
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            } catch (InstantiationException e) {
+            } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | InvocationTargetException e) {
                 e.printStackTrace();
             }
         }

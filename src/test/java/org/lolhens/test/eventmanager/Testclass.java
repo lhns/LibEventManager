@@ -18,12 +18,8 @@ public class Testclass {
         Events.eventmanager.registerEventListener(Testclass.class);
         Events.eventmanager.registerEventListener(new Secondclass());
 
-        for (Object obj : Events.eventmanager.callSync(Events.testevent1, 3).out) {
-            System.out.println(obj);
-        }
-        for (Object obj : Events.eventmanager.callSync(Events.testevent2, 5).out) {
-            System.out.println(obj);
-        }
+        Events.eventmanager.callSync(Events.testevent1, 3).out.forEach(System.out::println);
+        Events.eventmanager.callSync(Events.testevent2, 5).out.forEach(System.out::println);
     }
 
     @EventListener("test1")

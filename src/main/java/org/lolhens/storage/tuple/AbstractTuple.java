@@ -28,9 +28,9 @@ public abstract class AbstractTuple extends AbstractList<Object> implements Tupl
         Class<?> primitive = type.isPrimitive() ? PrimitiveUtil.get(type).wrapperClass : null;
 
         Object lastElement = null;
-        for (int i = 0; i < elementData.length; i++)
-            if (primitive != null && primitive.isInstance(elementData[i]) || type.isInstance(elementData[i])) {
-                lastElement = elementData[i];
+        for (Object anElementData : elementData)
+            if (primitive != null && primitive.isInstance(anElementData) || type.isInstance(anElementData)) {
+                lastElement = anElementData;
                 if (index-- == 0) break;
             }
         return (T) lastElement;
@@ -44,14 +44,14 @@ public abstract class AbstractTuple extends AbstractList<Object> implements Tupl
     @Override
     @SuppressWarnings("unchecked")
     public <T> List<T> getType(Class<T> type) {
-        List<T> ret = new ArrayList<T>();
+        List<T> ret = new ArrayList<>();
 
         Object[] elementData = toArray();
         Class<?> primitive = type.isPrimitive() ? PrimitiveUtil.get(type).wrapperClass : null;
 
-        for (int i = 0; i < elementData.length; i++)
-            if (primitive != null && primitive.isInstance(elementData[i]) || type.isInstance(elementData[i]))
-                ret.add((T) elementData[i]);
+        for (Object anElementData : elementData)
+            if (primitive != null && primitive.isInstance(anElementData) || type.isInstance(anElementData))
+                ret.add((T) anElementData);
         return ret;
     }
 
@@ -66,8 +66,8 @@ public abstract class AbstractTuple extends AbstractList<Object> implements Tupl
         Object[] elementData = toArray();
         Class<?> primitive = type.isPrimitive() ? PrimitiveUtil.get(type).wrapperClass : null;
 
-        for (int i = 0; i < elementData.length; i++)
-            if (primitive != null && primitive.isInstance(elementData[i]) || type.isInstance(elementData[i]))
+        for (Object anElementData : elementData)
+            if (primitive != null && primitive.isInstance(anElementData) || type.isInstance(anElementData))
                 return true;
         return false;
     }
@@ -95,12 +95,12 @@ public abstract class AbstractTuple extends AbstractList<Object> implements Tupl
     }
 
     @Override
-    public boolean addAll(Collection<? extends Object> paramCollection) {
+    public boolean addAll(Collection<?> paramCollection) {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean addAll(int paramInt, Collection<? extends Object> paramCollection) {
+    public boolean addAll(int paramInt, Collection<?> paramCollection) {
         throw new UnsupportedOperationException();
     }
 

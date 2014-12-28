@@ -33,7 +33,8 @@ public class SimpleProtocol extends AbstractBlockingProtocol<SimplePacket> {
         }
     }
 
-    private ByteBuffer inHeader = ByteBuffer.allocate(8).order(ByteOrder.BIG_ENDIAN), inData;
+    private final ByteBuffer inHeader = ByteBuffer.allocate(8).order(ByteOrder.BIG_ENDIAN);
+    private ByteBuffer inData;
 
     @Override
     protected void read(ReadableByteChannel in) throws IOException {

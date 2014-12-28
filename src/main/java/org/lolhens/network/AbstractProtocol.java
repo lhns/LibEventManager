@@ -5,7 +5,15 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
 public abstract class AbstractProtocol<P> {
-    protected AbstractClient<P> client = null;
+    private AbstractClient<P> client = null;
+
+    protected void setClient(AbstractClient<P> client) {
+        this.client = client;
+    }
+
+    protected AbstractClient<P> getClient() {
+        return client;
+    }
 
     protected abstract void send(P packet);
 

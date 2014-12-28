@@ -14,7 +14,7 @@ import java.util.function.Consumer;
  * Created by LolHens on 11.11.2014.
  */
 class AutoSelector implements Runnable {
-    protected Selector selector;
+    protected final Selector selector;
 
     public AutoSelector(ExecutorService executorService) throws IOException {
         selector = Selector.open();

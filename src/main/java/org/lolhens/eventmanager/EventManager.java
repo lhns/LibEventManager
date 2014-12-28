@@ -47,7 +47,7 @@ public class EventManager {
             eventListenerInstance = eventListener;
         }
 
-        Set<AnnotatedElement> targets = new HashSet<AnnotatedElement>();
+        Set<AnnotatedElement> targets = new HashSet<>();
         targets.addAll(ReflectionUtil.getAnnotatedMethods(eventListenerClass,
                 asList(EventListener.class, EventListener.Group.class), null, null));
         targets.addAll(ReflectionUtil.getAnnotatedConstructors(eventListenerClass,
@@ -62,7 +62,7 @@ public class EventManager {
             }
             if (isStatic && !staticTarget) continue;
 
-            List<EventListener> annotations = new ArrayList<EventListener>();
+            List<EventListener> annotations = new ArrayList<>();
 
             if (target.isAnnotationPresent(EventListener.class))
                 annotations.add(target.getAnnotation(EventListener.class));
@@ -88,7 +88,7 @@ public class EventManager {
     }
 
     public final void registerEventListener(Object eventListener) {
-        registerEventListener(eventListener, new Blacklist<EventType>());
+        registerEventListener(eventListener, new Blacklist<>());
     }
 
     public final void tryRegisterEventListener(String staticEventListener, Filterlist<EventType> filterlist) {
@@ -99,7 +99,7 @@ public class EventManager {
     }
 
     public final void tryRegisterEventListener(String staticEventListener) {
-        tryRegisterEventListener(staticEventListener, new Blacklist<EventType>());
+        tryRegisterEventListener(staticEventListener, new Blacklist<>());
     }
 
     public final void unregisterEventListener(Object eventListener, Filterlist<EventType> filterlist) {
@@ -125,13 +125,13 @@ public class EventManager {
     }
 
     public final void unregisterEventListener(Object eventListener) {
-        unregisterEventListener(eventListener, new Blacklist<EventType>());
+        unregisterEventListener(eventListener, new Blacklist<>());
     }
 
     private final void addEventListenerContainer(EventType type, ListenerContainer newListenerContainer) {
         synchronized (registeredListeners) {
             if (!registeredListeners.containsKey(type))
-                registeredListeners.put(type, new ArrayList<ListenerContainer>());
+                registeredListeners.put(type, new ArrayList<>());
 
             List<ListenerContainer> listenerContainers = registeredListeners.get(type);
             ListenerContainer listenerContainer;

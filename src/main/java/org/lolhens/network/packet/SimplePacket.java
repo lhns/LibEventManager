@@ -4,8 +4,8 @@ package org.lolhens.network.packet;
  * Created by LolHens on 11.11.2014.
  */
 public class SimplePacket {
-    public int channel;
-    public byte[] data;
+    public final int channel;
+    public final byte[] data;
 
     public SimplePacket(int channel, byte[] data) {
         this.channel = channel;

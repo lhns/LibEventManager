@@ -3,7 +3,7 @@ package org.lolhens.storage.array.sort;
 import java.util.Arrays;
 
 public class Sorter<Type extends Comparable<Type>> {
-    private Type[] array;
+    private final Type[] array;
     private boolean sorting = false;
 
     public Sorter(Type[] array) {

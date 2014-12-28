@@ -6,8 +6,8 @@ package org.lolhens.math;
 public class TrigonometryCache {
     private static final float cosShift = (float) (Math.PI / 2);
 
-    private float[] cache;
-    private float multiplier;
+    private final float[] cache;
+    private final float multiplier;
 
     public TrigonometryCache(int resolution) {
         cache = new float[(int) Math.pow(2, resolution)];
