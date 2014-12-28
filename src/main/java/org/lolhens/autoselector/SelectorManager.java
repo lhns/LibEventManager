@@ -5,6 +5,7 @@ import java.nio.channels.SelectableChannel;
 import java.nio.channels.SelectionKey;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.function.Consumer;
 
 /**
@@ -19,7 +20,11 @@ public class SelectorManager {
 
     public SelectorManager() {
         autoSelectors = new AutoSelector[Runtime.getRuntime().availableProcessors()];
-        executorService = Executors.newFixedThreadPool(autoSelectors.length);
+        executorService = Executors.newFixedThreadPool(autoSelectors.length, (runnable) -> {
+            Thread thread = new Thread(runnable);
+            thread.setDaemon(true);
+            return thread;
+        });
     }
 
     public SelectionKey register(SelectableChannel channel, int ops, Consumer<SelectionKey> consumer) throws IOException {
