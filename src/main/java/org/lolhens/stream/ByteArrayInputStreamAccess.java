@@ -20,7 +20,7 @@ public class ByteArrayInputStreamAccess {
             FIELD_COUNT = ByteArrayInputStream.class.getDeclaredField("count");
             FIELD_COUNT.setAccessible(true);
         } catch (NoSuchFieldException | SecurityException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -34,16 +34,15 @@ public class ByteArrayInputStreamAccess {
         try {
             return (byte[]) FIELD_BUF.get(inputStream);
         } catch (IllegalArgumentException | IllegalAccessException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
     public void setBuf(byte[] buf) {
         try {
             FIELD_BUF.set(inputStream, buf);
         } catch (IllegalArgumentException | IllegalAccessException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -51,16 +50,15 @@ public class ByteArrayInputStreamAccess {
         try {
             return (Integer) FIELD_POS.get(inputStream);
         } catch (IllegalArgumentException | IllegalAccessException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return 0;
     }
 
     public void setPos(int pos) {
         try {
             FIELD_POS.set(inputStream, pos);
         } catch (IllegalArgumentException | IllegalAccessException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -68,16 +66,15 @@ public class ByteArrayInputStreamAccess {
         try {
             return (Integer) FIELD_MARK.get(inputStream);
         } catch (IllegalArgumentException | IllegalAccessException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return 0;
     }
 
     public void setMark(int mark) {
         try {
             FIELD_MARK.set(inputStream, mark);
         } catch (IllegalArgumentException | IllegalAccessException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
@@ -85,16 +82,15 @@ public class ByteArrayInputStreamAccess {
         try {
             return (Integer) FIELD_COUNT.get(inputStream);
         } catch (IllegalArgumentException | IllegalAccessException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return 0;
     }
 
     public void setCount(int count) {
         try {
             FIELD_COUNT.set(inputStream, count);
         } catch (IllegalArgumentException | IllegalAccessException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 }

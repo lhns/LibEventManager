@@ -23,7 +23,7 @@ public class ClientTest {
         try {
             client.connect(input.readLine());
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         while (input != null) {

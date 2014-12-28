@@ -38,7 +38,7 @@ public final class ListenerContainer extends AnnotatedElementContainer {
                     filterName = filterName.substring(filterName.lastIndexOf('.') + 1);
                     mustBeStatic = true;
                 } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
             }
 
@@ -125,7 +125,7 @@ public final class ListenerContainer extends AnnotatedElementContainer {
                     returnObjects[i] = ((Constructor<?>) filter.target).newInstance(filter.nullArgs);
                 }
             } catch (IllegalAccessException | IllegalArgumentException | InstantiationException | InvocationTargetException e) {
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
         }
         return returnObjects;

@@ -108,7 +108,7 @@ public class ReflectionUtil {
                 fields.add(field);
             }
         } catch (NoClassDefFoundError e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         Class<?> superclass = target.getSuperclass();
         if (superclass != null) getAllDeclaredFields(superclass, fields);
@@ -127,7 +127,7 @@ public class ReflectionUtil {
                 methods.add(method);
             }
         } catch (NoClassDefFoundError e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         Class<?> superclass = target.getSuperclass();
         if (superclass != null) getAllDeclaredMethods(superclass, methods);
@@ -146,7 +146,7 @@ public class ReflectionUtil {
                 constructors.add(constructor);
             }
         } catch (NoClassDefFoundError e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         Class<?> superclass = target.getSuperclass();
         if (superclass != null) getAllDeclaredConstructors(superclass, constructors);

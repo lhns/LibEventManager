@@ -21,7 +21,7 @@ public class AsyncEvent extends Event {
         try {
             future.get();
         } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return this;
     }
@@ -30,7 +30,7 @@ public class AsyncEvent extends Event {
         try {
             future.get(l, timeunit);
         } catch (InterruptedException | ExecutionException | TimeoutException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return this;
     }

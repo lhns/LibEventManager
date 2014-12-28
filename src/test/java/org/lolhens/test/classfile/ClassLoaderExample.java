@@ -21,13 +21,13 @@ public class ClassLoaderExample {
                             IRunnableModule module = (IRunnableModule) newInstance;
                             module.run();
                         } catch (NoSuchMethodException | SecurityException | IllegalAccessException | InstantiationException | IllegalArgumentException | InvocationTargetException e) {
-                            e.printStackTrace();
+                            throw new RuntimeException(e);
                         }
                     }
                 }
             }
         } catch (ClassNotFoundException | IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 }

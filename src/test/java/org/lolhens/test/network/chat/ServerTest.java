@@ -23,7 +23,7 @@ public class ServerTest {
         try {
             server.bind(input.readLine());
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         while (input != null) {
