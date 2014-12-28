@@ -20,6 +20,7 @@ public class ClientTest {
 
         client.setReceiveHandler((c, packet) -> System.out.println(packet));
         client.setDisconnectHandler((pp, r) -> System.out.println(pp + ": " + r));
+        //client.setConnectHandler((c) -> c.send("test"));
 
         try {
             client.connect(input.readLine());

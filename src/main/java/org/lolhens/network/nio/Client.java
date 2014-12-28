@@ -37,8 +37,10 @@ public class Client<P> extends AbstractClient<P> {
             if (selectionKey.isConnectable()) {
                 selectionKey.interestOps(selectionKey.interestOps() ^ finishConnect());
                 selectionKey.selector().wakeup();
+                onConnect();
             }
         });
+        if ((ops & SelectionKey.OP_CONNECT) == 0) onConnect();
     }
 
     private final int finishConnect() {
@@ -47,7 +49,6 @@ public class Client<P> extends AbstractClient<P> {
         } catch (IOException e) {
             onException(e);
         }
-        onConnect();
         return SelectionKey.OP_CONNECT | SelectionKey.OP_READ;
     }
 
