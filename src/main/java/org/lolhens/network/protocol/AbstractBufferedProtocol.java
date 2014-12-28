@@ -2,6 +2,7 @@ package org.lolhens.network.protocol;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
@@ -30,7 +31,7 @@ public abstract class AbstractBufferedProtocol<P> extends AbstractBlockingProtoc
         }
     }
 
-    private final ByteBuffer sizeBuf = ByteBuffer.allocate(4);
+    private final ByteBuffer sizeBuf = ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN);
     private ByteBuffer packetBuf;
 
     @Override
@@ -43,7 +44,7 @@ public abstract class AbstractBufferedProtocol<P> extends AbstractBlockingProtoc
             //Allocate Packet Buffer if necessary
             if (packetBuf == null) {
                 int size = sizeBuf.getInt(0);
-                packetBuf = ByteBuffer.allocate(size);
+                packetBuf = ByteBuffer.allocate(size).order(ByteOrder.BIG_ENDIAN);
             }
 
             if (packetBuf.hasRemaining()) {
