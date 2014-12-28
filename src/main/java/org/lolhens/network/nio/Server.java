@@ -17,6 +17,7 @@ public class Server<P> extends AbstractServer<P> {
     public Server(Class<? extends AbstractProtocol> protocolClazz) {
         super(protocolClazz);
         clients = new CopyOnWriteArrayList<>();
+        setClientFactory((protocol) -> new Client<P>(protocol));
         setExceptionHandler(new ExceptionHandler());
     }
 
@@ -28,7 +29,7 @@ public class Server<P> extends AbstractServer<P> {
 
             if (selectionKey.isAcceptable()) {
                 try {
-                    AbstractClient<P> client = new Client<>(getProtocol());
+                    AbstractClient<P> client = newClient(getProtocol());
                     client.setSocketChannel(Server.this.socketChannel.accept());
                     client.setReceiveHandler(getReceiveHandler());
                     client.setDisconnectHandler(getDisconnectHandler());

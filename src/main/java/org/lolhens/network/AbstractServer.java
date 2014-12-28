@@ -11,6 +11,7 @@ public abstract class AbstractServer<P> extends ProtocolProvider<P> {
     protected List<AbstractClient<P>> clients;
 
     private Consumer<AbstractClient<P>> acceptHandler = null;
+    private IClientFactory<P> clientFactory = null;
 
     public AbstractServer(Class<? extends AbstractProtocol> protocolClazz) {
         super(protocolClazz);
@@ -44,6 +45,16 @@ public abstract class AbstractServer<P> extends ProtocolProvider<P> {
 
     protected final void onAccept(AbstractClient<P> client) {
         if (acceptHandler != null) acceptHandler.accept(client);
+    }
+
+
+    public final void setClientFactory(IClientFactory<P> clientFactory) {
+        this.clientFactory = clientFactory;
+    }
+
+    protected final AbstractClient<P> newClient(Class<? extends AbstractProtocol<P>> protocol) {
+        if (clientFactory != null) return clientFactory.newClient(protocol);
+        return null;
     }
 
 
