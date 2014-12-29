@@ -10,7 +10,6 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
 public class Client<P> extends AbstractClient<P> {
-    private SocketChannel socketChannel;
     private SelectionKey selectionKey;
 
     public Client(Class<? extends AbstractProtocol> protocolClazz) {
@@ -19,8 +18,7 @@ public class Client<P> extends AbstractClient<P> {
     }
 
     public void setSocketChannel(SocketChannel socketChannel) throws IOException {
-        this.socketChannel = socketChannel;
-        socketChannel.configureBlocking(false);
+        super.setSocketChannel(socketChannel);
 
         int ops = SelectionKey.OP_CONNECT;
         if (socketChannel.isConnected()) ops ^= finishConnect();
@@ -40,12 +38,13 @@ public class Client<P> extends AbstractClient<P> {
                 onConnect();
             }
         });
+
         if ((ops & SelectionKey.OP_CONNECT) == 0) onConnect();
     }
 
     private final int finishConnect() {
         try {
-            socketChannel.finishConnect();
+            getSocketChannel().finishConnect();
         } catch (IOException e) {
             onException(e);
         }
@@ -57,7 +56,7 @@ public class Client<P> extends AbstractClient<P> {
         setSocketChannel(SocketChannel.open());
 
         try {
-            socketChannel.connect(socketAddress);
+            getSocketChannel().connect(socketAddress);
         } catch (IOException e) {
             onException(e);
         }
@@ -84,7 +83,7 @@ public class Client<P> extends AbstractClient<P> {
             } catch (InterruptedException e) {
             }
         }
-        socketChannel.close();
+        getSocketChannel().close();
         selectionKey.cancel();
         selectionKey.selector().wakeup();
     }

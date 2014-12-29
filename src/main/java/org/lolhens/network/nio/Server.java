@@ -12,8 +12,6 @@ import java.nio.channels.ServerSocketChannel;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Server<P> extends AbstractServer<P> {
-    private ServerSocketChannel socketChannel;
-
     public Server(Class<? extends AbstractProtocol> protocolClazz) {
         super(protocolClazz);
         clients = new CopyOnWriteArrayList<>();
@@ -21,8 +19,9 @@ public class Server<P> extends AbstractServer<P> {
         setExceptionHandler(new ExceptionHandler());
     }
 
+    @Override
     public void setSocketChannel(ServerSocketChannel socketChannel) throws IOException {
-        this.socketChannel = socketChannel;
+        super.setSocketChannel(socketChannel);
 
         SelectorManager.instance.register(socketChannel, SelectionKey.OP_ACCEPT, (selectionKey) -> {
             if (!isAlive()) return;
@@ -30,7 +29,7 @@ public class Server<P> extends AbstractServer<P> {
             if (selectionKey.isAcceptable()) {
                 try {
                     AbstractClient<P> client = newClient(getProtocol());
-                    client.setSocketChannel(Server.this.socketChannel.accept());
+                    client.setSocketChannel(getSocketChannel().accept());
                     onAccept(client);
                     clients.add(client);
                 } catch (IOException e) {
@@ -45,7 +44,7 @@ public class Server<P> extends AbstractServer<P> {
         setSocketChannel(ServerSocketChannel.open());
 
         try {
-            socketChannel.bind(socketAddress);
+            getSocketChannel().bind(socketAddress);
         } catch (IOException e) {
             onException(e);
         }
@@ -54,6 +53,6 @@ public class Server<P> extends AbstractServer<P> {
     @Override
     protected void onClose() throws IOException {
         super.onClose();
-        socketChannel.close();
+        getSocketChannel().close();
     }
 }

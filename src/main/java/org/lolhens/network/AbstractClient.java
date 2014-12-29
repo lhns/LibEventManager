@@ -8,14 +8,62 @@ import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
 
 public abstract class AbstractClient<P> extends ProtocolProvider<P> {
+    private SocketChannel socketChannel;
+    private boolean connected = false;
+
     private AbstractProtocol<P> protocol;
+
     private AbstractServer<P> server;
 
     public AbstractClient(Class<? extends AbstractProtocol> protocolClazz) {
         super(protocolClazz);
     }
 
-    public abstract void setSocketChannel(SocketChannel socketChannel) throws IOException;
+
+    public void setSocketChannel(SocketChannel socketChannel) throws IOException {
+        socketChannel.configureBlocking(false);
+        this.socketChannel = socketChannel;
+
+        setConnected(false);
+    }
+
+    public SocketChannel getSocketChannel() {
+        return socketChannel;
+    }
+
+
+    private void setConnected(boolean connected) {
+        this.connected = connected;
+    }
+
+    public boolean isConnected() {
+        return connected;
+    }
+
+
+    @Override
+    public final void setProtocol(Class<? extends AbstractProtocol> protocolClazz) {
+        super.setProtocol(protocolClazz);
+
+        try {
+            AbstractProtocol<P> newProtocol = getProtocol().newInstance();
+            newProtocol.setClient(this);
+            if (protocol != null) protocol.setClient(null);
+            protocol = newProtocol;
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new IllegalArgumentException("Protocol instantiation failed!", e);
+        }
+    }
+
+
+    protected final void setServer(AbstractServer<P> server) {
+        this.server = server;
+    }
+
+    public final AbstractServer<P> getServer() {
+        return server;
+    }
+
 
     public abstract void connect(SocketAddress socketAddress) throws IOException;
 
@@ -29,37 +77,15 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
         connect(split[0], Integer.valueOf(split[1]));
     }
 
-    @Override
-    public final void setProtocol(Class<? extends AbstractProtocol> protocolClazz) {
-        super.setProtocol(protocolClazz);
-        try {
-            AbstractProtocol<P> newProtocol = getProtocol().newInstance();
-            newProtocol.setClient(this);
-            if (protocol != null) protocol.setClient(null);
-            protocol = newProtocol;
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new IllegalArgumentException("Protocol instantiation failed!", e);
-        }
-    }
-
-    protected final void setServer(AbstractServer<P> server) {
-        this.server = server;
-    }
-
-    public final AbstractServer<P> getServer() {
-        return server;
-    }
-
     protected final void onConnect() {
+        setConnected(true);
+
         onConnect(this);
     }
 
+
     protected final void receive(P packet) {
         onReceive(this, packet);
-    }
-
-    public final boolean isWriting() {
-        return protocol.isWriteEnabled();
     }
 
     public final void send(P packet) {
@@ -74,6 +100,13 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
         }
     }
 
+
+    protected abstract void setWriteEnabled(boolean value);
+
+    public final boolean isWriting() {
+        return protocol.isWriteEnabled();
+    }
+
     protected final void write(WritableByteChannel out) {
         try {
             protocol.write(out);
@@ -82,11 +115,11 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
         }
     }
 
-    protected abstract void setWriteEnabled(boolean value);
 
     @Override
     protected void onClose() throws IOException {
         super.onClose();
+        setConnected(false);
         protocol.onClose();
         if (server != null) server.removeClient(this);
     }
