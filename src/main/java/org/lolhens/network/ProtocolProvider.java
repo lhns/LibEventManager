@@ -9,7 +9,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public abstract class ProtocolProvider<P> implements Closeable {
-    public static ExecutorService executorService = Executors.newCachedThreadPool();
+    public static ExecutorService executorService = Executors.newScheduledThreadPool(10);
 
     private boolean closed = false;
     private Class<? extends AbstractProtocol<P>> protocolClazz;
