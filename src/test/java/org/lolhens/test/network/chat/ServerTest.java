@@ -26,6 +26,7 @@ public class ServerTest {
 
         while (input != null) {
             String in = input.readLine();
+            if (in.toLowerCase().startsWith("reconnect ")) server.bind(in.toLowerCase().replace("reconnect ", ""));
             if (in != null) server.broadcast(in);
         }
     }

@@ -80,12 +80,40 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
     protected final void onConnect() {
         setConnected(true);
 
-        onConnect(this);
+        executorService.execute(new ConnectRunnable<>(this));
+    }
+
+    private static class ConnectRunnable<P> implements Runnable {
+        private final AbstractClient<P> client;
+
+        public ConnectRunnable(AbstractClient<P> client) {
+            this.client = client;
+        }
+
+        @Override
+        public void run() {
+            client.onConnect(client);
+        }
     }
 
 
     protected final void receive(P packet) {
-        onReceive(this, packet);
+        executorService.execute(new ReceiveRunnable<P>(this, packet));
+    }
+
+    private static class ReceiveRunnable<P> implements Runnable {
+        private final AbstractClient<P> client;
+        private final P packet;
+
+        public ReceiveRunnable(AbstractClient<P> client, P packet) {
+            this.client = client;
+            this.packet = packet;
+        }
+
+        @Override
+        public void run() {
+            client.onReceive(client, packet);
+        }
     }
 
     public final void send(P packet) {

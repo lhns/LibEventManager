@@ -18,9 +18,16 @@ public class ClientTest {
 
         Client<String> client = new Client<>(Testprotocol.class);
 
-        client.setReceiveHandler((c, packet) -> System.out.println(packet));
+        client.setReceiveHandler((c, packet) -> {
+            c.send(packet);
+            c.send(packet + "-");
+        });
         client.setDisconnectHandler((pp, r) -> System.out.println(pp + ": " + r));
-        //client.setConnectHandler((c) -> c.send("test"));
+        client.setConnectHandler((c) -> {
+            //c.send("asdf");
+            //c.send("asdf2");
+            //for (int i = 0; i < 100; i++) client.send("" + i);
+        });
 
         try {
             client.connect(input.readLine());

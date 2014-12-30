@@ -30,6 +30,7 @@ public abstract class AbstractServer<P> extends ProtocolProvider<P> {
     protected final AbstractClient<P> newClient(Class<? extends AbstractProtocol<P>> protocol) {
         if (clientFactory != null) {
             AbstractClient<P> client = clientFactory.newClient(protocol);
+            client.setServer(this);
             client.setReceiveHandler(getReceiveHandler());
             client.setConnectHandler(getConnectHandler());
             client.setDisconnectHandler(getDisconnectHandler());
