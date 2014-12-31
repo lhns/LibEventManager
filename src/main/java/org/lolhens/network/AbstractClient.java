@@ -98,7 +98,7 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
 
 
     protected final void receive(P packet) {
-        executorService.execute(new ReceiveRunnable<P>(this, packet));
+        executorService.execute(new ReceiveRunnable<>(this, packet));
     }
 
     private static class ReceiveRunnable<P> implements Runnable {
