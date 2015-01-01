@@ -24,8 +24,10 @@ public abstract class AbstractProtocol<P> {
         this.client = client;
     }
 
-    protected void setWriting(boolean writing) {
+    protected final void setWriting(boolean writing) {
         client.setWriting(writing);
+
+        // Notify because client tries to close
         if (!writing && !client.isAlive()) {
             synchronized (client) {
                 client.notify();

@@ -11,6 +11,8 @@ import java.nio.channels.SocketChannel;
 public class Client<P> extends AbstractClient<P> {
     private SelectionKey selectionKey;
 
+    private volatile boolean writeLock = false, writing = false;
+
     public Client(Class<? extends AbstractProtocol> protocolClazz) {
         super(protocolClazz);
         setExceptionHandler(new ExceptionHandler());
@@ -51,6 +53,8 @@ public class Client<P> extends AbstractClient<P> {
 
             if (!isAlive() || selectionKey != Client.this.selectionKey) return switchOps;
 
+            writeLock = true;
+
             if ((readyOps & SelectionKey.OP_READ) != 0) {
                 read(socketChannel);
                 switchOps ^= SelectionKey.OP_READ;
@@ -65,6 +69,13 @@ public class Client<P> extends AbstractClient<P> {
                 switchOps ^= SelectionKey.OP_CONNECT;
             }
 
+            writeLock = false;
+
+            if (writing) {
+                writing = false;
+                switchOps ^= SelectionKey.OP_WRITE;
+            }
+
             return switchOps;
         });
 
@@ -74,10 +85,19 @@ public class Client<P> extends AbstractClient<P> {
     @Override
     protected void setWriting(boolean value) {
         if (!selectionKey.isValid()) return;
-        int ops = selectionKey.interestOps();
-        if (((ops & SelectionKey.OP_WRITE) != 0) != value) {
-            selectionKey.interestOps(ops ^ SelectionKey.OP_WRITE);
-            selectionKey.selector().wakeup();
+
+        if (isWriting() != value) {
+            super.setWriting(value);
+
+            if (writeLock) {
+                writing = !writing;
+            } else {
+                int ops = selectionKey.interestOps();
+                if (((ops & SelectionKey.OP_WRITE) != 0) != value) {
+                    selectionKey.interestOps(ops ^ SelectionKey.OP_WRITE);
+                    selectionKey.selector().wakeup();
+                }
+            }
         }
     }
 

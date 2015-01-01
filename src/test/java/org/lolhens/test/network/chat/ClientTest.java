@@ -19,8 +19,8 @@ public class ClientTest {
         Client<String> client = new Client<>(Testprotocol.class);
 
         client.setReceiveHandler((c, packet) -> {
-            //c.send(packet);
-            //c.send(packet + "-");
+            c.send(packet);
+            c.send(packet + "-");
             System.out.println(packet);
         });
         client.setDisconnectHandler((pp, r) -> System.out.println(pp + ": " + r));

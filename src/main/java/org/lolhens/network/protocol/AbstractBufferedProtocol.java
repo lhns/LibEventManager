@@ -23,7 +23,7 @@ public abstract class AbstractBufferedProtocol<P> extends AbstractBlockingProtoc
 
         //Rewind Buffer for writing and block any new packets
         outBuffer.rewind();
-        setWriting(true);
+        setWriting2(true);
     }
 
     @Override
@@ -31,7 +31,7 @@ public abstract class AbstractBufferedProtocol<P> extends AbstractBlockingProtoc
         out.write(outBuffer);
         if (outBuffer.remaining() == 0) {
             outBuffer = null;
-            setWriting(false);
+            setWriting2(false);
         }
     }
 
