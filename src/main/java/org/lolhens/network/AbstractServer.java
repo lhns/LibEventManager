@@ -9,7 +9,7 @@ import java.util.function.Predicate;
 
 public abstract class AbstractServer<P> extends ProtocolProvider<P> {
     protected List<AbstractClient<P>> clients;
-    private IFactoryClient<P> clientFactory = null;
+    private IClientFactory<P> clientFactory = null;
 
     private ServerSocketChannel socketChannel;
 
@@ -55,7 +55,7 @@ public abstract class AbstractServer<P> extends ProtocolProvider<P> {
         return null;
     }
 
-    public final void setClientFactory(IFactoryClient<P> clientFactory) {
+    public final void setClientFactory(IClientFactory<P> clientFactory) {
         this.clientFactory = clientFactory;
     }
 
