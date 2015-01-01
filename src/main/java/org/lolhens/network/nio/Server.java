@@ -1,6 +1,5 @@
 package org.lolhens.network.nio;
 
-import org.lolhens.autoselector.SelectorManager;
 import org.lolhens.network.AbstractClient;
 import org.lolhens.network.AbstractProtocol;
 import org.lolhens.network.AbstractServer;
@@ -12,6 +11,8 @@ import java.nio.channels.ServerSocketChannel;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Server<P> extends AbstractServer<P> {
+    private SelectionKey selectionKey;
+
     public Server(Class<? extends AbstractProtocol> protocolClazz) {
         super(protocolClazz);
         clients = new CopyOnWriteArrayList<>();
@@ -19,25 +20,6 @@ public class Server<P> extends AbstractServer<P> {
         setExceptionHandler(new ExceptionHandler());
     }
 
-    @Override
-    public void setSocketChannel(ServerSocketChannel socketChannel) throws IOException {
-        super.setSocketChannel(socketChannel);
-
-        SelectorManager.instance.register(socketChannel, SelectionKey.OP_ACCEPT, (selectionKey) -> {
-            if (!isAlive()) return;
-
-            if (selectionKey.isAcceptable()) {
-                try {
-                    AbstractClient<P> client = newClient(getProtocol());
-                    client.setSocketChannel(getSocketChannel().accept());
-                    onAccept(client);
-                    clients.add(client);
-                } catch (IOException e) {
-                    onException(e);
-                }
-            }
-        });
-    }
 
     @Override
     public void bind(SocketAddress socketAddress) throws IOException {
@@ -50,9 +32,41 @@ public class Server<P> extends AbstractServer<P> {
         }
     }
 
+
+    // Setters
+
     @Override
-    protected void onClose() throws IOException {
-        super.onClose();
-        getSocketChannel().close();
+    public void setSocketChannel(ServerSocketChannel socketChannel) throws IOException {
+        super.setSocketChannel(socketChannel);
+
+        if (selectionKey != null) selectionKey.cancel();
+
+        selectionKey = getSelectorThread().register(socketChannel, SelectionKey.OP_ACCEPT, (selectionKey, readyOps) -> {
+            int switchOps = 0;
+
+            if (!isAlive()) return switchOps;
+
+            if ((readyOps & SelectionKey.OP_ACCEPT) != 0) {
+                try {
+                    AbstractClient<P> client = newClient(getProtocol());
+                    client.setSocketChannel(getSocketChannel().accept());
+                    onAccept(client);
+                    clients.add(client);
+                } catch (IOException e) {
+                    onException(e);
+                }
+                switchOps ^= SelectionKey.OP_ACCEPT;
+            }
+
+            return switchOps;
+        });
     }
+
+    @Override
+    protected void setClosed() throws IOException {
+        super.setClosed();
+        selectionKey.cancel();
+    }
+
+    // Getters
 }

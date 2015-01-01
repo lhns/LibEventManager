@@ -6,64 +6,21 @@ import java.net.SocketAddress;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.concurrent.Executor;
 
 public abstract class AbstractClient<P> extends ProtocolProvider<P> {
-    private SocketChannel socketChannel;
-    private boolean connected = false;
-
-    private AbstractProtocol<P> protocol;
-
     private AbstractServer<P> server;
+
+    private volatile SocketChannel socketChannel;
+
+    private volatile AbstractProtocol<P> protocol;
+
+    private volatile boolean connected = false;
+    private volatile boolean writing = false;
 
     public AbstractClient(Class<? extends AbstractProtocol> protocolClazz) {
         super(protocolClazz);
     }
-
-
-    public void setSocketChannel(SocketChannel socketChannel) throws IOException {
-        socketChannel.configureBlocking(false);
-        this.socketChannel = socketChannel;
-
-        setConnected(false);
-    }
-
-    public SocketChannel getSocketChannel() {
-        return socketChannel;
-    }
-
-
-    private void setConnected(boolean connected) {
-        this.connected = connected;
-    }
-
-    public boolean isConnected() {
-        return connected;
-    }
-
-
-    @Override
-    public final void setProtocol(Class<? extends AbstractProtocol> protocolClazz) {
-        super.setProtocol(protocolClazz);
-
-        try {
-            AbstractProtocol<P> newProtocol = getProtocol().newInstance();
-            newProtocol.setClient(this);
-            if (protocol != null) protocol.setClient(null);
-            protocol = newProtocol;
-        } catch (InstantiationException | IllegalAccessException e) {
-            throw new IllegalArgumentException("Protocol instantiation failed!", e);
-        }
-    }
-
-
-    protected final void setServer(AbstractServer<P> server) {
-        this.server = server;
-    }
-
-    public final AbstractServer<P> getServer() {
-        return server;
-    }
-
 
     public abstract void connect(SocketAddress socketAddress) throws IOException;
 
@@ -80,40 +37,11 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
     protected final void onConnect() {
         setConnected(true);
 
-        executorService.execute(new ConnectRunnable<>(this));
+        onConnect(this);
     }
-
-    private static class ConnectRunnable<P> implements Runnable {
-        private final AbstractClient<P> client;
-
-        public ConnectRunnable(AbstractClient<P> client) {
-            this.client = client;
-        }
-
-        @Override
-        public void run() {
-            client.onConnect(client);
-        }
-    }
-
 
     protected final void receive(P packet) {
-        executorService.execute(new ReceiveRunnable<>(this, packet));
-    }
-
-    private static class ReceiveRunnable<P> implements Runnable {
-        private final AbstractClient<P> client;
-        private final P packet;
-
-        public ReceiveRunnable(AbstractClient<P> client, P packet) {
-            this.client = client;
-            this.packet = packet;
-        }
-
-        @Override
-        public void run() {
-            client.onReceive(client, packet);
-        }
+        onReceive(this, packet);
     }
 
     public final void send(P packet) {
@@ -128,13 +56,6 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
         }
     }
 
-
-    protected abstract void setWriteEnabled(boolean value);
-
-    public final boolean isWriting() {
-        return protocol.isWriteEnabled();
-    }
-
     protected final void write(WritableByteChannel out) {
         try {
             protocol.write(out);
@@ -143,12 +64,79 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
         }
     }
 
+    // Setters
+
+    protected final void setServer(AbstractServer<P> server) {
+        if (this.server != null) throw new UnsupportedOperationException("Cannot override server!");
+        this.server = server;
+    }
+
+    public void setSocketChannel(SocketChannel socketChannel) throws IOException {
+        this.socketChannel = socketChannel;
+
+        socketChannel.configureBlocking(false);
+
+        setConnected(false);
+    }
 
     @Override
-    protected void onClose() throws IOException {
-        super.onClose();
+    public final void setProtocol(Class<? extends AbstractProtocol> protocolClazz) {
+        super.setProtocol(protocolClazz);
+
+        try {
+            AbstractProtocol<P> newProtocol = getProtocol().newInstance();
+            newProtocol.setClient(this);
+            if (protocol != null) protocol.setClient(null);
+            protocol = newProtocol;
+        } catch (InstantiationException | IllegalAccessException e) {
+            throw new IllegalArgumentException("Protocol instantiation failed!", e);
+        }
+    }
+
+    private final void setConnected(boolean connected) {
+        this.connected = connected;
+    }
+
+    protected void setWriting(boolean value) {
+        writing = value;
+    }
+
+    @Override
+    protected void setClosed() throws IOException {
+        super.setClosed();
+        getSocketChannel().close();
         setConnected(false);
-        protocol.onClose();
+        protocol.setClosed();
         if (server != null) server.removeClient(this);
+    }
+
+    // Getters
+
+    public final AbstractServer<P> getServer() {
+        return server;
+    }
+
+    public final SocketChannel getSocketChannel() {
+        return socketChannel;
+    }
+
+    public boolean isConnected() {
+        return connected;
+    }
+
+    @Override
+    protected final Executor getExecutor() {
+        if (server != null) return server.getExecutor();
+        return super.getExecutor();
+    }
+
+    @Override
+    protected final SelectorThread getSelectorThread() {
+        if (server != null) return server.getSelectorThread();
+        return super.getSelectorThread();
+    }
+
+    public final boolean isWriting() {
+        return writing;
     }
 }

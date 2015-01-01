@@ -20,7 +20,7 @@ public abstract class AbstractExceptionHandler implements Closeable {
     @Override
     public final void close() {
         try {
-            protocolProvider.onClose();
+            protocolProvider.setClosed();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

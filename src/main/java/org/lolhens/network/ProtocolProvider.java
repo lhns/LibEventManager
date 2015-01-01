@@ -5,19 +5,21 @@ import org.lolhens.network.disconnect.Quit;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public abstract class ProtocolProvider<P> implements Closeable {
-    public static ExecutorService executorService = Executors.newScheduledThreadPool(10);
-
-    private boolean closed = false;
     private Class<? extends AbstractProtocol<P>> protocolClazz;
 
-    private IReceiveHandler<P> receiveHandler = null;
-    private IConnectHandler<P> connectHandler = null;
-    private IDisconnectHandler<P> disconnectHandler = null;
+    private Executor executor;
+    private SelectorThread selectorThread;
+
+    private IHandlerReceive<P> receiveHandler = null;
+    private IHandlerConnect<P> connectHandler = null;
+    private IHandlerDisconnect<P> disconnectHandler = null;
     private AbstractExceptionHandler exceptionHandler = null;
+
+    private boolean closed = false;
 
     public ProtocolProvider(Class<? extends AbstractProtocol> protocolClazz) {
         setReceiveHandler(receiveHandler);
@@ -25,63 +27,16 @@ public abstract class ProtocolProvider<P> implements Closeable {
         setProtocol(protocolClazz);
     }
 
-
-    public void setProtocol(Class<? extends AbstractProtocol> protocolClazz) {
-        this.protocolClazz = (Class<? extends AbstractProtocol<P>>) protocolClazz;
+    protected final void onReceive(AbstractClient<P> client, P packet) {
+        if (receiveHandler != null) getExecutor().execute(new RunnableReceive<>(receiveHandler, client, packet));
     }
 
-    public final Class<? extends AbstractProtocol<P>> getProtocol() {
-        return protocolClazz;
-    }
-
-
-    public final void setReceiveHandler(IReceiveHandler<P> receiveHandler) {
-        this.receiveHandler = receiveHandler;
-    }
-
-    protected final IReceiveHandler<P> getReceiveHandler() {
-        return receiveHandler;
-    }
-
-    final void onReceive(AbstractClient<P> client, P packet) {
-        if (receiveHandler != null) receiveHandler.onReceive(client, packet);
-    }
-
-
-    public final void setConnectHandler(IConnectHandler<P> connectHandler) {
-        this.connectHandler = connectHandler;
-    }
-
-    protected final IConnectHandler<P> getConnectHandler() {
-        return connectHandler;
-    }
-
-    final void onConnect(AbstractClient<P> client) {
+    protected final void onConnect(AbstractClient<P> client) {
         if (connectHandler != null) connectHandler.onConnect(client);
-    }
-
-
-    public final void setDisconnectHandler(IDisconnectHandler<P> disconnectHandler) {
-        this.disconnectHandler = disconnectHandler;
-    }
-
-    protected IDisconnectHandler<P> getDisconnectHandler() {
-        return disconnectHandler;
     }
 
     protected final void onDisconnect(DisconnectReason reason) {
         if (disconnectHandler != null) disconnectHandler.onDisconnect(this, reason);
-    }
-
-
-    protected final void setExceptionHandler(AbstractExceptionHandler exceptionHandler) {
-        if (this.exceptionHandler != null) this.exceptionHandler.protocolProvider = null;
-        exceptionHandler.protocolProvider = this;
-        this.exceptionHandler = exceptionHandler;
-    }
-
-    protected final AbstractExceptionHandler getExceptionHandler() {
-        return exceptionHandler;
     }
 
     protected final void onException(IOException exception) {
@@ -90,18 +45,73 @@ public abstract class ProtocolProvider<P> implements Closeable {
     }
 
 
-    protected void onClose() throws IOException {
-        closed = true;
-    }
-
-
     @Override
     public final void close() throws IOException {
-        onClose();
+        setClosed();
         onDisconnect(new Quit(this, null));
     }
 
-    public boolean isAlive() {
+    // Setters
+
+    public void setProtocol(Class<? extends AbstractProtocol> protocolClazz) {
+        this.protocolClazz = (Class<? extends AbstractProtocol<P>>) protocolClazz;
+    }
+
+    public final void setReceiveHandler(IHandlerReceive<P> receiveHandler) {
+        this.receiveHandler = receiveHandler;
+    }
+
+    public final void setConnectHandler(IHandlerConnect<P> connectHandler) {
+        this.connectHandler = connectHandler;
+    }
+
+    public final void setDisconnectHandler(IHandlerDisconnect<P> disconnectHandler) {
+        this.disconnectHandler = disconnectHandler;
+    }
+
+    protected final void setExceptionHandler(AbstractExceptionHandler exceptionHandler) {
+        if (this.exceptionHandler != null) this.exceptionHandler.protocolProvider = null;
+        exceptionHandler.protocolProvider = this;
+        this.exceptionHandler = exceptionHandler;
+    }
+
+    protected void setClosed() throws IOException { // TODO: rename to setClosed
+        closed = true;
+    }
+
+    // Getters
+
+    public final Class<? extends AbstractProtocol<P>> getProtocol() {
+        return protocolClazz;
+    }
+
+    protected Executor getExecutor() {
+        if (executor == null) executor = Executors.newWorkStealingPool();
+        return executor;
+    }
+
+    protected SelectorThread getSelectorThread() {
+        if (selectorThread == null) selectorThread = new SelectorThread(getExecutor());
+        return selectorThread;
+    }
+
+    protected final IHandlerReceive<P> getReceiveHandler() {
+        return receiveHandler;
+    }
+
+    protected final IHandlerConnect<P> getConnectHandler() {
+        return connectHandler;
+    }
+
+    protected IHandlerDisconnect<P> getDisconnectHandler() {
+        return disconnectHandler;
+    }
+
+    protected final AbstractExceptionHandler getExceptionHandler() {
+        return exceptionHandler;
+    }
+
+    public final boolean isAlive() {
         return !closed;
     }
 }

@@ -11,7 +11,7 @@ import java.nio.channels.WritableByteChannel;
  * Created by LolHens on 27.11.2014.
  */
 public class RawProtocol extends AbstractBlockingProtocol<byte[]> {
-    private ByteBuffer outData;
+    private volatile ByteBuffer outData;
 
     @Override
     protected void onPacket(byte[] packet) throws IOException {

@@ -1,6 +1,5 @@
 package org.lolhens.network.nio;
 
-import org.lolhens.autoselector.SelectorManager;
 import org.lolhens.network.AbstractClient;
 import org.lolhens.network.AbstractProtocol;
 
@@ -15,31 +14,6 @@ public class Client<P> extends AbstractClient<P> {
     public Client(Class<? extends AbstractProtocol> protocolClazz) {
         super(protocolClazz);
         setExceptionHandler(new ExceptionHandler());
-    }
-
-    public void setSocketChannel(SocketChannel socketChannel) throws IOException {
-        super.setSocketChannel(socketChannel);
-
-        int ops = SelectionKey.OP_CONNECT;
-        if (socketChannel.isConnected()) ops ^= finishConnect();
-
-        selectionKey = SelectorManager.instance.register(socketChannel, ops, (selectionKey) -> {
-            if (!isAlive() || selectionKey != Client.this.selectionKey) return;
-
-            if (selectionKey.isReadable()) {
-                read(socketChannel);
-            }
-            if (selectionKey.isWritable()) {
-                write(socketChannel);
-            }
-            if (selectionKey.isConnectable()) {
-                selectionKey.interestOps(selectionKey.interestOps() ^ finishConnect());
-                selectionKey.selector().wakeup();
-                onConnect();
-            }
-        });
-
-        if ((ops & SelectionKey.OP_CONNECT) == 0) onConnect();
     }
 
     private final int finishConnect() {
@@ -62,8 +36,43 @@ public class Client<P> extends AbstractClient<P> {
         }
     }
 
+    // Setters
+
+    public void setSocketChannel(SocketChannel socketChannel) throws IOException {
+        super.setSocketChannel(socketChannel);
+
+        int ops = SelectionKey.OP_CONNECT;
+        if (socketChannel.isConnected()) ops ^= finishConnect();
+
+        if (selectionKey != null) selectionKey.cancel();
+
+        selectionKey = getSelectorThread().register(socketChannel, ops, (selectionKey, readyOps) -> {
+            int switchOps = 0;
+
+            if (!isAlive() || selectionKey != Client.this.selectionKey) return switchOps;
+
+            if ((readyOps & SelectionKey.OP_READ) != 0) {
+                read(socketChannel);
+                switchOps ^= SelectionKey.OP_READ;
+            }
+            if ((readyOps & SelectionKey.OP_WRITE) != 0) {
+                write(socketChannel);
+                switchOps ^= SelectionKey.OP_WRITE;
+            }
+            if ((readyOps & SelectionKey.OP_CONNECT) != 0) {
+                switchOps ^= finishConnect();
+                onConnect();
+                switchOps ^= SelectionKey.OP_CONNECT;
+            }
+
+            return switchOps;
+        });
+
+        if ((ops & SelectionKey.OP_CONNECT) == 0) onConnect();
+    }
+
     @Override
-    protected void setWriteEnabled(boolean value) {
+    protected void setWriting(boolean value) {
         if (!selectionKey.isValid()) return;
         int ops = selectionKey.interestOps();
         if (((ops & SelectionKey.OP_WRITE) != 0) != value) {
@@ -73,8 +82,8 @@ public class Client<P> extends AbstractClient<P> {
     }
 
     @Override
-    protected void onClose() throws IOException {
-        super.onClose();
+    protected void setClosed() throws IOException {
+        super.setClosed();
         while (isWriting()) {
             try {
                 synchronized (this) {
@@ -83,8 +92,8 @@ public class Client<P> extends AbstractClient<P> {
             } catch (InterruptedException e) {
             }
         }
-        getSocketChannel().close();
         selectionKey.cancel();
-        selectionKey.selector().wakeup();
     }
+
+    // Getters
 }

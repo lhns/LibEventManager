@@ -9,8 +9,8 @@ import java.nio.channels.WritableByteChannel;
  * Created by LolHens on 14.11.2014.
  */
 public abstract class AbstractBlockingProtocol<P> extends AbstractProtocol<P> {
-    private P packet;
-    private boolean writing = false;
+    private volatile P packet;
+    private volatile boolean writing = false;
 
     @Override
     protected final void send(P packet) {
@@ -24,7 +24,7 @@ public abstract class AbstractBlockingProtocol<P> extends AbstractProtocol<P> {
         }
         synchronized (this) {
             this.packet = packet;
-            setWriteEnabled(true);
+            super.setWriting(true);
         }
     }
 
@@ -52,12 +52,12 @@ public abstract class AbstractBlockingProtocol<P> extends AbstractProtocol<P> {
 
     protected abstract void onWrite(WritableByteChannel out) throws IOException;
 
+    @Override
     protected final void setWriting(boolean value) {
         if (value != writing) {
-            if (value) {
-            } else {
+            if (!value) {
                 synchronized (this) {
-                    if (packet == null) setWriteEnabled(false);
+                    if (packet == null) super.setWriting(false);
                 }
             }
         }

@@ -19,8 +19,9 @@ public class ClientTest {
         Client<String> client = new Client<>(Testprotocol.class);
 
         client.setReceiveHandler((c, packet) -> {
-            c.send(packet);
-            c.send(packet + "-");
+            //c.send(packet);
+            //c.send(packet + "-");
+            System.out.println(packet);
         });
         client.setDisconnectHandler((pp, r) -> System.out.println(pp + ": " + r));
         client.setConnectHandler((c) -> {
@@ -45,6 +46,7 @@ public class ClientTest {
     public static class Testprotocol extends AbstractBufferedProtocol<String> {
         @Override
         protected ByteBuffer wrapPacket(String packet) {
+            if (packet == null) System.out.println("NULL!!!");
             byte[] data = packet.getBytes();
             ByteBuffer bb = ByteBuffer.allocate(data.length).order(ByteOrder.BIG_ENDIAN);
             bb.put(data);

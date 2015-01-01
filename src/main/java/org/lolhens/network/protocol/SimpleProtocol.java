@@ -12,7 +12,7 @@ import java.nio.channels.WritableByteChannel;
  * Created by LolHens on 11.11.2014.
  */
 public class SimpleProtocol extends AbstractBlockingProtocol<SimplePacket> {
-    private ByteBuffer outBuffer = null;
+    private volatile ByteBuffer outBuffer = null;
 
     @Override
     protected void onPacket(SimplePacket packet) throws IOException {
@@ -34,7 +34,7 @@ public class SimpleProtocol extends AbstractBlockingProtocol<SimplePacket> {
     }
 
     private final ByteBuffer inHeader = ByteBuffer.allocate(8).order(ByteOrder.BIG_ENDIAN);
-    private ByteBuffer inData;
+    private volatile ByteBuffer inData;
 
     @Override
     protected void read(ReadableByteChannel in) throws IOException {

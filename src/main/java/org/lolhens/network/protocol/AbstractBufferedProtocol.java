@@ -7,7 +7,7 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
 public abstract class AbstractBufferedProtocol<P> extends AbstractBlockingProtocol<P> {
-    private ByteBuffer outBuffer = null;
+    private volatile ByteBuffer outBuffer = null;
 
     @Override
     protected final void onPacket(P packet) throws IOException {
@@ -36,7 +36,7 @@ public abstract class AbstractBufferedProtocol<P> extends AbstractBlockingProtoc
     }
 
     private final ByteBuffer sizeBuf = ByteBuffer.allocate(4).order(ByteOrder.BIG_ENDIAN);
-    private ByteBuffer packetBuf;
+    private volatile ByteBuffer packetBuf;
 
     @Override
     protected final void read(ReadableByteChannel in) throws IOException {
