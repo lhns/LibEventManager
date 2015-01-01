@@ -21,7 +21,7 @@ public class SimpleProtocol extends AbstractBlockingProtocol<SimplePacket> {
         outBuffer.putInt(packet.data.length);
         outBuffer.put(packet.data);
         outBuffer.rewind();
-        setWriting(true);
+        setWriting2(true);
     }
 
     @Override
@@ -29,7 +29,7 @@ public class SimpleProtocol extends AbstractBlockingProtocol<SimplePacket> {
         out.write(outBuffer);
         if (outBuffer.remaining() == 0) {
             outBuffer = null;
-            setWriting(false);
+            setWriting2(false);
         }
     }
 

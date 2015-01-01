@@ -1,6 +1,8 @@
 package org.lolhens.test.network.chat;
 
 import org.lolhens.network.nio.Server;
+import org.lolhens.network.packet.SimplePacket;
+import org.lolhens.network.protocol.SimpleProtocol;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -13,9 +15,12 @@ public class ServerTest {
     public static void main(String[] args) throws IOException {
         BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 
-        Server<String> server = new Server<>(ClientTest.Testprotocol.class);
+        Server<SimplePacket> server = new Server<>(SimpleProtocol.class);
 
-        server.setReceiveHandler((c, packet) -> System.out.println(packet));
+        server.setReceiveHandler((c, packet) -> {
+            System.out.println(packet.channel);
+            c.send(packet);
+        });
         server.setDisconnectHandler((pp, r) -> System.out.println(pp + ": " + r));
 
         try {
@@ -26,8 +31,7 @@ public class ServerTest {
 
         while (input != null) {
             String in = input.readLine();
-            if (in.toLowerCase().startsWith("reconnect ")) server.bind(in.toLowerCase().replace("reconnect ", ""));
-            if (in != null) server.broadcast(in);
+            if (in != null) server.broadcast(new SimplePacket(Integer.valueOf(in), new byte[0]));
         }
     }
 }

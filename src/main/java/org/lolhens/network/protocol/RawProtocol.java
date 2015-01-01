@@ -18,7 +18,7 @@ public class RawProtocol extends AbstractBlockingProtocol<byte[]> {
         outData = ByteBuffer.allocate(packet.length).order(ByteOrder.BIG_ENDIAN);
         outData.put(packet);
         outData.rewind();
-        setWriting(true);
+        setWriting2(true);
     }
 
     @Override
@@ -26,7 +26,7 @@ public class RawProtocol extends AbstractBlockingProtocol<byte[]> {
         out.write(outData);
         if (outData.remaining() == 0) {
             outData = null;
-            setWriting(false);
+            setWriting2(false);
         }
     }
 

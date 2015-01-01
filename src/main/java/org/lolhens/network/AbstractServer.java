@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.nio.channels.ServerSocketChannel;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -55,6 +56,10 @@ public abstract class AbstractServer<P> extends ProtocolProvider<P> {
         return null;
     }
 
+    protected final void removeClient(AbstractClient<P> client) {
+        clients.remove(client);
+    }
+
     public final void setClientFactory(IClientFactory<P> clientFactory) {
         this.clientFactory = clientFactory;
     }
@@ -76,8 +81,8 @@ public abstract class AbstractServer<P> extends ProtocolProvider<P> {
 
     // Getters
 
-    protected final void removeClient(AbstractClient<P> client) {
-        clients.remove(client);
+    public List<AbstractClient<P>> getClients() {
+        return Collections.unmodifiableList(clients);
     }
 
     public ServerSocketChannel getSocketChannel() {
