@@ -75,7 +75,7 @@ public abstract class ProtocolProvider<P> implements Closeable {
         this.exceptionHandler = exceptionHandler;
     }
 
-    protected void setClosed() throws IOException { // TODO: rename to setClosed
+    protected void setClosed() throws IOException {
         closed = true;
     }
 
