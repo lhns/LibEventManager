@@ -2,6 +2,7 @@ package org.lolhens.network.nio;
 
 import org.lolhens.network.AbstractClient;
 import org.lolhens.network.AbstractProtocol;
+import org.lolhens.network.SelectionKeyContainer;
 
 import java.io.IOException;
 import java.net.SocketAddress;
@@ -9,9 +10,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
 public class Client<P> extends AbstractClient<P> {
-    private SelectionKey selectionKey;
-
-    private volatile boolean writeLock = false, setWriting = false;
+    private SelectionKeyContainer selectionKeyContainer;
 
     public Client(Class<? extends AbstractProtocol> protocolClazz) {
         super(protocolClazz);
@@ -46,37 +45,21 @@ public class Client<P> extends AbstractClient<P> {
         int ops = SelectionKey.OP_CONNECT;
         if (socketChannel.isConnected()) ops ^= finishConnect();
 
-        if (selectionKey != null) selectionKey.cancel();
+        if (selectionKeyContainer != null) selectionKeyContainer.cancel();
 
-        selectionKey = getSelectorThread().register(socketChannel, ops, (selectionKey, readyOps) -> {
-            int switchOps = 0;
-
-            if (!isAlive()) return switchOps;
-
-            writeLock = true;
+        selectionKeyContainer = getSelectorThread().register(socketChannel, ops, (selectionKeyContainer, readyOps) -> {
+            if (!isAlive()) return;
 
             if ((readyOps & SelectionKey.OP_READ) != 0) {
                 read(socketChannel);
-                switchOps ^= SelectionKey.OP_READ;
             }
             if ((readyOps & SelectionKey.OP_WRITE) != 0) {
                 write(socketChannel);
-                switchOps ^= SelectionKey.OP_WRITE;
             }
             if ((readyOps & SelectionKey.OP_CONNECT) != 0) {
-                switchOps ^= finishConnect();
+                selectionKeyContainer.toggleInterestOps(finishConnect());
                 onConnect();
-                switchOps ^= SelectionKey.OP_CONNECT;
             }
-
-            writeLock = false;
-
-            if (setWriting) {
-                setWriting = false;
-                switchOps ^= SelectionKey.OP_WRITE;
-            }
-
-            return switchOps;
         });
 
         if ((ops & SelectionKey.OP_CONNECT) == 0) onConnect();
@@ -84,19 +67,14 @@ public class Client<P> extends AbstractClient<P> {
 
     @Override
     protected void setWriting(boolean writing) {
-        if (!selectionKey.isValid()) return;
+        if (!selectionKeyContainer.isValid()) return;
 
         if (isWriting() != writing) {
             super.setWriting(writing);
 
-            if (writeLock) {
-                setWriting = !setWriting;
-            } else {
-                int ops = selectionKey.interestOps();
-                if (((ops & SelectionKey.OP_WRITE) != 0) != writing) {
-                    selectionKey.interestOps(ops ^ SelectionKey.OP_WRITE);
-                    selectionKey.selector().wakeup();
-                }
+            int ops = selectionKeyContainer.getInterestOps();
+            if (((ops & SelectionKey.OP_WRITE) != 0) != writing) {
+                selectionKeyContainer.toggleInterestOps(SelectionKey.OP_WRITE);
             }
         }
     }
@@ -112,7 +90,7 @@ public class Client<P> extends AbstractClient<P> {
             } catch (InterruptedException e) {
             }
         }
-        selectionKey.cancel();
+        selectionKeyContainer.cancel();
     }
 
     // Getters

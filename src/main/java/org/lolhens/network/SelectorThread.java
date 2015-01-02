@@ -28,17 +28,19 @@ public class SelectorThread extends Thread {
         start();
     }
 
-    public SelectionKey register(SelectableChannel channel, int ops, IHandlerSelect selectHandler) throws IOException {
+    public SelectionKeyContainer register(SelectableChannel channel, int ops, IHandlerSelect selectHandler) throws IOException {
         channel.configureBlocking(false);
 
-        SelectionKey selectionKey;
+        SelectionKeyContainer selectionKeyContainer;
 
         synchronized (selector) {
             selector.wakeup();
-            selectionKey = channel.register(selector, ops, selectHandler);
+            selectionKeyContainer = new SelectionKeyContainer(selectHandler);
+            SelectionKey selectionKey = channel.register(selector, ops, selectionKeyContainer);
+            selectionKeyContainer.setSelectionKey(selectionKey);
         }
 
-        return selectionKey;
+        return selectionKeyContainer;
     }
 
     @Override
@@ -55,24 +57,37 @@ public class SelectorThread extends Thread {
                     while (readyKeysIterator.hasNext()) {
                         SelectionKey selectionKey = readyKeysIterator.next();
 
+                        readyKeysIterator.remove();
+                        boolean remove = true;
+
                         if (selectionKey.isValid()) {
-                            int interestOps = selectionKey.interestOps();
-                            int readyOps = selectionKey.readyOps() & interestOps;
+                            try {
+                                SelectionKeyContainer selectionKeyContainer = (SelectionKeyContainer) selectionKey.attachment();
 
-                            if (readyOps != 0) {
-                                selectionKey.interestOps(interestOps & ~readyOps);
+                                int activeOps = selectionKeyContainer.getActiveOps();
+                                int readyOps = selectionKey.readyOps();
 
-                                try {
-                                    Object attachment = selectionKey.attachment();
-
-                                    if (attachment instanceof IHandlerSelect)
-                                        executor.execute(new RunnableSelect((IHandlerSelect) attachment, selectionKey, readyOps));
-                                } catch (CancelledKeyException e) {
+                                System.out.println(Integer.toBinaryString(readyOps));
+                                System.out.println(Integer.toBinaryString(activeOps));
+                                if ((readyOps & ~activeOps) != 0) {
+                                    System.out.println(Integer.toBinaryString((readyOps & ~activeOps)));
+                                    remove = false;
                                 }
+                                System.out.println("-");
+
+                                int ops = readyOps & activeOps;
+                                //System.out.println(Integer.toBinaryString(activeOps) + " active");
+                                //System.out.println(Integer.toBinaryString(ops));
+                                if (ops != 0) {
+                                    //selectionKeyContainer.setActiveOps(0, ops);
+                                    executor.execute(new RunnableSelect(selectionKeyContainer, ops));
+                                }
+                            } catch (CancelledKeyException e) {
+                                e.printStackTrace();
                             }
                         }
 
-                        readyKeysIterator.remove();
+                        //if (remove)
                     }
                 }
             }

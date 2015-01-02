@@ -3,15 +3,17 @@ package org.lolhens.network.nio;
 import org.lolhens.network.AbstractClient;
 import org.lolhens.network.AbstractProtocol;
 import org.lolhens.network.AbstractServer;
+import org.lolhens.network.SelectionKeyContainer;
 
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Server<P> extends AbstractServer<P> {
-    private SelectionKey selectionKey;
+    private SelectionKeyContainer selectionKeyContainer;
 
     public Server(Class<? extends AbstractProtocol> protocolClazz) {
         super(protocolClazz);
@@ -39,33 +41,30 @@ public class Server<P> extends AbstractServer<P> {
     public void setSocketChannel(ServerSocketChannel socketChannel) throws IOException {
         super.setSocketChannel(socketChannel);
 
-        if (selectionKey != null) selectionKey.cancel();
+        if (selectionKeyContainer != null) selectionKeyContainer.cancel();
 
-        selectionKey = getSelectorThread().register(socketChannel, SelectionKey.OP_ACCEPT, (selectionKey, readyOps) -> {
-            int switchOps = 0;
-
-            if (!isAlive()) return switchOps;
+        selectionKeyContainer = getSelectorThread().register(socketChannel, SelectionKey.OP_ACCEPT, (selectionKey, readyOps) -> {
+            if (!isAlive()) return;
 
             if ((readyOps & SelectionKey.OP_ACCEPT) != 0) {
                 try {
                     AbstractClient<P> client = newClient(getProtocol());
-                    client.setSocketChannel(getSocketChannel().accept());
-                    onAccept(client);
+                    SocketChannel c = getSocketChannel().accept();
+                    if (c == null) return;// TODO collapse
+                    client.setSocketChannel(c);
                     clients.add(client);
+                    onAccept(client);
                 } catch (IOException e) {
                     onException(e);
                 }
-                switchOps ^= SelectionKey.OP_ACCEPT;
             }
-
-            return switchOps;
         });
     }
 
     @Override
     protected void setClosed() throws IOException {
         super.setClosed();
-        selectionKey.cancel();
+        selectionKeyContainer.cancel();
     }
 
     // Getters

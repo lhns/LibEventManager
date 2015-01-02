@@ -18,8 +18,7 @@ public class ServerTest {
         Server<SimplePacket> server = new Server<>(SimpleProtocol.class);
 
         server.setReceiveHandler((c, packet) -> {
-            System.out.println(packet.channel);
-            c.send(packet);
+            System.out.println(new String(packet.data));
         });
         server.setDisconnectHandler((pp, r) -> System.out.println(pp + ": " + r));
 
@@ -31,7 +30,7 @@ public class ServerTest {
 
         while (input != null) {
             String in = input.readLine();
-            if (in != null) server.broadcast(new SimplePacket(Integer.valueOf(in), new byte[0]));
+            if (in != null) server.broadcast(new SimplePacket(0, in.getBytes()));
         }
     }
 }

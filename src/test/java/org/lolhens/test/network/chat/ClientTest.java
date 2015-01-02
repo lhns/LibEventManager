@@ -18,12 +18,10 @@ public class ClientTest {
         Client<SimplePacket> client = new Client<>(SimpleProtocol.class);
 
         client.setReceiveHandler((c, packet) -> {
-            System.out.println(packet.channel);
-            c.send(new SimplePacket(packet.channel + 1, new byte[0]));
+            System.out.println(new String(packet.data));
+            //c.send(new SimplePacket(packet.channel + 1, new byte[0]));
         });
         client.setDisconnectHandler((pp, r) -> System.out.println(pp + ": " + r));
-
-        client.setConnectHandler((c) -> c.send(new SimplePacket(0, new byte[0])));
 
         try {
             client.connect(input.readLine());
@@ -33,7 +31,7 @@ public class ClientTest {
 
         while (input != null) {
             String in = input.readLine();
-            if (in != null) client.send(new SimplePacket(Integer.valueOf(in), new byte[0]));
+            if (in != null) client.send(new SimplePacket(0, in.getBytes()));
         }
     }
 }
