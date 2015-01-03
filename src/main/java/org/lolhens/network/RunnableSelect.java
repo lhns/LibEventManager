@@ -25,6 +25,6 @@ class RunnableSelect implements Runnable {
                 }
             }
         }
-        //selectionKeyContainer.setActiveOps(0xFFFFFFFF, readyOps);
+        selectionKeyContainer.setActiveOps(0xFFFFFFFF, readyOps);
     }
 }

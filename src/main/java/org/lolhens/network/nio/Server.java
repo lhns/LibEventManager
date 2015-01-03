@@ -49,11 +49,12 @@ public class Server<P> extends AbstractServer<P> {
             if ((readyOps & SelectionKey.OP_ACCEPT) != 0) {
                 try {
                     AbstractClient<P> client = newClient(getProtocol());
-                    SocketChannel c = getSocketChannel().accept();
-                    if (c == null) return;// TODO collapse
-                    client.setSocketChannel(c);
-                    clients.add(client);
-                    onAccept(client);
+                    SocketChannel channel = getSocketChannel().accept();
+                    if (channel != null) {
+                        client.setSocketChannel(channel);
+                        clients.add(client);
+                        onAccept(client);
+                    }
                 } catch (IOException e) {
                     onException(e);
                 }

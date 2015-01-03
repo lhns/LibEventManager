@@ -67,19 +67,13 @@ public class SelectorThread extends Thread {
                                 int activeOps = selectionKeyContainer.getActiveOps();
                                 int readyOps = selectionKey.readyOps();
 
-                                System.out.println(Integer.toBinaryString(readyOps));
-                                System.out.println(Integer.toBinaryString(activeOps));
                                 if ((readyOps & ~activeOps) != 0) {
-                                    System.out.println(Integer.toBinaryString((readyOps & ~activeOps)));
-                                    remove = false;
+                                    //remove = false;
                                 }
-                                System.out.println("-");
 
                                 int ops = readyOps & activeOps;
-                                //System.out.println(Integer.toBinaryString(activeOps) + " active");
-                                //System.out.println(Integer.toBinaryString(ops));
                                 if (ops != 0) {
-                                    //selectionKeyContainer.setActiveOps(0, ops);
+                                    selectionKeyContainer.setActiveOps(0, ops);
                                     executor.execute(new RunnableSelect(selectionKeyContainer, ops));
                                 }
                             } catch (CancelledKeyException e) {

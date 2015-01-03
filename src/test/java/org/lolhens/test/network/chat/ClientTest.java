@@ -19,7 +19,6 @@ public class ClientTest {
 
         client.setReceiveHandler((c, packet) -> {
             System.out.println(new String(packet.data));
-            //c.send(new SimplePacket(packet.channel + 1, new byte[0]));
         });
         client.setDisconnectHandler((pp, r) -> System.out.println(pp + ": " + r));
 
