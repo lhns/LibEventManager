@@ -18,7 +18,8 @@ public class ServerTest {
         Server<SimplePacket> server = new Server<>(SimpleProtocol.class);
 
         server.setReceiveHandler((c, packet) -> {
-            System.out.println(new String(packet.data));
+            c.send(packet);
+            //System.out.println(new String(packet.data));
         });
         server.setDisconnectHandler((pp, r) -> System.out.println(pp + ": " + r));
 

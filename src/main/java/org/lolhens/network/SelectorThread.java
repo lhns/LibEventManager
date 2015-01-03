@@ -58,7 +58,6 @@ public class SelectorThread extends Thread {
                         SelectionKey selectionKey = readyKeysIterator.next();
 
                         readyKeysIterator.remove();
-                        boolean remove = true;
 
                         if (selectionKey.isValid()) {
                             try {
@@ -66,10 +65,6 @@ public class SelectorThread extends Thread {
 
                                 int activeOps = selectionKeyContainer.getActiveOps();
                                 int readyOps = selectionKey.readyOps();
-
-                                if ((readyOps & ~activeOps) != 0) {
-                                    //remove = false;
-                                }
 
                                 int ops = readyOps & activeOps;
                                 if (ops != 0) {
@@ -80,8 +75,6 @@ public class SelectorThread extends Thread {
                                 e.printStackTrace();
                             }
                         }
-
-                        //if (remove)
                     }
                 }
             }
