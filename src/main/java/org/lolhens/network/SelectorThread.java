@@ -24,10 +24,11 @@ public class SelectorThread extends Thread {
         }
         this.executor = executor;
 
-        setName(getClass().getName() + "@" + Integer.toHexString(hashCode()) + "-" + getName());
+        setName(getClass().getSimpleName() + "-" + nextThreadNum());
         setDaemon(true);
         start();
     }
+
 
     public SelectionKeyContainer register(SelectableChannel channel, int ops, IHandlerSelect selectHandler) throws IOException {
         channel.configureBlocking(false);
@@ -84,5 +85,11 @@ public class SelectorThread extends Thread {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private static int threadInitNumber;
+
+    private static synchronized int nextThreadNum() {
+        return threadInitNumber++;
     }
 }

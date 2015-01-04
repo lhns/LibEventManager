@@ -6,7 +6,9 @@ import org.lolhens.network.disconnect.Quit;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.ForkJoinWorkerThread;
 
 public abstract class ProtocolProvider<P> implements Closeable {
     private Class<? extends AbstractProtocol<P>> protocolClazz;
@@ -85,8 +87,17 @@ public abstract class ProtocolProvider<P> implements Closeable {
     }
 
     protected Executor getExecutor() {
-        if (executor == null) executor = Executors.newWorkStealingPool();
+        if (executor == null) executor = newWorkStealingPool();
         return executor;
+    }
+
+    private ExecutorService newWorkStealingPool() {
+        return new ForkJoinPool(
+                Runtime.getRuntime().availableProcessors(),
+                new ForkJoinWorkerThreadFactory(getClass().getSimpleName()),
+                null,
+                true
+        );
     }
 
     protected SelectorThread getSelectorThread() {
@@ -112,5 +123,26 @@ public abstract class ProtocolProvider<P> implements Closeable {
 
     public final boolean isAlive() {
         return !closed;
+    }
+
+    private static class ForkJoinWorkerThreadFactory implements ForkJoinPool.ForkJoinWorkerThreadFactory {
+        private final String prefix;
+
+        public ForkJoinWorkerThreadFactory(String prefix) {
+            this.prefix = prefix;
+        }
+
+        @Override
+        public ForkJoinWorkerThread newThread(ForkJoinPool pool) {
+            ForkJoinWorkerThread thread = ForkJoinPool.defaultForkJoinWorkerThreadFactory.newThread(pool);
+            thread.setName(prefix + "-ForkJoinPool-worker-" + nextThreadNum());
+            return thread;
+        }
+
+        private static int threadInitNumber;
+
+        private static synchronized int nextThreadNum() {
+            return threadInitNumber++;
+        }
     }
 }
