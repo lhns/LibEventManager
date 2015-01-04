@@ -44,7 +44,6 @@ public abstract class ProtocolProvider<P> implements Closeable {
         else throw new RuntimeException(exception);
     }
 
-
     @Override
     public final void close() throws IOException {
         setClosed();

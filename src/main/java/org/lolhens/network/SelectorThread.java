@@ -24,6 +24,7 @@ public class SelectorThread extends Thread {
         }
         this.executor = executor;
 
+        setName(getClass().getName() + "@" + Integer.toHexString(hashCode()) + "-" + getName());
         setDaemon(true);
         start();
     }

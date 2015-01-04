@@ -34,27 +34,31 @@ public final class SelectionKeyContainer {
         activeOpsLock.writeLock().unlock();
     }
 
-    public void setInterestOps(int ops, int mask) {
+    public final void setInterestOps(int ops, int mask) {
         interestOpsLock.writeLock().lock();
         {
-            selectionKey.interestOps((selectionKey.interestOps() & ~mask) | (ops & mask));
+            setInterestOps((selectionKey.interestOps() & ~mask) | (ops & mask));
         }
         interestOpsLock.writeLock().unlock();
 
         selectionKey.selector().wakeup();
     }
 
-    public void toggleInterestOps(int ops) {
+    public final void toggleInterestOps(int ops) {
         interestOpsLock.writeLock().lock();
         {
-            selectionKey.interestOps(selectionKey.interestOps() ^ ops);
+            setInterestOps(selectionKey.interestOps() ^ ops);
         }
         interestOpsLock.writeLock().unlock();
 
         selectionKey.selector().wakeup();
     }
 
-    public void cancel() {
+    private final void setInterestOps(int ops) {
+        selectionKey.interestOps(ops);
+    }
+
+    public final void cancel() {
         selectionKey.cancel();
     }
 
