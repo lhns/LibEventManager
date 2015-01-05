@@ -12,6 +12,7 @@ public final class SelectionKeyContainer {
     private volatile SelectionKey selectionKey;
 
     private volatile int activeOps = 0xFFFFFFFF;
+    private volatile int bufferedOps = 0x00000000;
 
     private final ReadWriteLock activeOpsLock = new ReentrantReadWriteLock();
     private final ReadWriteLock interestOpsLock = new ReentrantReadWriteLock();
@@ -32,6 +33,9 @@ public final class SelectionKeyContainer {
             activeOps = (activeOps & ~mask) | (ops & mask);
         }
         activeOpsLock.writeLock().unlock();
+        if (bufferedOps != 0) setInterestOps(0xFFFFFFFF, bufferedOps & activeOps);
+        if (activeOps != 0) setInterestOps(0x00000000, ~activeOps);
+        bufferedOps &= ~activeOps;
     }
 
     public final void setInterestOps(int ops, int mask) {
@@ -55,6 +59,8 @@ public final class SelectionKeyContainer {
     }
 
     private final void setInterestOps(int ops) {
+        bufferedOps |= ops & ~activeOps;
+        ops &= activeOps;
         selectionKey.interestOps(ops);
     }
 
