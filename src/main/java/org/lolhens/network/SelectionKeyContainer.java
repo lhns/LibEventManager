@@ -13,6 +13,7 @@ public final class SelectionKeyContainer {
 
     private volatile int activeOps = 0xFFFFFFFF;
     private volatile int bufferedOps = 0x00000000;
+    // TODO: add changedBufferedOps int
 
     private final ReadWriteLock activeOpsLock = new ReentrantReadWriteLock();
     private final ReadWriteLock interestOpsLock = new ReentrantReadWriteLock();
