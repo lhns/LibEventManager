@@ -13,7 +13,6 @@ public final class SelectionKeyContainer {
 
     private volatile int activeOps = 0xFFFFFFFF;
     private volatile int bufferedOps = 0x00000000;
-    // TODO: add changedBufferedOps int
 
     private final ReadWriteLock activeOpsLock = new ReentrantReadWriteLock();
     private final ReadWriteLock interestOpsLock = new ReentrantReadWriteLock();
@@ -31,12 +30,13 @@ public final class SelectionKeyContainer {
     protected final void setActiveOps(int ops, int mask) {
         activeOpsLock.writeLock().lock();
         {
-            activeOps = (activeOps & ~mask) | (ops & mask);
+            int changedOps = (activeOps ^ ops) & mask; // save changed ops with mask
+            activeOps = (activeOps & ~mask) | (ops & mask); // save active ops with mask
+            bufferedOps = (bufferedOps & ~changedOps) | (activeOps & changedOps); // set changed ops to active ops
+            if (changedOps != 0)
+                setInterestOps(bufferedOps, changedOps); // set interest ops to buffered ops with changedOps as mask
         }
         activeOpsLock.writeLock().unlock();
-        if (bufferedOps != 0) setInterestOps(0xFFFFFFFF, bufferedOps & activeOps);
-        if (activeOps != 0) setInterestOps(0x00000000, ~activeOps);
-        bufferedOps &= ~activeOps;
     }
 
     public final void setInterestOps(int ops, int mask) {
@@ -60,7 +60,7 @@ public final class SelectionKeyContainer {
     }
 
     private final void setInterestOps(int ops) {
-        bufferedOps |= ops & ~activeOps;
+        bufferedOps |= ops & ~activeOps;//buffer them if they are not active
         ops &= activeOps;
         selectionKey.interestOps(ops);
     }
