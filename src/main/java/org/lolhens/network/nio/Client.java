@@ -6,6 +6,9 @@ import org.lolhens.network.SelectionKeyContainer;
 
 import java.io.IOException;
 import java.net.SocketAddress;
+import java.net.SocketOption;
+import java.net.SocketOptions;
+import java.net.StandardSocketOptions;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
@@ -20,6 +23,7 @@ public class Client<P> extends AbstractClient<P> {
     private final int finishConnect() {
         try {
             getSocketChannel().finishConnect();
+            getSocketChannel().setOption(StandardSocketOptions.TCP_NODELAY, true);
         } catch (IOException e) {
             onException(e);
         }
