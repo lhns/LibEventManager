@@ -17,7 +17,7 @@ class RunnableSelect implements Runnable {
     @Override
     public void run() {
         synchronized (selectionKeyContainer) {
-            if (selectionKeyContainer.getSelectionKey().isValid()) {
+            if (selectionKeyContainer.isValid()) {
                 try {
                     selectionKeyContainer.getSelectHandler().onSelect(selectionKeyContainer, readyOps);
                 } catch (CancelledKeyException e) {
