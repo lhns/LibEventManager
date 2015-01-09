@@ -83,11 +83,11 @@ public final class SelectionKeyContainer {
     public final int getInterestOps() {
         int ret;
 
-        interestOpsLock.readLock().lock();
+        //interestOpsLock.readLock().lock();
         {
             ret = (interestOps & activeOps) | (bufferedOps & ~activeOps);
         }
-        interestOpsLock.readLock().unlock();
+        //interestOpsLock.readLock().unlock();
 
         return ret;
     }
