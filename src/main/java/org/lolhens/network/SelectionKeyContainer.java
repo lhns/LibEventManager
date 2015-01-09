@@ -11,7 +11,6 @@ public final class SelectionKeyContainer {
     private final IHandlerSelect selectHandler;
     private volatile SelectionKey selectionKey;
 
-    private volatile int interestOps;
     private volatile int activeOps = 0xFFFFFFFF;
     private volatile int bufferedOps = 0xFFFFFFFF;
 
@@ -25,7 +24,6 @@ public final class SelectionKeyContainer {
 
     protected final void setSelectionKey(SelectionKey selectionKey) {
         this.selectionKey = selectionKey;
-        this.interestOps = selectionKey.interestOps();
     }
 
     protected final void setActiveOps(int ops, int mask) {
@@ -52,12 +50,9 @@ public final class SelectionKeyContainer {
     }
 
     private final void setInterestOps(int ops, int mask) {
-        ops = (interestOps & ~mask) | (ops & mask);
-
+        ops = (getInterestOps() & ~mask) | (ops & mask);
         bufferedOps = (bufferedOps & activeOps) | (ops & ~activeOps);
-
-        interestOps = ops & activeOps;
-        selectionKey.interestOps(interestOps);
+        selectionKey.interestOps(ops & activeOps);
 
         selectionKey.selector().wakeup();
     }
@@ -83,11 +78,11 @@ public final class SelectionKeyContainer {
     public final int getInterestOps() {
         int ret;
 
-        //interestOpsLock.readLock().lock();
+        interestOpsLock.readLock().lock();
         {
-            ret = (interestOps & activeOps) | (bufferedOps & ~activeOps);
+            ret = (selectionKey.interestOps() & activeOps) | (bufferedOps & ~activeOps);
         }
-        //interestOpsLock.readLock().unlock();
+        interestOpsLock.readLock().unlock();
 
         return ret;
     }
