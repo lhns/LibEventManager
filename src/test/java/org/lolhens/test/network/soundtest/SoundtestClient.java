@@ -7,12 +7,13 @@ import org.lolhens.network.protocol.SimpleProtocol;
 import javax.sound.sampled.*;
 import java.io.*;
 import java.util.Arrays;
+import java.util.Vector;
 
 /**
  * Created by LolHens on 10.01.2015.
  */
 public class SoundtestClient {
-    private static final AudioFormat audioFormat = new AudioFormat(AudioFormat.Encoding.PCM_UNSIGNED, 44100, 16, 2, 2, 44100, false);
+    private static final AudioFormat audioFormat = new AudioFormat(AudioFormat.Encoding.PCM_UNSIGNED, 44100, 16, 1, 2, 44100, true);
 
     public static void main(String[] args) throws IOException, InterruptedException {
         BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
@@ -27,16 +28,12 @@ public class SoundtestClient {
                 final AudioInputStream ais =
                         new AudioInputStream(inputStream, format,
                                 audio.length / format.getFrameSize());
-                DataLine.Info info = new DataLine.Info(
-                        SourceDataLine.class, format);
-                final SourceDataLine line = (SourceDataLine)
-                        AudioSystem.getLine(info);
+                final SourceDataLine line = AudioSystem.getSourceDataLine(audioFormat);
                 line.open(format);
                 line.start();
 
                 Runnable runner = new Runnable() {
-                    int bufferSize = (int) format.getSampleRate()
-                            * format.getFrameSize();
+                    int bufferSize = (int) format.getSampleRate() * format.getFrameSize();
                     byte buffer[] = new byte[bufferSize];
 
                     public void run() {
@@ -77,10 +74,7 @@ public class SoundtestClient {
 
         try {
             final AudioFormat format = audioFormat;
-            DataLine.Info info = new DataLine.Info(
-                    TargetDataLine.class, format);
-            final TargetDataLine line = (TargetDataLine)
-                    AudioSystem.getLine(info);
+            final TargetDataLine line = AudioSystem.getTargetDataLine(audioFormat);
             line.open(format);
             line.start();
             Runnable runner = new Runnable() {
