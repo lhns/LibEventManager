@@ -1,4 +1,4 @@
-package org.lolhens.test.network.chat;
+package org.lolhens.test.network.packetloss;
 
 import org.lolhens.network.nio.Server;
 import org.lolhens.network.packet.SimplePacket;
@@ -11,31 +11,27 @@ import java.io.InputStreamReader;
 /**
  * Created by LolHens on 11.11.2014.
  */
-public class ServerTest {
+public class ServerTestPacketloss {
     public static void main(String[] args) throws IOException {
         BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 
         Server<SimplePacket> server = new Server<>(SimpleProtocol.class);
 
         server.setReceiveHandler((c, packet) -> {
-            server.broadcast((c2) -> c2 != c, packet);
-            System.out.println(packet);
+            c.send(packet);
+            //System.out.println(packet);
         });
         server.setDisconnectHandler((pp, r) -> System.out.println(pp + ": " + r));
 
-        System.out.println("port:");
         try {
             server.bind(input.readLine());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
-        System.out.println("name:");
-        String name = input.readLine();
-
         while (input != null) {
             String in = input.readLine();
-            if (in != null) server.broadcast(new SimplePacket(0, (name + ": " + in).getBytes()));
+            if (in != null) server.broadcast(new SimplePacket(0, in.getBytes()));
         }
     }
 }
