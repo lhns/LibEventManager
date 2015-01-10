@@ -14,23 +14,31 @@ public final class SelectionKeyContainer {
     private volatile int activeOps = 0xFFFFFFFF;
     private volatile int interestOps;
 
-    private final ReadWriteLock interestOpsLock = new ReentrantReadWriteLock();
+    private final ReadWriteLock lock = new ReentrantReadWriteLock();
 
     protected SelectionKeyContainer(IHandlerSelect selectHandler) {
         this.selectHandler = selectHandler;
     }
 
     public final void toggleInterestOps(int ops) {
-        interestOpsLock.writeLock().lock();
+        lock.writeLock().lock();
         {
             setInterestOps(interestOps ^ ops, ops);
         }
-        interestOpsLock.writeLock().unlock();
+        lock.writeLock().unlock();
     }
 
-    private final void updateOps() {
-        selectionKey.interestOps(interestOps & activeOps);
-        selectionKey.selector().wakeup();
+    private final void updateOps(int interestOps, int activeOps) {
+        int oldOps = this.interestOps & this.activeOps;
+        int newOps = interestOps & activeOps;
+
+        this.interestOps = interestOps;
+        this.activeOps = activeOps;
+
+        if ((oldOps ^ newOps) != 0) {
+            selectionKey.interestOps(newOps);
+            selectionKey.selector().wakeup();
+        }
     }
 
     // Setters
@@ -41,21 +49,19 @@ public final class SelectionKeyContainer {
     }
 
     protected final void setActiveOps(int ops, int mask) {
-        interestOpsLock.writeLock().lock();
+        lock.writeLock().lock();
         {
-            activeOps = (activeOps & ~mask) | (ops & mask);
-            updateOps();
+            updateOps(interestOps, (activeOps & ~mask) | (ops & mask));
         }
-        interestOpsLock.writeLock().unlock();
+        lock.writeLock().unlock();
     }
 
     public final void setInterestOps(int ops, int mask) {
-        interestOpsLock.writeLock().lock();
+        lock.writeLock().lock();
         {
-            interestOps = (interestOps & ~mask) | (ops & mask);
-            updateOps();
+            updateOps((interestOps & ~mask) | (ops & mask), activeOps);
         }
-        interestOpsLock.writeLock().unlock();
+        lock.writeLock().unlock();
     }
 
     public final void cancel() {
@@ -79,11 +85,11 @@ public final class SelectionKeyContainer {
     public final int getInterestOps() {
         int ret;
 
-        interestOpsLock.readLock().lock();
+        lock.readLock().lock();
         {
             ret = interestOps;
         }
-        interestOpsLock.readLock().unlock();
+        lock.readLock().unlock();
 
         return ret;
     }
