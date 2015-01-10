@@ -20,11 +20,11 @@ class RunnableSelect implements Runnable {
             if (selectionKeyContainer.isValid()) {
                 try {
                     selectionKeyContainer.getSelectHandler().onSelect(selectionKeyContainer, readyOps);
+                    selectionKeyContainer.setActiveOps(0xFFFFFFFF, readyOps);
                 } catch (CancelledKeyException e) {
-                    e.printStackTrace();
+                    //e.printStackTrace();
                 }
             }
         }
-        selectionKeyContainer.setActiveOps(0xFFFFFFFF, readyOps);
     }
 }

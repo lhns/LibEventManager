@@ -19,7 +19,7 @@ public class ServerTest {
 
         server.setReceiveHandler((c, packet) -> {
             c.send(packet);
-            //System.out.println(new String(packet.data));
+            //System.out.println(packet);
         });
         server.setDisconnectHandler((pp, r) -> System.out.println(pp + ": " + r));
 

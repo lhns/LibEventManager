@@ -71,10 +71,18 @@ public class SelectorThread extends Thread {
                                 int ops = readyOps & activeOps;
                                 if (ops != 0) {
                                     selectionKeyContainer.setActiveOps(0x00000000, ops);
-                                    executor.execute(new RunnableSelect(selectionKeyContainer, ops));
+
+                                    int currentBit = 1;
+                                    while (ops != 0) {
+                                        if ((ops & currentBit) != 0) {
+                                            executor.execute(new RunnableSelect(selectionKeyContainer, currentBit));
+                                            ops &= ~currentBit;
+                                        }
+                                        currentBit <<= 1;
+                                    }
                                 }
                             } catch (CancelledKeyException e) {
-                                e.printStackTrace();
+                                //e.printStackTrace();
                             }
                         }
                     }
