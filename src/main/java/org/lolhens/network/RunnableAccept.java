@@ -14,6 +14,12 @@ class RunnableAccept<P> implements Runnable {
 
     @Override
     public void run() {
+        Thread currentThread = Thread.currentThread();
+        String name = currentThread.getName();
+        currentThread.setName(name + " (accept)");
+
         acceptHandler.onAccept(client);
+
+        currentThread.setName(name);
     }
 }

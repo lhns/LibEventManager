@@ -18,6 +18,12 @@ class RunnableDisconnect<P> implements Runnable {
 
     @Override
     public void run() {
+        Thread currentThread = Thread.currentThread();
+        String name = currentThread.getName();
+        currentThread.setName(name + " (disconnect)");
+
         disconnectHandler.onDisconnect(protocolProvider, disconnectReason);
+
+        currentThread.setName(name);
     }
 }

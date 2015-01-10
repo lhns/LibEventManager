@@ -29,7 +29,6 @@ public class SelectorThread extends Thread {
         start();
     }
 
-
     public SelectionKeyContainer register(SelectableChannel channel, int ops, IHandlerSelect selectHandler) throws IOException {
         channel.configureBlocking(false);
 
@@ -60,30 +59,29 @@ public class SelectorThread extends Thread {
                         SelectionKey selectionKey = readyKeysIterator.next();
 
                         readyKeysIterator.remove();
+                        if (!selectionKey.isValid()) continue;
 
-                        if (selectionKey.isValid()) {
-                            try {
-                                SelectionKeyContainer selectionKeyContainer = (SelectionKeyContainer) selectionKey.attachment();
+                        try {
+                            SelectionKeyContainer selectionKeyContainer = (SelectionKeyContainer) selectionKey.attachment();
 
-                                int activeOps = selectionKeyContainer.getActiveOps();
-                                int readyOps = selectionKey.readyOps();
+                            int activeOps = selectionKeyContainer.getActiveOps();
+                            int readyOps = selectionKey.readyOps();
 
-                                int ops = readyOps & activeOps;
-                                if (ops != 0) {
-                                    selectionKeyContainer.setActiveOps(0x00000000, ops);
+                            int ops = readyOps & activeOps;
+                            if (ops != 0) {
+                                selectionKeyContainer.setActiveOps(0x00000000, ops);
 
-                                    int currentBit = 1;
-                                    while (ops != 0) {
-                                        if ((ops & currentBit) != 0) {
-                                            executor.execute(new RunnableSelect(selectionKeyContainer, currentBit));
-                                            ops &= ~currentBit;
-                                        }
-                                        currentBit <<= 1;
+                                int currentBit = 1;
+                                while (ops != 0) {
+                                    if ((ops & currentBit) != 0) {
+                                        executor.execute(new RunnableSelect(selectionKeyContainer, currentBit));
+                                        ops &= ~currentBit;
                                     }
+                                    currentBit <<= 1;
                                 }
-                            } catch (CancelledKeyException e) {
-                                //e.printStackTrace();
                             }
+                        } catch (CancelledKeyException e) {
+                            //e.printStackTrace();
                         }
                     }
                 }

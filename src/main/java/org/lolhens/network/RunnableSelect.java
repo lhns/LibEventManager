@@ -16,15 +16,21 @@ class RunnableSelect implements Runnable {
 
     @Override
     public void run() {
+        if (!selectionKeyContainer.isValid()) return;
+
         synchronized (selectionKeyContainer) {
-            if (selectionKeyContainer.isValid()) {
-                try {
-                    selectionKeyContainer.getSelectHandler().onSelect(selectionKeyContainer, readyOps);
-                    selectionKeyContainer.setActiveOps(0xFFFFFFFF, readyOps);
-                } catch (CancelledKeyException e) {
-                    //e.printStackTrace();
-                }
+            Thread currentThread = Thread.currentThread();
+            String name = currentThread.getName();
+            currentThread.setName(name + " (select)");
+
+            try {
+                selectionKeyContainer.getSelectHandler().onSelect(selectionKeyContainer, readyOps);
+                selectionKeyContainer.setActiveOps(0xFFFFFFFF, readyOps);
+            } catch (CancelledKeyException e) {
+                //e.printStackTrace();
             }
+
+            currentThread.setName(name);
         }
     }
 }

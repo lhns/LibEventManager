@@ -16,6 +16,12 @@ class RunnableReceive<P> implements Runnable {
 
     @Override
     public void run() {
+        Thread currentThread = Thread.currentThread();
+        String name = currentThread.getName();
+        currentThread.setName(name + " (receive)");
+
         receiveHandler.onReceive(client, packet);
+
+        currentThread.setName(name);
     }
 }

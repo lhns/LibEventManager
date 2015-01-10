@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.net.SocketAddress;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Server<P> extends AbstractServer<P> {
@@ -49,12 +48,9 @@ public class Server<P> extends AbstractServer<P> {
             if ((readyOps & SelectionKey.OP_ACCEPT) != 0) {
                 try {
                     AbstractClient<P> client = newClient(getProtocol());
-                    SocketChannel channel = getSocketChannel().accept();
-                    if (channel != null) {
-                        client.setSocketChannel(channel);
-                        clients.add(client);
-                        onAccept(client);
-                    }
+                    client.setSocketChannel(getSocketChannel().accept());
+                    clients.add(client);
+                    onAccept(client);
                 } catch (IOException e) {
                     onException(e);
                 }
