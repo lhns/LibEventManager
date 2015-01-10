@@ -28,19 +28,6 @@ public final class SelectionKeyContainer {
         lock.writeLock().unlock();
     }
 
-    private final void updateOps(int interestOps, int activeOps) {
-        int oldOps = this.interestOps & this.activeOps;
-        int newOps = interestOps & activeOps;
-
-        this.interestOps = interestOps;
-        this.activeOps = activeOps;
-
-        if ((oldOps ^ newOps) != 0) {
-            selectionKey.interestOps(newOps);
-            selectionKey.selector().wakeup();
-        }
-    }
-
     // Setters
 
     protected final void setSelectionKey(SelectionKey selectionKey) {
@@ -62,6 +49,19 @@ public final class SelectionKeyContainer {
             updateOps((interestOps & ~mask) | (ops & mask), activeOps);
         }
         lock.writeLock().unlock();
+    }
+
+    private final void updateOps(int interestOps, int activeOps) {
+        int oldOps = this.interestOps & this.activeOps;
+        int newOps = interestOps & activeOps;
+
+        this.interestOps = interestOps;
+        this.activeOps = activeOps;
+
+        if ((oldOps ^ newOps) != 0) {
+            selectionKey.interestOps(newOps);
+            selectionKey.selector().wakeup();
+        }
     }
 
     public final void cancel() {

@@ -69,14 +69,12 @@ public class Client<P> extends AbstractClient<P> {
 
     @Override
     protected void setWriting(boolean writing) {
-        if (!selectionKeyContainer.isValid()) return;
+        synchronized (this) {
+            if (!selectionKeyContainer.isValid()) return;
 
-        if (isWriting() != writing) {
-            super.setWriting(writing);
-
-            int ops = selectionKeyContainer.getInterestOps();
-            if (((ops & SelectionKey.OP_WRITE) != 0) != writing) {
-                selectionKeyContainer.toggleInterestOps(SelectionKey.OP_WRITE);
+            if (isWriting() != writing) {
+                super.setWriting(writing);
+                selectionKeyContainer.setInterestOps(writing ? SelectionKey.OP_WRITE : 0, SelectionKey.OP_WRITE);
             }
         }
     }
