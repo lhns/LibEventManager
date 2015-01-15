@@ -1,4 +1,4 @@
-package org.lolhens.stream;
+package org.lolhens.reflect.stream;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
