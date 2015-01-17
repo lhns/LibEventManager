@@ -12,5 +12,10 @@ public class MappedRegion {
         this.mappedBuffer = mappedBuffer;
         this.position = position;
         this.length = length;
+
+    }
+
+    public void putInt() {
+
     }
 }
