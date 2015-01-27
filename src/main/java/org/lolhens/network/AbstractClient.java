@@ -29,9 +29,17 @@ public abstract class AbstractClient<P> extends ProtocolProvider<P> {
     }
 
     public void connect(String hostname) throws IOException {
-        String[] split = hostname.split(":");
-        if (split.length != 2) throw new RuntimeException("Wrong Hostname format!");
-        connect(split[0], Integer.valueOf(split[1]));
+        int colonIndex = hostname.lastIndexOf(":");
+        if (colonIndex < 0) throw new RuntimeException("Wrong Hostname format: No port specified!");
+
+        String name = hostname.substring(0, colonIndex);
+
+        String port = hostname.substring(colonIndex + 1);
+        if (!port.matches("-?\\d+")) throw new RuntimeException("Wrong Hostname format: Port is not numeric!");
+
+        System.out.println(name);
+
+        connect(name, Integer.valueOf(port));
     }
 
     protected final void onConnect() {

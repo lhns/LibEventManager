@@ -21,7 +21,9 @@ public abstract class ProtocolProvider<P> implements Closeable {
     private IHandlerDisconnect<P> disconnectHandler = null;
     private AbstractExceptionHandler exceptionHandler = null;
 
-    private boolean closed = false;
+    private volatile boolean closed = false;
+
+    private volatile Object attachment = null;
 
     public ProtocolProvider(Class<? extends AbstractProtocol> protocolClazz) {
         setReceiveHandler(receiveHandler);
@@ -80,6 +82,10 @@ public abstract class ProtocolProvider<P> implements Closeable {
         closed = true;
     }
 
+    public final void setAttachment(Object attachment) {
+        this.attachment = attachment;
+    }
+
     // Getters
 
     public final Class<? extends AbstractProtocol<P>> getProtocol() {
@@ -123,6 +129,10 @@ public abstract class ProtocolProvider<P> implements Closeable {
 
     public final boolean isAlive() {
         return !closed;
+    }
+
+    public final Object getAttachment() {
+        return attachment;
     }
 
     private static class ForkJoinWorkerThreadFactory implements ForkJoinPool.ForkJoinWorkerThreadFactory {

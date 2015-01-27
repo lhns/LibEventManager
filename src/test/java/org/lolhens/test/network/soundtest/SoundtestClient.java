@@ -7,7 +7,6 @@ import org.lolhens.network.protocol.SimpleProtocol;
 import javax.sound.sampled.*;
 import java.io.*;
 import java.util.Arrays;
-import java.util.Vector;
 
 /**
  * Created by LolHens on 10.01.2015.

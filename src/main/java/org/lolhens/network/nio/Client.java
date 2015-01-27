@@ -11,7 +11,7 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.SocketChannel;
 
 public class Client<P> extends AbstractClient<P> {
-    private SelectionKeyContainer selectionKeyContainer;
+    private volatile SelectionKeyContainer selectionKeyContainer;
 
     public Client(Class<? extends AbstractProtocol> protocolClazz) {
         super(protocolClazz);
