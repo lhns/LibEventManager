@@ -13,7 +13,12 @@ public class Redirector {
     private static Redirector instance = new Redirector();
 
     public static void main(String[] args) throws IOException {
-        InputStream inputStream = new FileInputStream("redirect.txt");
+        InputStream inputStream;
+        //inputStream = new FileInputStream("redirect.txt");
+
+        inputStream = new ByteArrayInputStream(
+                "1248 localhost:1234".getBytes()
+        );
 
         instance.parse(new InputStreamReader(inputStream));
 
