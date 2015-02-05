@@ -9,7 +9,6 @@ import java.util.function.Function;
 
 public class PrimitiveUtil {
     private static final List<Primitive<?>> PRIMITIVES = new ArrayList<>();
-    private static volatile Primitive<?>[] PRIMITIVE_ARRAY;
 
     public static final Primitive<Byte> BYTE = new Primitive<>(byte.class, Byte.class, "byte", 1, 0, ByteBuffer::put, ByteBuffer::get);
     public static final Primitive<Integer> INTEGER = new Primitive<>(int.class, Integer.class, "int", 4, 0, ByteBuffer::putInt, ByteBuffer::getInt);
@@ -21,7 +20,7 @@ public class PrimitiveUtil {
     public static final Primitive<Boolean> BOOLEAN = new Primitive<>(boolean.class, Boolean.class, "boolean", 1, false, (byteBuffer, value) -> byteBuffer.put((byte) (value ? 1 : 0)), (byteBuffer) -> byteBuffer.get() != 0);
 
     public static Primitive<?> get(Class<?> clazz) {
-        for (Primitive<?> primitive : PRIMITIVE_ARRAY)
+        for (Primitive<?> primitive : PRIMITIVES)
             if (primitive.isSameType(clazz)) return primitive;
         return null;
     }
@@ -35,7 +34,6 @@ public class PrimitiveUtil {
         private final BiConsumer<ByteBuffer, ClassType> writeToByteBuffer;
         private final Function<ByteBuffer, ClassType> readFromByteBuffer;
 
-        @SuppressWarnings("unchecked")
         private Primitive(Class<ClassType> primitiveClass, Class<ClassType> wrapperClass, String name, int size, Object nullObj, BiConsumer<ByteBuffer, ClassType> writeToByteBuffer, Function<ByteBuffer, ClassType> readFromByteBuffer) {
             this.primitiveClass = primitiveClass;
             this.wrapperClass = wrapperClass;
@@ -46,7 +44,6 @@ public class PrimitiveUtil {
             this.readFromByteBuffer = readFromByteBuffer;
 
             PRIMITIVES.add(this);
-            PRIMITIVE_ARRAY = PRIMITIVES.toArray(new Primitive[PRIMITIVES.size()]);
         }
 
         public void writeToByteBuffer(ByteBuffer buffer, ClassType value) {
@@ -73,8 +70,7 @@ public class PrimitiveUtil {
         }
 
         public ClassType fromByteArray(byte[] bytes, ByteOrder order) {
-            ByteBuffer byteBuffer = ByteBuffer.wrap(bytes).order(order);
-            return readFromByteBuffer.apply(byteBuffer);
+            return fromByteArray(bytes, 0, order);
         }
 
         @Override

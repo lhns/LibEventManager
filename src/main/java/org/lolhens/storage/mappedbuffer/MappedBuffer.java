@@ -7,7 +7,7 @@ import java.nio.ByteOrder;
  * Created by LolHens on 15.01.2015.
  */
 public class MappedBuffer {
-    private final ByteBuffer byteBuffer;
+    protected final ByteBuffer byteBuffer;
     private final RegionList mapped = new RegionList();
 
     public MappedBuffer(ByteBuffer byteBuffer) {
