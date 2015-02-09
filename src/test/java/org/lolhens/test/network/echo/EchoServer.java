@@ -1,4 +1,4 @@
-package org.lolhens.test.network.broadcast;
+package org.lolhens.test.network.echo;
 
 import org.lolhens.network.nio.Server;
 import org.lolhens.network.protocol.RawProtocol;
@@ -8,16 +8,16 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
- * Created by pierre.kisters on 09.02.15.
+ * Created by LolHens on 09.02.2015.
  */
-public class Broadcaster {
+public class EchoServer {
     public static void main(String[] args) throws IOException {
         BufferedReader input = new BufferedReader(new InputStreamReader(System.in));
 
         Server<byte[]> server = new Server<>(RawProtocol.class);
 
         server.setReceiveHandler((c, packet) -> {
-            server.broadcast((client) -> client != c, packet);
+            c.send(packet);
         });
         server.setDisconnectHandler((pp, r) -> System.out.println(pp + ": " + r));
 
