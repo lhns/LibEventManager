@@ -7,9 +7,9 @@ import java.util.List;
  * Created by LolHens on 15.01.2015.
  */
 public class RegionList {
-    private List<MappedRegion> mapped = new LinkedList<>();
+    private List<Region> regions = new LinkedList<>();
 
-    public void add() {
+    public void add(Region region) {
 
     }
 }
