@@ -20,9 +20,37 @@ public class Region {
         return region.getEnd() >= getPosition() && region.getPosition() <= getEnd();
     }
 
-    public void mergeWith(Region region) {
+    public boolean mergeWith(Region region) {
+        if (!isTouching(region)) return false;
+
         setEnd(Math.max(getEnd(), region.getEnd()));
         setPosition(Math.min(getPosition(), region.getPosition()));
+
+        return true;
+    }
+
+    public Region[] cutWith(Region region) {
+        if (isIntersecting(region)) {
+            if (region.getPosition() <= getPosition() && region.getEnd() >= getEnd()) {
+                return new Region[]{
+                };
+            } else if (region.getPosition() > getPosition() && region.getEnd() < getEnd()) {
+                return new Region[]{
+                        new Region(getPosition(), region.getPosition() - getPosition()),
+                        new Region(region.getEnd(), getEnd() - region.getEnd())
+                };
+            } else if (region.getPosition() > getPosition()) {
+                return new Region[]{
+                        new Region(getPosition(), region.getPosition() - getPosition())
+                };
+            } else if (region.getEnd() < getEnd()) {
+                return new Region[]{
+                        new Region(region.getEnd(), getEnd() - region.getEnd())
+                };
+            }
+        }
+
+        return null;
     }
 
     // Setters
