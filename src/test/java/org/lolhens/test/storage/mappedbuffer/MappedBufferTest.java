@@ -9,12 +9,12 @@ import org.lolhens.storage.mappedbuffer.RegionList;
 public class MappedBufferTest {
     public static void main(String[] args) {
         System.out.println(new Region(34, 10).isTouching(new Region(22, 10)));
-        
+
         RegionList regionList = new RegionList();
 
         regionList.add(new Region(20, 100));
         regionList.test();
-        
+
         regionList.add(new Region(30, 10));
         regionList.test();
 
