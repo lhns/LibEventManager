@@ -1,5 +1,6 @@
 package org.lolhens.test.network.redirect;
 
+import org.lolhens.network.AbstractClient;
 import org.lolhens.network.nio.Client;
 import org.lolhens.network.nio.Server;
 import org.lolhens.network.protocol.RawProtocol;
@@ -44,32 +45,40 @@ public class Redirector {
     public void redirect(int port, String host) throws IOException {
         Server<byte[]> server = new Server<>(RawProtocol.class);
 
-        server.setAcceptHandler((c) -> {
-            Client<byte[]> client = new Client<>(RawProtocol.class);
+        RedirectContainer redirectContainer = new RedirectContainer(host);
+        server.setAcceptHandler(redirectContainer::onAccept);
+        server.setReceiveHandler(redirectContainer::onReceive);
 
-            client.setReceiveHandler((c2, packet) -> {
+        server.bind(port);
+    }
+
+    private class RedirectContainer {
+        private final String host;
+        private volatile AbstractClient<byte[]> client;
+
+        public RedirectContainer(String host) {
+            this.host = host;
+        }
+
+        public void onAccept(AbstractClient<byte[]> c) {
+            Client<byte[]> newClient = new Client<>(RawProtocol.class);
+
+            newClient.setReceiveHandler((c2, packet) -> {
                 c.send(packet);
             });
 
             try {
-                client.connect(host);
+                newClient.connect(host);
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            server.setAttachment(client);
-        });
+            client = newClient;
+        }
 
-        server.setReceiveHandler((c, packet) -> {
-            while (server.getAttachment() == null) {
-                Thread.yield();
-            }
-
-            Client<byte[]> client = (Client<byte[]>) server.getAttachment();
-
+        public void onReceive(AbstractClient<byte[]> c, byte[] packet) {
+            while (client == null) Thread.yield();
             client.send(packet);
-        });
-
-        server.bind(port);
+        }
     }
 }

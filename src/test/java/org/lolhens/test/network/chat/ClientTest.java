@@ -17,9 +17,7 @@ public class ClientTest {
 
         Client<SimplePacket> client = new Client<>(SimpleProtocol.class);
 
-        client.setReceiveHandler((c, packet) -> {
-            System.out.println(packet);
-        });
+        client.setReceiveHandler((c, packet) -> System.out.println(packet));
         client.setDisconnectHandler((pp, r) -> System.out.println(pp + ": " + r));
 
         System.out.println("address:");
