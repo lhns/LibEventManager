@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 /**
- * Created by pierre.kisters on 09.02.15.
+ * Created by LolHens on 09.02.15.
  */
 public class Connector {
     public static void main(String[] args) throws IOException {
