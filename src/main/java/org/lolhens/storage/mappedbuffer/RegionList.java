@@ -10,7 +10,7 @@ import java.util.ListIterator;
 public class RegionList {
     private List<Region> regions = new LinkedList<>();
 
-    public void add(Region newRegion) {
+    public void add(Region newRegion) { // TODO: Fix with new region methods
         int position = newRegion.getPosition(), end = newRegion.getEnd();
         Region region = null, last;
 
@@ -46,7 +46,7 @@ public class RegionList {
         i.add(new Region(position, end - position));
     }
 
-    public void remove(Region newRegion) {
+    public void remove(Region newRegion) { // TODO: Fix with new region methods
         Region region = null, last;
 
         ListIterator<Region> i = regions.listIterator();
