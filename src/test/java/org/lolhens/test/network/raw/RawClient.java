@@ -32,17 +32,25 @@ public class RawClient {
         while (input != null) {
             String in = input.readLine();
             if (in != null) {
-                if (in.startsWith("b ")) {
-                    in = in.substring(2);
-                    String[] byteStrings = in.split(" ");
-                    byte[] bytes = new byte[byteStrings.length];
-                    try {
-                        for (int i = 0; i < byteStrings.length; i++) bytes[i] = Byte.valueOf(byteStrings[i]);
-                        client.send(bytes);
-                    } catch (NumberFormatException e) {
+                int times = 1;
+                if (in.startsWith("repeat ")) {
+                    String[] split = in.split(" ", 3);
+                    times = Integer.parseInt(split[1]);
+                    in = split[2];
+                }
+                for (int i1 = 0; i1 < times; i1++) {
+                    if (in.startsWith("b ")) {
+                        in = in.substring(2);
+                        String[] byteStrings = in.replaceAll("\\\\i", "" + i1).split(" ");
+                        byte[] bytes = new byte[byteStrings.length];
+                        try {
+                            for (int i = 0; i < byteStrings.length; i++) bytes[i] = Byte.valueOf(byteStrings[i]);
+                            client.send(bytes);
+                        } catch (NumberFormatException e) {
+                        }
+                    } else {
+                        client.send(in.replaceAll("\\n", "\n").replaceAll("\\\\i", "" + i1).getBytes());
                     }
-                } else {
-                    client.send(in.getBytes());
                 }
             }
         }
