@@ -8,7 +8,11 @@ import org.lolhens.storage.mappedbuffer.RegionList;
  */
 public class MappedBufferTest {
     public static void main(String[] args) {
-        System.out.println(new Region(34, 10).isTouching(new Region(22, 10)));
+        Region r = new Region(34, 10);
+        r.mergeWith(new Region(23, 10));
+        System.out.println(r.getPosition() + " - "+r.getEnd());
+        
+        
 
         RegionList regionList = new RegionList();
 

@@ -10,40 +10,25 @@ import java.util.ListIterator;
 public class RegionList {
     private List<Region> regions = new LinkedList<>();
 
-    public void add(Region newRegion) { // TODO: Fix with new region methods
-        int position = newRegion.getPosition(), end = newRegion.getEnd();
-        Region region = null, last;
+    public void add(Region newRegion) {
+        Region region = null;
 
         // Get last region with a lower position than newRegion
         ListIterator<Region> i = regions.listIterator();
         while (i.hasNext()) {
-            last = region;
+            //last = region;
             region = i.next();
-            if (region.getPosition() > position) {
+            if (region.getPosition() > newRegion.getEnd()) {
                 i.previous();
-                region = last;
                 break;
             }
-        }
-
-        if (region != null && region.getEnd() >= position) {
-            position = region.getPosition();
-            i.remove();
-        }
-
-        while (i.hasNext()) {
-            region = i.next();
-
-            if (region.getPosition() <= end) {
-                end = Math.max(end, region.getEnd());
+            if (region.isTouching(newRegion)) {
                 i.remove();
-            } else {
-                i.previous();
-                break;
+                newRegion.mergeWith(region);
             }
         }
 
-        i.add(new Region(position, end - position));
+        i.add(newRegion);
     }
 
     public void remove(Region newRegion) { // TODO: Fix with new region methods

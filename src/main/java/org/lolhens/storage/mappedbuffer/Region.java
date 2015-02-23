@@ -23,8 +23,9 @@ public class Region {
     public boolean mergeWith(Region region) {
         if (!isTouching(region)) return false;
 
-        setEnd(Math.max(getEnd(), region.getEnd()));
+        int end = getEnd();
         setPosition(Math.min(getPosition(), region.getPosition()));
+        setEnd(Math.max(end, region.getEnd()));
 
         return true;
     }
