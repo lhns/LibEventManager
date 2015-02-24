@@ -18,7 +18,7 @@ public class RegionList {
         while (i.hasNext()) {
             //last = region;
             region = i.next();
-            if (region.getPosition() > newRegion.getEnd()) {
+            if (region.getPosition() - 1 > newRegion.getEnd()) {
                 i.previous();
                 break;
             }
@@ -31,21 +31,24 @@ public class RegionList {
         i.add(newRegion);
     }
 
-    public void remove(Region newRegion) { // TODO: Fix with new region methods
-        Region region = null, last;
+    public void remove(Region newRegion) {
+        Region region = null;
 
+        // Get last region with a lower position than newRegion
         ListIterator<Region> i = regions.listIterator();
         while (i.hasNext()) {
-            last = region;
+            //last = region;
             region = i.next();
-            if (region.getPosition() >= newRegion.getPosition()) {
-                i.previous();
-                region = last;
+            if (region.getPosition() > newRegion.getEnd()) {
                 break;
             }
+            if (region.isIntersecting(newRegion)) {
+                i.remove();
+                for (Region cutRegion : region.cutWith(newRegion)) {
+                    i.add(cutRegion);
+                }
+            }
         }
-
-
     }
 
     public void test() {

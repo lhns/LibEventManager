@@ -16,13 +16,18 @@ public class MappedBufferTest {
 
         RegionList regionList = new RegionList();
 
-        regionList.add(new Region(20, 100));
+        //regionList.add(new Region(20, 100));
         regionList.test();
 
-        regionList.add(new Region(30, 10));
+        regionList.add(new Region(30, 8));
         regionList.test();
 
         regionList.add(new Region(40, 10));
+        regionList.test();
+
+        System.out.println("-");
+
+        regionList.remove(new Region(35, 10));
         regionList.test();
     }
 }
