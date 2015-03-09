@@ -6,7 +6,6 @@ import org.lolhens.network.protocol.RawProtocol;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.regex.Pattern;
 
 /**
  * Created by LolHens on 27.11.2014.
@@ -50,7 +49,7 @@ public class RawServer {
                         } catch (NumberFormatException e) {
                         }
                     } else {
-                        server.broadcast(in.replaceAll("\\n", "\n").replaceAll("\\\\i", "" + i1).getBytes());
+                        server.broadcast(in.replaceAll("\\\\n", "\n").replaceAll("\\\\i", "" + i1).getBytes());
                     }
                 }
             }

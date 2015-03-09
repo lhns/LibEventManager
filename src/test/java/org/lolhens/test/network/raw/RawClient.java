@@ -49,7 +49,7 @@ public class RawClient {
                         } catch (NumberFormatException e) {
                         }
                     } else {
-                        client.send(in.replaceAll("\\n", "\n").replaceAll("\\\\i", "" + i1).getBytes());
+                        client.send(in.replaceAll("\\\\n", "\n").replaceAll("\\\\i", "" + i1).getBytes());
                     }
                 }
             }
