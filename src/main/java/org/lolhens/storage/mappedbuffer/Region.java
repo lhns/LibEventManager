@@ -38,7 +38,7 @@ public class Region {
             } else if (region.getPosition() > getPosition() && region.getEnd() < getEnd()) {
                 return new Region[]{
                         new Region(getPosition(), region.getPosition() - getPosition()),
-                        new Region(region.getEnd(), getEnd() - region.getEnd())
+                        new Region(region.getEnd() + 1, getEnd() - region.getEnd())
                 };
             } else if (region.getPosition() > getPosition()) {
                 return new Region[]{
@@ -46,7 +46,7 @@ public class Region {
                 };
             } else if (region.getEnd() < getEnd()) {
                 return new Region[]{
-                        new Region(region.getEnd(), getEnd() - region.getEnd())
+                        new Region(region.getEnd() + 1, getEnd() - region.getEnd())
                 };
             }
         }
@@ -65,7 +65,7 @@ public class Region {
     }
 
     public void setEnd(int end) {
-        this.length = end - position;
+        this.length = end - position + 1;
     }
 
     // Getters
@@ -79,6 +79,6 @@ public class Region {
     }
 
     public int getEnd() {
-        return position + length;
+        return position + length - 1;
     }
 }

@@ -11,13 +11,15 @@ public class RegionList {
     private List<Region> regions = new LinkedList<>();
 
     public void add(Region newRegion) {
+        if (newRegion.getLength() <= 0) return;
+
         Region region = null;
 
         // Get last region with a lower position than newRegion
         ListIterator<Region> i = regions.listIterator();
         while (i.hasNext()) {
-            //last = region;
             region = i.next();
+
             if (region.getPosition() - 1 > newRegion.getEnd()) {
                 i.previous();
                 break;
@@ -32,23 +34,28 @@ public class RegionList {
     }
 
     public void remove(Region newRegion) {
+        if (newRegion.getLength() <= 0) return;
+
         Region region = null;
 
         // Get last region with a lower position than newRegion
         ListIterator<Region> i = regions.listIterator();
         while (i.hasNext()) {
-            //last = region;
             region = i.next();
+
             if (region.getPosition() > newRegion.getEnd()) {
                 break;
             }
+
             if (region.isIntersecting(newRegion)) {
                 i.remove();
-                for (Region cutRegion : region.cutWith(newRegion)) {
-                    i.add(cutRegion);
-                }
+                for (Region cutRegion : region.cutWith(newRegion)) i.add(cutRegion);
             }
         }
+    }
+
+    public List<Region> getRegions() {
+        return regions;
     }
 
     public void test() {
