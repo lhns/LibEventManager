@@ -35,6 +35,7 @@ public class MappedBuffer {
             MappedRegion mappedRegion = new MappedRegion(this, lastEnd + 1, length);
             System.out.println(mappedRegion.getPosition() + " " + mappedRegion.getLength());
             mapped.add(new Region(mappedRegion.getPosition(), mappedRegion.getLength()));
+            onChange(mappedRegion.getPosition(), mappedRegion.getLength());
             return mappedRegion;
         } else if (defrag) {
             defrag();
