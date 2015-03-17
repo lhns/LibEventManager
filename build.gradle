@@ -1,13 +1,13 @@
-file('build.properties').withReader {
+file('gradle.properties').withReader {
     def prop = new Properties()
     prop.load it
     project.ext.config = new ConfigSlurper().parse prop
 }
 
 apply plugin: 'java'
+apply plugin: 'maven-publish'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
-apply plugin: 'maven'
 
 version = config.version
 group = config.group
@@ -22,7 +22,7 @@ dependencies {
 
 jar {
     manifest {
-        if (!config.mainClass.isEmpty()) attributes "Main-Class": config.mainClass
+        if (!config.mainClass.isEmpty()) attributes 'Main-Class': config.mainClass
     }
 }
 
@@ -46,4 +46,32 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
     classifier = 'javadoc'
 }
 
-build.dependsOn testJar, sourceJar, javadocJar
+build {
+    dependsOn testJar
+    dependsOn sourceJar
+    dependsOn javadocJar
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            from components.java
+
+            artifact testJar {
+                classifier 'test'
+            }
+
+            artifact sourceJar {
+                classifier 'sources'
+            }
+
+            artifact javadocJar {
+                classifier 'javadoc'
+            }
+        }
+    }
+
+    repositories.maven {
+
+    }
+}
