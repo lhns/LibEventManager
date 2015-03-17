@@ -1,5 +1,6 @@
 package org.lolhens.test.storage.mappedbuffer;
 
+import org.lolhens.storage.mappedbuffer.MappedBuffer;
 import org.lolhens.storage.mappedbuffer.Region;
 import org.lolhens.storage.mappedbuffer.RegionList;
 
@@ -8,17 +9,33 @@ import org.lolhens.storage.mappedbuffer.RegionList;
  */
 public class MappedBufferTest {
     public static void main(String[] args) {
-        System.out.println(new Region(34, 10).isTouching(new Region(22, 10)));
-
         RegionList regionList = new RegionList();
 
-        regionList.add(new Region(20, 100));
+        regionList.add(new Region(0, 10));
+
         regionList.test();
 
-        regionList.add(new Region(30, 10));
+        regionList.add(new Region(10, 10));
+
         regionList.test();
 
-        regionList.add(new Region(40, 10));
+        regionList.add(new Region(20, 10));
+
         regionList.test();
+
+        regionList.remove(new Region(7, 1));
+
+        regionList.test();
+
+        MappedBuffer b = new MappedBuffer(null);
+
+        b.mapped.add(new Region(0, 10));
+        b.mapped.add(new Region(20, 10));
+        b.mapped.test();
+
+        b.allocate(71, false);
+
+        b.mapped.test();
+
     }
 }
