@@ -1,16 +1,7 @@
-file('gradle.properties').withReader {
-    def prop = new Properties()
-    prop.load it
-    project.ext.config = new ConfigSlurper().parse prop
-}
-
 apply plugin: 'java'
 apply plugin: 'maven-publish'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
-
-version = config.version
-group = config.group
 
 repositories {
     mavenLocal()
@@ -22,7 +13,7 @@ dependencies {
 
 jar {
     manifest {
-        if (!config.mainClass.isEmpty()) attributes 'Main-Class': config.mainClass
+        if (project.hasProperty("mainClass")) attributes 'Main-Class': mainClass
     }
 }
 
@@ -31,7 +22,7 @@ task testJar(type: Jar, dependsOn: javadoc) {
     from sourceSets.test.output
 
     manifest {
-        if (!config.testMainClass.isEmpty()) attributes "Main-Class": config.testMainClass
+        if (project.hasProperty("testMainClass")) attributes "Main-Class": testMainClass
     }
     classifier = 'test'
 }
@@ -71,7 +62,17 @@ publishing {
         }
     }
 
+    // Use -PmavenUsername and -PmavenPassword
     repositories.maven {
+        if (!(project.hasProperty("mavenUrl") &&
+                project.hasProperty("mavenUsername") &&
+                project.hasProperty("mavenPassword")))
+            return;
 
+        credentials {
+            username mavenUsername
+            password mavenPassword
+        }
+        url mavenUrl
     }
 }
