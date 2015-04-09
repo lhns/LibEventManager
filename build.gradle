@@ -53,16 +53,12 @@ publishing {
         }
     }
 
-    // Use -PmavenUsername and -PmavenPassword
     repositories.maven {
-        if (!(project.hasProperty("mavenUrl") &&
-                project.hasProperty("mavenUsername") &&
-                project.hasProperty("mavenPassword")))
-            return;
+        if (!project.hasProperty("mavenUrl")) return;
 
         credentials {
-            username mavenUsername
-            password mavenPassword
+            username System.getenv("CI_DEPLOY_USERNAME")
+            password System.getenv("CI_DEPLOY_PASSWORD")
         }
         url mavenUrl
     }

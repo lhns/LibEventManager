@@ -1,15 +1,18 @@
 language: java
+
 jdk:
- - oraclejdk8
+- oraclejdk8
 
 before_install:
- - chmod +x gradlew
+- chmod +x gradlew
 
-script: ./gradlew build -S
+script: "./gradlew build -S"
 
 env:
- global:
-  TERM=dumb
+  global:
+  - TERM=dumb
+  - secure: JU+ygRWlAuicw2InDssrJWkHkLuWSDPl3b3Iz9XyyLTwAkovlhMWiCfjqt3wjgqAVrTsIt2G4gpyPl0rp57fz0AIYTXVqzCW9JUwIeM5yS5As5xxi5GMEzi3prlEbOR+MvR0CelwEfY9HlNcQ3DOIr/fazGIUhVoVRUyRxLoXdg=
+  - secure: C7AgBi9jxZMf2Nr16/LWjAya0drlnF0eMimLl5GOxoWVpznTEMMQRJzMCcJhKJ1dip01OYB5fMKIcmTyCRyEclVXMaOgHuODE5gBokoaQEBWCjo8n1Gj4+FzH11i56ElBA5UUETYBEqMzDkqcCfd4oY0oqKivn/ATXD8JcZEHGE=
 
 notifications:
- email: false
+  email: false
