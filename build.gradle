@@ -3,6 +3,8 @@ apply plugin: 'maven-publish'
 apply plugin: 'idea'
 apply plugin: 'eclipse'
 
+if (!"".equals(System.getenv("TRAVIS_BUILD_NUMBER"))) version = version + "." + System.getenv("TRAVIS_BUILD_NUMBER")
+
 repositories {
     mavenLocal()
     mavenCentral()
