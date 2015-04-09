@@ -1,18 +1,13 @@
 language: java
-
 jdk:
 - oraclejdk8
-
 before_install:
 - chmod +x gradlew
-
 script: "./gradlew publishMavenPublicationToMavenRepository -S"
-
 env:
   global:
   - TERM=dumb
-  - secure: JU+ygRWlAuicw2InDssrJWkHkLuWSDPl3b3Iz9XyyLTwAkovlhMWiCfjqt3wjgqAVrTsIt2G4gpyPl0rp57fz0AIYTXVqzCW9JUwIeM5yS5As5xxi5GMEzi3prlEbOR+MvR0CelwEfY9HlNcQ3DOIr/fazGIUhVoVRUyRxLoXdg=
-  - secure: C7AgBi9jxZMf2Nr16/LWjAya0drlnF0eMimLl5GOxoWVpznTEMMQRJzMCcJhKJ1dip01OYB5fMKIcmTyCRyEclVXMaOgHuODE5gBokoaQEBWCjo8n1Gj4+FzH11i56ElBA5UUETYBEqMzDkqcCfd4oY0oqKivn/ATXD8JcZEHGE=
-
+  - secure: H44O3PKM1BtjRQg/xqEcgkJfhhkTb2Hekd1Y9wXxR9e9+/u3LMu5G7QRwJjaOVasOWRyWueDrkem8QuBhg1OUvZ4/l51IltHrFenGCNc7KBgHcihN635QjrINm0EvHA4ypOLTMiXcQmXPwwxUcDGcrTEGhwwuW80cnV/3MfT8hk=
+  - secure: VZbpOswf5MWlB5FSdYAmXWADLIjXvsiKhVF7ek0a/6B7Cpj0ifNw4EBRO8sBeH48CiKXNHHLVZmnhRGmQRZFWmvpytZgoNh0JMeu0YkazxTItFUmPF1AYc6iilVrvGWKlnPehuQpy5rJPrvyWdSNga2ippRNTU84nVzQIkzwYn4=
 notifications:
   email: false
