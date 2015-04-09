@@ -6,7 +6,7 @@ jdk:
 before_install:
 - chmod +x gradlew
 
-script: "./gradlew build -S"
+script: "./gradlew publishMavenPublicationToMavenRepository -S"
 
 env:
   global:
