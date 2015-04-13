@@ -3,7 +3,7 @@ jdk:
 - oraclejdk8
 before_install:
 - chmod +x gradlew
-script: "./gradlew publishMavenPublicationToMavenRepository -S"
+script: "./gradlew publish -S"
 env:
   global:
   - TERM=dumb
