@@ -1,6 +1,13 @@
-#Scala
-.scala_dependencies
-.worksheet
+#Git
+.cache
+
+#Gradle
+.gradle/
+build/
+gradle-app.setting
+
+#Other
+*.log
 
 #Eclipse
 .project
@@ -16,17 +23,9 @@ bin/
 out/
 projectFilesBackup*/
 
-#Gradle
-.gradle/
-build/
-gradle-app.setting
-
-#Git
-.cache
-
-#Other
-*.log
-run/
+#Scala
+.scala_dependencies
+.worksheet
 
 #SBT
 .cache/
