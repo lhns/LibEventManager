@@ -41,4 +41,8 @@ public class TrigonometryCache {
     public float cos(float val) {
         return sin(val + cosShift);
     }
+
+    public float tan(float val) {
+        return sin(val) / cos(val);
+    }
 }
